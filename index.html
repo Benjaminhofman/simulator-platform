@@ -412,6 +412,12 @@
       </svg>
       <input type="text" id="search" placeholder="Rechercher un simulateur…" autocomplete="off" />
     </div>
+    <a href="/about.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:24px;padding:12px 24px;border:2px solid #1a56e8;border-radius:10px;color:#1a56e8;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;text-decoration:none;animation:blink-border 2s ease-in-out infinite;">
+      ✉️ Me contacter</a>
+    <style>@keyframes blink-border {
+      0%,100% { border-color:#1a56e8; box-shadow:none; background:#fff; }
+      50% { border-color:#1a56e8; box-shadow:0 0 0 4px rgba(26,86,232,0.15); background:#e8f0fe; }
+    }</style>
   </section>
 
   <section class="grid-section" id="simulateurs">
@@ -525,13 +531,6 @@
     empty.style.display = visible === 0 ? 'block' : 'none';
   });
 </script>
-
-<a href="/about.html#contact" style="position:fixed;bottom:28px;right:28px;background:#1a56e8;color:#fff;text-decoration:none;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:14px 22px;border-radius:50px;box-shadow:0 4px 20px rgba(26,86,232,0.4);animation:pulse 2s infinite;z-index:999;">
-  ✉️ Me contacter</a>
-<style>@keyframes pulse {
-  0%,100% { box-shadow: 0 4px 20px rgba(26,86,232,0.4); }
-  50% { box-shadow: 0 4px 32px rgba(26,86,232,0.85); }
-}</style>
 
 </body>
 </html>
