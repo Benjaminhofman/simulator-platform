@@ -110,7 +110,8 @@
       <h2>Me contacter</h2>
     </div>
     <p>Vous souhaitez échanger sur votre situation fiscale ou patrimoniale ?</p>
-    <form style="margin-top:20px;display:flex;flex-direction:column;gap:12px;">
+    <form name="contact" method="POST" data-netlify="true" style="margin-top:20px;display:flex;flex-direction:column;gap:12px;">
+      <input type="hidden" name="form-name" value="contact" />
       <input type="text" placeholder="Votre nom" style="padding:12px;border-radius:8px;border:none;font-size:14px;" />
       <input type="email" placeholder="Votre email" style="padding:12px;border-radius:8px;border:none;font-size:14px;" />
       <textarea placeholder="Votre message" rows="4" style="padding:12px;border-radius:8px;border:none;font-size:14px;resize:vertical;"></textarea>
