@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://simulateur-entrepreneur.netlify.app/sitemap.xml
