@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://simulateurplateforme.netlify.app/sitemap.xml
+Sitemap: https://fiscalite-entrepreneur.fr/sitemap.xml
