@@ -233,19 +233,20 @@
     /* ── CARD ── */
     .card {
       background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      border-radius: 16px;
       padding: 28px;
       display: flex;
       flex-direction: column;
       gap: 16px;
-      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
     }
 
     .card:hover {
+      box-shadow: 0 8px 32px rgba(26,86,232,0.12);
+      transform: translateY(-4px);
       border-color: var(--accent);
-      box-shadow: 0 4px 24px rgba(26,86,232,0.08);
-      transform: translateY(-2px);
     }
 
     .card[data-hidden="true"] { display: none; }
