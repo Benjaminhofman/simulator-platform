@@ -13,7 +13,7 @@ Police : Plus Jakarta Sans (titres) + Inter (corps)
 - index.html — page d'accueil, bibliothèque de simulateurs
 - about.html — page à propos + formulaire contact
 - blog.html — page blog, liste des articles (cards)
-- blog/ — articles (1 fichier .html) + images de couverture (.png)
+- blog/ — articles (1 fichier .html) + images de couverture (.png ou .jpg)
 - og-image.jpg — image partage social 1200x630
 - photo.jpg — photo profil
 - sitemap.xml / robots.txt / _redirects / netlify.toml
@@ -25,12 +25,20 @@ Police : Plus Jakarta Sans (titres) + Inter (corps)
 - Arbitrage sortie d'associé → https://simulateur-patrimonial.onrender.com/
 
 ## Blog
-- Articles et images dans blog/ ; liens absolus /blog/xxx.html et /blog/xxx.png
-- Nouvel article = card dans blog.html (tags + titre + description + date + lien)
-  ajoutée APRÈS la dernière card, + entrée dans sitemap.xml (priority 0.7, monthly)
-- Image de couverture : <img> juste après le <h1> de l'article
-  style="width:100%;border-radius:12px;margin:24px 0 32px;"
+- Articles et images dans blog/ ; liens absolus /blog/xxx.html et /blog/xxx.(png|jpg)
+- Nouvel article = card dans blog.html, ajoutée APRÈS la dernière card,
+  + entrée dans sitemap.xml (priority 0.7, monthly)
+- Card = <a class="card" href="/blog/xxx.html"> avec, dans l'ordre :
+  <div class="card-tags"><span class="card-tag">…</span></div>, <h2 class="card-title">,
+  <p class="card-desc">, <span class="card-date">. NE PAS utiliser d'autres classes
+  (tag/card-footer/read-more…) : adapter tout markup collé à ce pattern.
+- Image de couverture (2 patterns selon l'article) :
+  - anciens : <img> juste après le <h1>, style inline
+    width:100%;border-radius:12px;margin:24px 0 32px;
+  - récents : <img class="cover-img"> (style dans le <style> de l'article)
+  Toujours garder la meta og:image synchronisée avec le src de la couverture.
 - Lien « Blog » présent dans la nav et le footer de toutes les pages
+- Articles autoportants (CSS inline dans chaque fichier, indépendant de index.html)
 
 ## Règles
 - Toujours lire le fichier avant de modifier
