@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow, max-snippet:160" />
+  <meta name="theme-color" content="#1a56e8" />
+  <title>Actualités fiscales & comptables — Benjamin Hofman</title>
+  <meta name="description" content="Actualités fiscales et comptables par Benjamin Hofman, expert-comptable diplômé : réformes, dispositifs et conseils pour les créateurs d'entreprise et entrepreneurs." />
+  <link rel="canonical" href="https://fiscalite-entrepreneur.fr/blog.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://fiscalite-entrepreneur.fr/blog.html" />
+  <meta property="og:title" content="Actualités fiscales & comptables — Benjamin Hofman" />
+  <meta property="og:description" content="Actualités fiscales et comptables par Benjamin Hofman, expert-comptable diplômé." />
+  <meta property="og:image" content="https://fiscalite-entrepreneur.fr/og-image.jpg" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:site_name" content="Simulateurs fiscaux — Benjamin Hofman" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Actualités fiscales & comptables — Benjamin Hofman" />
+  <meta name="twitter:description" content="Actualités fiscales et comptables par Benjamin Hofman, expert-comptable diplômé." />
+  <meta name="twitter:image" content="https://fiscalite-entrepreneur.fr/og-image.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:      #0f1117;
+      --ink-mid:  #4a4f5e;
+      --ink-soft: #8a909f;
+      --bg:       #f7f8fc;
+      --surface:  #ffffff;
+      --accent:   #1a56e8;
+      --accent-2: #e8f0fe;
+      --border:   #e2e6f0;
+      --radius:   12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .logo-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .logo-title {
+      font-size: 11px;
+      color: var(--ink-soft);
+      letter-spacing: 0.02em;
+    }
+
+    nav {
+      display: flex;
+      gap: 28px;
+    }
+
+    nav a {
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-mid);
+      transition: color 0.15s;
+    }
+
+    nav a:hover { color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--ink);
+      max-width: 680px;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 17px;
+      color: var(--ink-mid);
+      max-width: 560px;
+      line-height: 1.6;
+    }
+
+    /* ── GRID ── */
+    .grid-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+      text-decoration: none;
+    }
+
+    .card:hover {
+      box-shadow: 0 8px 32px rgba(26,86,232,0.12);
+      transform: translateY(-4px);
+      border-color: var(--accent);
+    }
+
+    .card-tag {
+      align-self: flex-start;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--accent);
+      background: var(--accent-2);
+      border-radius: 6px;
+      padding: 5px 10px;
+    }
+
+    .card-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.25;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--ink-mid);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .card-date {
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-inner p {
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      nav { display: none; }
+      .grid-section { padding: 0 20px 60px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="https://www.linkedin.com/in/benjamin-hofman-expert-comptable-ia/" target="_blank" rel="noopener">
+      <div class="logo-icon">⚖</div>
+      <div class="logo-text">
+        <span class="logo-name">Benjamin Hofman</span>
+        <span class="logo-title">Expert-comptable diplômé</span>
+      </div>
+    </a>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <a href="/about.html#contact" style="background:#1a56e8;color:#fff;padding:8px 18px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;">Me contacter</a>
+      <nav>
+        <a href="/#simulateurs">Simulateurs</a>
+        <a href="/about.html">À propos</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div style="max-width:1100px;margin:0 auto;padding:64px 24px 48px;">
+      <p class="hero-eyebrow">Le blog</p>
+      <h1>Actualités fiscales &amp; comptables</h1>
+      <p>Par Benjamin Hofman, expert-comptable diplômé.</p>
+    </div>
+  </section>
+
+  <section class="grid-section">
+    <div class="grid">
+
+      <a class="card" href="/blog/acre-2026.html">
+        <span class="card-tag">Réforme 2026</span>
+        <h2 class="card-title">ACRE 2026 : un tournant majeur pour les créateurs d'entreprise</h2>
+        <p class="card-desc">L'ACRE devient un dispositif ciblé au 1er janvier 2026. Accès restreint, exonération plafonnée à 25%.</p>
+        <span class="card-date">16 juin 2026</span>
+      </a>
+
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <p>© 2025 Benjamin Hofman — Expert-comptable diplômé, Bretagne</p>
+    <p>Outils à titre indicatif — ne constituent pas un conseil fiscal personnalisé</p>
+  </div>
+</footer>
+
+</body>
+</html>
