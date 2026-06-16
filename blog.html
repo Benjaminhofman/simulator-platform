@@ -237,6 +237,19 @@
       color: var(--ink-soft);
     }
 
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--ink-mid);
+      text-decoration: none;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       nav { display: none; }
@@ -303,6 +316,11 @@
 <footer>
   <div class="footer-inner">
     <p>© 2025 Benjamin Hofman — Expert-comptable diplômé, Bretagne</p>
+    <nav class="footer-links">
+      <a href="/">Simulateurs</a>
+      <a href="/blog.html">Blog</a>
+      <a href="/about.html">À propos</a>
+    </nav>
     <p>Outils à titre indicatif — ne constituent pas un conseil fiscal personnalisé</p>
   </div>
 </footer>

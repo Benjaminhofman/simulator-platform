@@ -92,6 +92,9 @@
     footer { border-top: 1px solid var(--border); background: var(--surface); }
     .footer-inner { max-width: 1100px; margin: 0 auto; padding: 28px 24px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
     .footer-inner p { font-size: 13px; color: var(--ink-soft); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 13px; color: var(--ink-mid); text-decoration: none; }
+    .footer-links a:hover { color: var(--accent); }
     @media (max-width: 600px) { nav { display: none; } .article-wrap { padding: 40px 20px 60px; } }
   </style>
 </head>
@@ -190,6 +193,11 @@
 <footer>
   <div class="footer-inner">
     <p>© 2026 Benjamin Hofman — Expert-comptable diplômé</p>
+    <nav class="footer-links">
+      <a href="/">Simulateurs</a>
+      <a href="/blog.html">Blog</a>
+      <a href="/about.html">À propos</a>
+    </nav>
     <p>Articles à titre informatif — ne constituent pas un conseil fiscal personnalisé</p>
   </div>
 </footer>
