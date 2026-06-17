@@ -5,24 +5,6 @@
     <lastmod>2026-06-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
-    <video:video>
-      <video:thumbnail_loc>https://pub-14910f5b50c64720b262e2fa6bc465e1.r2.dev/tuto-auto.png</video:thumbnail_loc>
-      <video:title>Tuto simulateur auto-entrepreneur vs régime réel</video:title>
-      <video:content_loc>https://pub-14910f5b50c64720b262e2fa6bc465e1.r2.dev/bandicam%202026-06-17%2012-13-25-681.mp4</video:content_loc>
-      <video:publication_date>2026-06-17</video:publication_date>
-    </video:video>
-    <video:video>
-      <video:thumbnail_loc>https://pub-14910f5b50c64720b262e2fa6bc465e1.r2.dev/foncier.png</video:thumbnail_loc>
-      <video:title>Tuto simulateur régime foncier optimal</video:title>
-      <video:content_loc>https://pub-14910f5b50c64720b262e2fa6bc465e1.r2.dev/bandicam%202026-06-17%2013-17-14-206.mp4</video:content_loc>
-      <video:publication_date>2026-06-17</video:publication_date>
-    </video:video>
-    <video:video>
-      <video:thumbnail_loc>https://pub-14910f5b50c64720b262e2fa6bc465e1.r2.dev/taxe%20puma.png</video:thumbnail_loc>
-      <video:title>Tuto simulateur taxe PUMa 2026</video:title>
-      <video:content_loc>https://pub-14910f5b50c64720b262e2fa6bc465e1.r2.dev/taxe%20puma.mp4</video:content_loc>
-      <video:publication_date>2026-06-17</video:publication_date>
-    </video:video>
   </url>
   <url>
     <loc>https://fiscalite-entrepreneur.fr/tutos.html</loc>
