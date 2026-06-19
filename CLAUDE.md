@@ -46,3 +46,18 @@ Police : Plus Jakarta Sans (titres) + Inter (corps)
 - git add -A && git commit && git push origin main à chaque fin de tâche
 - Ne jamais toucher og-image.jpg, photo.jpg, _redirects sans confirmation
 - URLs canoniques : fiscalite-entrepreneur.fr (pas simulateurplateforme.netlify.app)
+
+## Pages tutos dédiées (19 juin 2026)
+5 pages dans tutos/ avec VideoObject Schema.org :
+- tutos/sortie-associe.html
+- tutos/auto-entrepreneur.html
+- tutos/regime-foncier.html
+- tutos/taxe-puma.html
+- tutos/holding.html
+Chaque page : VideoObject JSON-LD + lien depuis tutos.html + entrée sitemap priority 0.8
+Vidéos hébergées sur Cloudflare R2 bucket fiscalite-videos
+
+## Card holding (19 juin 2026)
+Card "Holding Immobilier vs Dividendes & Rémunération" en première position dans index.html
+Lien : https://holding-04ri.onrender.com/
+Repo holding : Benjaminhofman/holding — Open Graph à ajouter (PENDING)
