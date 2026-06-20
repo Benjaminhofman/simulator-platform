@@ -61,3 +61,7 @@ Vidéos hébergées sur Cloudflare R2 bucket fiscalite-videos
 Card "Holding Immobilier vs Dividendes & Rémunération" en première position dans index.html
 Lien : https://holding-04ri.onrender.com/
 Repo holding : Benjaminhofman/holding — Open Graph à ajouter (PENDING)
+
+## Règle automatique
+Quand je demande d'ajouter une vidéo tuto, consulte TOUJOURS
+skills/ajouter-video-tuto.md avant de commencer.
