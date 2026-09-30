@@ -22,7 +22,6 @@ Police : Plus Jakarta Sans (titres) + Inter (corps)
 - Auto-entrepreneur vs SARL/SASU → https://simul-auto.netlify.app/
 - Régime foncier optimal → https://urls.fr/5LomTD
 - Taxe PUMa → https://taxepuma.netlify.app/
-- Arbitrage sortie d'associé → https://simulateur-patrimonial.onrender.com/
 
 ## Blog
 - Articles et images dans blog/ ; liens absolus /blog/xxx.html et /blog/xxx.(png|jpg)
@@ -48,8 +47,7 @@ Police : Plus Jakarta Sans (titres) + Inter (corps)
 - URLs canoniques : fiscalite-entrepreneur.fr (pas simulateurplateforme.netlify.app)
 
 ## Pages tutos dédiées (19 juin 2026)
-5 pages dans tutos/ avec VideoObject Schema.org :
-- tutos/sortie-associe.html
+Pages dans tutos/ avec VideoObject Schema.org :
 - tutos/auto-entrepreneur.html
 - tutos/regime-foncier.html
 - tutos/taxe-puma.html
