@@ -25,7 +25,7 @@ Police : Plus Jakarta Sans (titres) + Inter (corps)
 
 ## Blog
 - Articles et images dans blog/ ; liens absolus /blog/xxx.html et /blog/xxx.(png|jpg)
-- Nouvel article = card dans blog.html, ajoutée APRÈS la dernière card,
+- Nouvel article = card dans blog.html, ajoutée en PREMIÈRE position (plus récent en tête),
   + entrée dans sitemap.xml (priority 0.7, monthly)
 - Card = <a class="card" href="/blog/xxx.html"> avec, dans l'ordre :
   <div class="card-tags"><span class="card-tag">…</span></div>, <h2 class="card-title">,
