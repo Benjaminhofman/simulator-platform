@@ -350,6 +350,144 @@
     #empty svg { margin-bottom: 16px; opacity: 0.4; }
     #empty p { font-size: 15px; }
 
+    /* ── BLOG : DERNIER ARTICLE ── */
+    .blog-latest {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+
+    .blog-section-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+
+    .blog-section-title--sub {
+      font-size: 17px;
+      margin: 36px 0 16px;
+    }
+
+    .post-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .post-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+    }
+
+    .post-card:hover,
+    .post-card:focus-within {
+      box-shadow: 0 8px 32px rgba(26,86,232,0.12);
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .post-card--featured {
+      border-radius: 16px;
+      border-left: 4px solid var(--accent);
+      padding: 32px;
+      gap: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .post-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 14px;
+    }
+
+    .post-cat {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--accent);
+      background: var(--accent-2);
+      border-radius: 6px;
+      padding: 5px 10px;
+    }
+
+    .post-date {
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+
+    .post-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+
+    .post-card--featured .post-title {
+      font-size: clamp(20px, 2.6vw, 26px);
+      line-height: 1.25;
+    }
+
+    /* Le lien du titre couvre toute la card */
+    .post-link {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .post-link::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+    }
+
+    .post-link:focus-visible { outline: none; }
+
+    .post-card:has(.post-link:focus-visible) {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .post-excerpt {
+      font-size: 13px;
+      color: var(--ink-mid);
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .post-card--featured .post-excerpt {
+      font-size: 15px;
+      line-height: 1.6;
+      max-width: 760px;
+    }
+
+    .post-more {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .blog-all {
+      display: inline-block;
+      margin-top: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .blog-all:hover { text-decoration: underline; }
+
     /* ── FOOTER ── */
     footer {
       border-top: 1px solid var(--border);
@@ -390,6 +528,9 @@
       nav { display: none; }
       .grid-section { padding: 0 20px 60px; }
       .grid { grid-template-columns: 1fr; }
+      .blog-latest { padding: 0 20px 48px; }
+      .post-grid { grid-template-columns: 1fr; }
+      .post-card--featured { padding: 22px 20px; }
     }
   </style>
 </head>
@@ -552,52 +693,52 @@
     </div>
   </section>
 
-  <!-- SECTION : Derniers articles -->
-<section style="max-width:1100px;margin:0 auto;padding:0 24px 64px;">
-  <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:24px;">
-    Derniers articles
-  </h2>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;">
+  <!-- SECTION : Dernier article — alimentée par /blog/articles.json (repli statique ci-dessous) -->
+  <section class="blog-latest" id="dernier-article" aria-labelledby="dernier-article-titre">
+    <h2 class="blog-section-title" id="dernier-article-titre">Dernier article</h2>
 
-    <a href="/blog/prime-partage-valeur-fin-regime-2026.html"
-       style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:10px;text-decoration:none;">
-      <span style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);">Social</span>
-      <p style="font-size:15px;font-weight:700;color:var(--ink);line-height:1.35;margin:0;">Prime de partage de la valeur : fin du régime de faveur au 31 décembre 2026</p>
-      <p style="font-size:13px;color:var(--ink-mid);line-height:1.55;margin:0;flex:1;">Dans les entreprises de moins de 50 salariés, l'exonération renforcée de la PPV prend fin le 31 décembre 2026. CSG-CRDS et impôt sur le revenu dus dès 2027.</p>
-      <span style="font-size:12px;color:var(--ink-soft);">30 septembre 2026</span>
-    </a>
+    <div id="latest-post">
+      <article class="post-card post-card--featured">
+        <div class="post-meta">
+          <span class="post-cat">Agricole &amp; MSA</span>
+          <span class="post-date"><time datetime="2026-10-02">2 octobre 2026</time> · 5 min de lecture</span>
+        </div>
+        <h3 class="post-title"><a class="post-link" href="/blog/option-n-1-msa-cotisations-2027.html">Cotisations MSA 2027 : quand l'option N-1 bat la moyenne triennale</a></h3>
+        <p class="post-excerpt">Après une année exceptionnelle, la moyenne triennale MSA gonfle encore vos cotisations. L'option N-1 peut réduire la base de calcul 2027 de 40 % ou plus. Simulations, conditions et échéance du 30 juin 2027.</p>
+        <span class="post-more" aria-hidden="true">Lire l'article →</span>
+      </article>
+    </div>
 
-    <a href="/blog/taxe-holdings-patrimoniales-2026.html"
-       style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:10px;text-decoration:none;">
-      <span style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);">Holding</span>
-      <p style="font-size:15px;font-weight:700;color:var(--ink);line-height:1.35;margin:0;">Taxe sur les holdings patrimoniales 2026 : ce qui est vraiment taxé à 20 %</p>
-      <p style="font-size:13px;color:var(--ink-mid);line-height:1.55;margin:0;flex:1;">Seuil de 5 M€, contrôle à 50 %, revenus passifs : qui est concerné et quels actifs sont réellement taxés à 20 %. Trésorerie et titres exclus.</p>
-      <span style="font-size:12px;color:var(--ink-soft);">25 septembre 2026</span>
-    </a>
+    <h2 class="blog-section-title blog-section-title--sub">Articles précédents</h2>
+    <div class="post-grid" id="previous-posts">
+      <article class="post-card">
+        <div class="post-meta">
+          <span class="post-cat">Social</span>
+          <span class="post-date"><time datetime="2026-09-30">30 septembre 2026</time></span>
+        </div>
+        <h3 class="post-title"><a class="post-link" href="/blog/prime-partage-valeur-fin-regime-2026.html">Prime de partage de la valeur : fin du régime de faveur au 31 décembre 2026</a></h3>
+        <p class="post-excerpt">Dans les entreprises de moins de 50 salariés, l'exonération renforcée de la PPV prend fin le 31 décembre 2026. CSG-CRDS et impôt sur le revenu dus dès 2027.</p>
+      </article>
+      <article class="post-card">
+        <div class="post-meta">
+          <span class="post-cat">Holding</span>
+          <span class="post-date"><time datetime="2026-09-25">25 septembre 2026</time></span>
+        </div>
+        <h3 class="post-title"><a class="post-link" href="/blog/taxe-holdings-patrimoniales-2026.html">Taxe sur les holdings patrimoniales 2026 : ce qui est vraiment taxé à 20 %</a></h3>
+        <p class="post-excerpt">Taxe holding 2026 (CGI art. 235 ter C) : seuil de 5 M€, contrôle à 50 %, revenus passifs, 7 catégories d'actifs taxés à 20 %. Trésorerie et titres exclus.</p>
+      </article>
+      <article class="post-card">
+        <div class="post-meta">
+          <span class="post-cat">Fiscalité</span>
+          <span class="post-date"><time datetime="2026-07-24">24 juillet 2026</time></span>
+        </div>
+        <h3 class="post-title"><a class="post-link" href="/blog/facturation-electronique-sanction-plateforme.html">Facturation électronique : quelle sanction en l'absence de plateforme agréée ?</a></h3>
+        <p class="post-excerpt">Dès le 1er septembre 2026, toute entreprise assujettie à la TVA doit pouvoir recevoir ses factures via une plateforme agréée. Sans elle : 500 € puis 1 000 € tous les trois mois.</p>
+      </article>
+    </div>
 
-    <a href="/blog/facturation-electronique-sanction-plateforme.html"
-       style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:10px;text-decoration:none;">
-      <span style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);">Fiscalité</span>
-      <p style="font-size:15px;font-weight:700;color:var(--ink);line-height:1.35;margin:0;">Facturation électronique : quelle sanction en l'absence de plateforme agréée ?</p>
-      <p style="font-size:13px;color:var(--ink-mid);line-height:1.55;margin:0;flex:1;">Dès le 1er septembre 2026, toute entreprise assujettie à la TVA doit pouvoir recevoir ses factures via une plateforme agréée, sous peine d'amende.</p>
-      <span style="font-size:12px;color:var(--ink-soft);">Juillet 2026</span>
-    </a>
-
-    <a href="/blog/sci-ir-ou-is.html"
-       style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:10px;text-decoration:none;">
-      <span style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);">SCI</span>
-      <p style="font-size:15px;font-weight:700;color:var(--ink);line-height:1.35;margin:0;">SCI à l'IR ou à l'IS en 2026 : quel régime fiscal choisir ?</p>
-      <p style="font-size:13px;color:var(--ink-mid);line-height:1.55;margin:0;flex:1;">Comparatif complet du régime fiscal des SCI — fiscalité des loyers, amortissement, revente, déficit foncier.</p>
-      <span style="font-size:12px;color:var(--ink-soft);">Juillet 2026</span>
-    </a>
-
-  </div>
-  <div style="margin-top:20px;">
-    <a href="/blog.html" style="font-size:14px;font-weight:600;color:var(--accent);text-decoration:none;">
-      Voir tous les articles →
-    </a>
-  </div>
-</section>
+    <a class="blog-all" href="/blog.html">Voir tous les articles →</a>
+  </section>
 </main>
 
 <footer>
@@ -634,6 +775,37 @@
     count.textContent = visible;
     empty.style.display = visible === 0 ? 'block' : 'none';
   });
+
+  // Dernier article : lu depuis /blog/articles.json. En cas d'échec, le HTML statique reste affiché.
+  (function () {
+    const latest   = document.getElementById('latest-post');
+    const previous = document.getElementById('previous-posts');
+
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const fmtDate = iso => new Date(iso + 'T00:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+    function postCard(a, featured) {
+      return `
+      <article class="post-card${featured ? ' post-card--featured' : ''}">
+        <div class="post-meta">
+          <span class="post-cat">${esc(a.categorie)}</span>
+          <span class="post-date"><time datetime="${esc(a.date)}">${fmtDate(a.date)}</time>${featured && a.lecture ? ' · ' + esc(a.lecture) + ' de lecture' : ''}</span>
+        </div>
+        <h3 class="post-title"><a class="post-link" href="${esc(a.url)}">${esc(a.titre)}</a></h3>
+        <p class="post-excerpt">${esc(a.extrait)}</p>${featured ? '\n        <span class="post-more" aria-hidden="true">Lire l\'article →</span>' : ''}
+      </article>`;
+    }
+
+    fetch('/blog/articles.json')
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(articles => {
+        if (!Array.isArray(articles) || !articles.length) return;
+        articles.sort((a, b) => b.date.localeCompare(a.date));
+        latest.innerHTML   = postCard(articles[0], true);
+        previous.innerHTML = articles.slice(1, 4).map(a => postCard(a, false)).join('');
+      })
+      .catch(() => {});
+  })();
 </script>
 
 </body>
