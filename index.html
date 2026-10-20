@@ -34,6 +34,7 @@
       "address": { "@type": "PostalAddress", "addressRegion": "Bretagne", "addressCountry": "FR" }
     },
     "hasPart": [
+      { "@type": "WebApplication", "name": "Location meublée : SCI à l'IS, LMNP ou micro-BIC ?", "url": "https://simullmnp.onrender.com/", "description": "Coût fiscal annuel et coût de sortie de la SCI à l'IS, du LMNP au réel et du micro-BIC selon la durée de détention, plus-value, boni de liquidation et PLF 2027", "applicationCategory": "FinanceApplication", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" } },
       { "@type": "WebApplication", "name": "Cession de parts de SARL ou d'actions de SAS : combien vous reste-t-il réellement ?", "url": "https://simul-cessionpart.onrender.com/", "description": "Fiscalité d'une cession de titres : PFU, barème progressif, abattements, départ à la retraite, droits d'enregistrement et coût pour l'acquéreur", "applicationCategory": "FinanceApplication", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" } },
       { "@type": "WebApplication", "name": "Simulateur succession : conjoint survivant et enfants", "url": "https://simul-succession.onrender.com/", "description": "Répartition d'une succession entre conjoint survivant et enfants, base taxable et droits de succession", "applicationCategory": "FinanceApplication", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" } },
       { "@type": "WebApplication", "name": "Simulateur auto-entrepreneur VS régime réel", "url": "https://simul-auto.netlify.app/", "applicationCategory": "FinanceApplication", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" } },
@@ -582,9 +583,21 @@
   </section>
 
   <section class="grid-section" id="simulateurs">
-    <p class="count-label"><span id="count">10</span> simulateurs disponibles</p>
+    <p class="count-label"><span id="count">11</span> simulateurs disponibles</p>
 
     <div class="grid" id="grid">
+      <!-- CARD : Location meublée : SCI à l'IS, LMNP ou micro-BIC -->
+      <article class="card" data-tags="location meublée lmnp sci is micro-bic micro bic réel immobilier plus-value boni de liquidation abattements surtaxe durée de détention coût de sortie loi de finances 2027 plf">
+        <div class="card-header">
+          <div class="card-icon">🏘️</div>
+          <h2 class="card-title">Location meublée : SCI à l'IS, LMNP ou micro-BIC ?</h2>
+        </div>
+        <p class="card-desc">Comparez le coût fiscal annuel et le coût de sortie de la SCI à l'IS, du LMNP au réel et du micro-BIC selon la durée de détention. Prise en compte de la plus-value des particuliers (abattements 150 VC, surtaxe), du boni de liquidation et du projet de loi de finances 2027. Résultat instantané.</p>
+        <a class="btn-primary" href="https://simullmnp.onrender.com/" target="_blank" rel="noopener">
+          Accéder au simulateur
+        </a>
+      </article>
+
       <!-- CARD : Cession de parts de SARL ou d'actions de SAS -->
       <article class="card" data-tags="cession titres parts sociales actions sarl sas sasu plus-value plus-values pfu flat tax barème progressif abattement départ à la retraite droits d'enregistrement acquéreur vendeur vente entreprise">
         <div class="card-header">
