@@ -20,7 +20,6 @@ Police : Plus Jakarta Sans (titres) + Inter (corps)
 
 ## Simulateurs
 - Auto-entrepreneur vs SARL/SASU → https://simul-auto.netlify.app/
-- Régime foncier optimal → https://urls.fr/5LomTD
 - Taxe PUMa → https://taxepuma.netlify.app/
 
 ## Blog
@@ -49,7 +48,6 @@ Police : Plus Jakarta Sans (titres) + Inter (corps)
 ## Pages tutos dédiées (19 juin 2026)
 Pages dans tutos/ avec VideoObject Schema.org :
 - tutos/auto-entrepreneur.html
-- tutos/regime-foncier.html
 - tutos/taxe-puma.html
 - tutos/holding.html
 Chaque page : VideoObject JSON-LD + lien depuis tutos.html + entrée sitemap priority 0.8
