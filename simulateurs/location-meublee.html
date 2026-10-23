@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Location meublée : SCI à l'IS, LMNP ou micro-BIC ? | Benjamin Hofman</title>
-<meta name="description" content="Simulateur gratuit — Coût fiscal annuel et coût de sortie de la SCI à l'IS, du LMNP au réel et du micro-BIC selon la durée de détention, plus-value, boni de liquidation et PLF 2027.">
+<meta name="description" content="Simulateur gratuit : coût fiscal annuel et coût de sortie de la SCI à l'IS, du LMNP au réel et du micro-BIC selon la durée de détention, avec option PLF 2027.">
 <link rel="canonical" href="https://fiscalite-entrepreneur.fr/simulateurs/location-meublee.html">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://fiscalite-entrepreneur.fr/simulateurs/location-meublee.html">
@@ -12,6 +12,19 @@
 <meta property="og:description" content="Coût fiscal annuel et coût de sortie de la SCI à l'IS, du LMNP au réel et du micro-BIC selon la durée de détention, plus-value, boni de liquidation et PLF 2027.">
 <meta property="og:locale" content="fr_FR">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Location meublée : SCI à l'IS, LMNP ou micro-BIC ?", "url": "https://fiscalite-entrepreneur.fr/simulateurs/location-meublee.html", "description": "Coût fiscal annuel et coût de sortie de la SCI à l'IS, du LMNP au réel et du micro-BIC selon la durée de détention, plus-value, boni de liquidation et PLF 2027.", "applicationCategory": "FinanceApplication", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}, "author": {"@type": "Person", "name": "Benjamin Hofman"}}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Quelle différence entre le LMNP au réel et le micro-BIC ?", "acceptedAnswer": {"@type": "Answer", "text": "Le micro-BIC applique un abattement forfaitaire de 50 % sur les recettes (30 % pour un meublé de tourisme non classé), sans déduction des charges ni de l'amortissement. Pour les revenus perçus à compter de 2026, il est ouvert jusqu'à 83 600 € de recettes (15 000 € pour un meublé de tourisme non classé). Le LMNP au réel déduit les charges, les intérêts d'emprunt et l'amortissement, mais l'amortissement ne peut pas créer de déficit : l'excédent est reporté (article 39 C du CGI)."}},
+    {"@type": "Question", "name": "L'amortissement du LMNP est-il réintégré dans la plus-value à la revente ?", "acceptedAnswer": {"@type": "Answer", "text": "Le simulateur réintègre dans le calcul de la plus-value les amortissements effectivement déduits (article 150 VB III du CGI), ce qui réduit le prix d'acquisition retenu. En micro-BIC, aucun amortissement n'est déduit : rien n'est réintégré."}},
+    {"@type": "Question", "name": "Que prévoit le PLF 2027 pour l'amortissement du LMNP ?", "acceptedAnswer": {"@type": "Answer", "text": "Selon l'article 7 du projet de loi de finances pour 2027, l'amortissement des locaux serait plafonné à 2,5 % et 7 000 € par an et par foyer fiscal (1,5 % et 5 000 € pour un meublé de tourisme). L'excédent serait perdu à compter des exercices clos en 2027, et le stock antérieur resterait utilisable jusqu'en 2036 dans la limite de 50 % du bénéfice restant. Il s'agit d'un projet non voté : le simulateur propose une option pour le tester, la version par défaut applique le droit en vigueur."}},
+    {"@type": "Question", "name": "Pourquoi la SCI à l'IS coûte-t-elle plus cher à la sortie dans le simulateur ?", "acceptedAnswer": {"@type": "Answer", "text": "La SCI a amorti le bien : sa plus-value est calculée sur la valeur nette comptable et taxée à l'impôt sur les sociétés dès la cession. Le boni de liquidation distribué aux associés peut ensuite être taxé au prélèvement forfaitaire unique. Le simulateur permet de désactiver la distribution du boni pour voir l'effet de cette seconde taxation."}},
+    {"@type": "Question", "name": "À partir de quelle durée de détention la plus-value d'un particulier est-elle exonérée ?", "acceptedAnswer": {"@type": "Answer", "text": "La plus-value immobilière des particuliers est exonérée d'impôt sur le revenu après 22 ans de détention et de prélèvements sociaux après 30 ans (article 150 VC du CGI). Les abattements démarrent à la 6e année. Ces repères sont matérialisés sur le graphique du simulateur."}},
+    {"@type": "Question", "name": "Faut-il examiner la qualification de loueur en meublé professionnel (LMP) ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui dès que les recettes annuelles du foyer excèdent 23 000 € (BOI-BIC-CHAMP-40-10, paragraphe 110). Le simulateur affiche une alerte, mais ne modélise pas la qualification de LMP ni les cotisations sociales qui en découlent."}},
+    {"@type": "Question", "name": "Le simulateur remplace-t-il un conseil ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. Il fournit une estimation indicative à valider par un expert-comptable sur votre situation réelle."}}
+  ]
+}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;background:#f7f8fc;color:#0f1117}header{background:#fff;border-bottom:1px solid #e2e6f0;position:sticky;top:0;z-index:100}.header-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}.logo{display:flex;align-items:center;gap:12px;text-decoration:none}.logo-icon{width:36px;height:36px;background:#1a56e8;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}.logo-name{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:15px;color:#0f1117}.logo-title{font-size:11px;color:#8a909f}nav{display:flex;gap:24px}nav a{font-size:14px;font-weight:500;color:#4a4f5e;text-decoration:none}nav a:hover{color:#1a56e8}.container{max-width:860px;margin:0 auto;padding:48px 24px 80px}.breadcrumb{font-size:13px;color:#8a909f;margin-bottom:24px}.breadcrumb a{color:#1a56e8;text-decoration:none}h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(24px,4vw,36px);font-weight:800;line-height:1.2;color:#0f1117;margin-bottom:16px}.meta{font-size:13px;color:#8a909f;margin-bottom:32px;display:flex;gap:16px;flex-wrap:wrap}.content h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:700;color:#0f1117;margin:32px 0 12px}.content p{font-size:15px;color:#4a4f5e;line-height:1.7;margin-bottom:16px}
 
@@ -27,14 +40,151 @@
 .src{font-size:13px;color:#8a909f}
 footer{border-top:1px solid #e2e6f0;background:#fff;padding:24px;text-align:center;font-size:13px;color:#8a909f}
 footer a{color:#4a4f5e;text-decoration:none}
-@media(max-width:600px){nav{display:none}.container{padding-left:16px;padding-right:16px}}
+
+/* Ajouts pour la version enrichie : mêmes couleurs et polices que le reste du site */
+.content h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.05rem;font-weight:700;color:#0f1117;margin:28px 0 10px}
+.content ol{padding-left:22px;margin-bottom:16px}
+.content ol li{font-size:15px;color:#4a4f5e;line-height:1.7;margin-bottom:8px}
+.content strong{color:#0f1117;font-weight:600}
+.tbl{overflow-x:auto;margin:0 0 20px;border:1px solid #e2e6f0;border-radius:12px;background:#fff}
+.tbl table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+.tbl th{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#4a4f5e;text-align:left;padding:12px 14px;background:#f7f8fc;border-bottom:1px solid #e2e6f0}
+.tbl td{padding:12px 14px;color:#4a4f5e;line-height:1.5;border-bottom:1px solid #e2e6f0;vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td:first-child{color:#0f1117;font-weight:600}
+.tbl td.n,.tbl th.n{text-align:right;white-space:nowrap}
+.formula{background:#eef3fe;border-left:4px solid #1a56e8;border-radius:0 10px 10px 0;padding:14px 18px;margin:0 0 20px}
+.content .formula p{margin:0;font-size:14.5px;color:#0f1117}
+.content .formula p+p{margin-top:6px;color:#4a4f5e}
+.formula b{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:#1a56e8}
+.notice{background:#fdf1e3;border-left:4px solid #c2570c;border-radius:0 10px 10px 0;padding:14px 18px;margin:0 0 20px}
+.content .notice p{margin:0;font-size:14.5px;color:#4a4f5e}
+.content .notice b{color:#a14b06}
+.content p.src,.content .src{font-size:13px;color:#8a909f}
+.faq p{font-size:15px;color:#4a4f5e;line-height:1.7;margin-bottom:8px}
+@media(max-width:600px){nav{display:none}.container{padding-left:16px;padding-right:16px}.cta-box{padding:24px 20px}}
 </style>
-</head>
-<body><header>  <div class="header-inner">    <a class="logo" href="/">      <div class="logo-icon">⚖</div>      <div>        <div class="logo-name">Benjamin Hofman</div>        <div class="logo-title">Expert-comptable diplômé</div>      </div>    </a>    <nav>      <a href="/#simulateurs">Simulateurs</a>      <a href="/tutos.html">Tutos</a>      <a href="/blog.html">Blog</a>    </nav>  </div></header>
-<div class="container">  <div class="breadcrumb"><a href="/">Accueil</a> › <a href="/#simulateurs">Simulateurs</a> › Location meublée : SCI à l'IS, LMNP ou micro-BIC</div>  <h1>Location meublée : SCI à l'IS, LMNP ou micro-BIC ?</h1>  <div class="meta"><span>👤 Benjamin Hofman</span></div>
-  <p class="intro">Louer en meublé via une SCI à l'IS, en LMNP au réel ou au micro-BIC ? Le simulateur compare le coût fiscal annuel de chaque option, puis le coût de sortie selon la durée de détention, en tenant compte de la plus-value, du boni de liquidation et du projet de loi de finances 2027.</p>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="ca3d5b5a-b5c6-4fdd-87d8-342b863784f4"></script></head>
+<body><header>  <div class="header-inner">    <a class="logo" href="/">      <div class="logo-icon">⚖</div>      <div>        <div class="logo-name">Benjamin Hofman</div>        <div class="logo-title">Expert-comptable diplômé</div>      </div>    </a>    <nav>      <a href="/#simulateurs">Simulateurs</a>      <a href='/tutos'>Tutos</a>      <a href='/blog'>Blog</a>    </nav>  </div></header>
+<div class="container">  <div class="breadcrumb"><a href="/">Accueil</a> › <a href="/#simulateurs">Simulateurs</a> › Location meublée : SCI à l'IS, LMNP ou micro-BIC</div>  <h1>Location meublée : SCI à l'IS, LMNP ou micro-BIC ?</h1>  <div class="meta"><span>👤 Benjamin Hofman</span><span>Paramètres légaux relevés le 12 octobre 2026</span></div>
+  <p class="intro">Louer en meublé via une SCI à l'IS, en LMNP au réel ou au micro-BIC ? Le simulateur compare le coût fiscal annuel de chaque option, puis le coût de sortie selon la durée de détention, en tenant compte de la plus-value, du boni de liquidation et du projet de loi de finances 2027. Le résultat s'exprime en coût global : fiscalité annuelle cumulée, honoraires comptables et fiscalité de la cession, pour chaque durée de détention de 1 à 40 ans.</p>
   <div class="cta-box">    <h2>Accéder au simulateur gratuit</h2>    <p>Comparez les trois options de la location meublée en quelques clics — aucune inscription requise.</p>    <a class="btn-white" href="https://simullmnp.onrender.com/" target="_blank" rel="noopener">Lancer le simulateur gratuit →</a>  </div>
-  <div class="content">    <h2>Ce que compare le simulateur</h2>    <ul>      <li><strong>SCI à l'IS</strong> : imposition des loyers à l'impôt sur les sociétés, puis boni de liquidation à la sortie.</li>      <li><strong>LMNP au réel</strong> : imposition du bénéfice après déduction des charges et des amortissements.</li>      <li><strong>Micro-BIC</strong> : imposition des recettes après abattement forfaitaire.</li>      <li><strong>Coût de sortie</strong> : plus-value des particuliers (abattements pour durée de détention, surtaxe) ou boni de liquidation selon la structure, en fonction de la durée de détention.</li>    </ul>
-    <h2>Limites</h2>    <ul>      <li>Les résultats sont des estimations indicatives : ils ne remplacent pas un calcul réalisé sur votre situation réelle.</li>      <li>Les règles fiscales retenues pour la sortie dépendent du projet de loi de finances 2027, susceptible d'évoluer au cours des débats parlementaires.</li>    </ul>    <p>Avant toute décision, faites valider votre situation par un expert-comptable.</p>  </div>
+  <div class="content">
+    <h2>À qui s'adresse ce simulateur</h2>
+    <ul>
+      <li><strong>Investisseurs particuliers</strong> qui hésitent entre acheter en nom propre (LMNP au réel ou micro-BIC) ou via une SCI à l'IS.</li>
+      <li><strong>Bailleurs en meublé</strong> qui veulent mesurer l'effet d'une revente à 10, 20 ou 30 ans, ou l'impact du plafonnement de l'amortissement prévu par le PLF 2027.</li>
+      <li><strong>Experts-comptables et conseils en gestion de patrimoine</strong> qui préparent une comparaison de montages, avec le détail année par année et le calcul de la sortie.</li>
+    </ul>
+
+    <h2>Comment fonctionne le simulateur</h2>
+    <ol>
+      <li><strong>Choisissez l'option législative.</strong> Droit en vigueur par défaut, ou texte déposé du PLF 2027 (article 7) pour tester le plafonnement de l'amortissement.</li>
+      <li><strong>Décrivez le bien.</strong> Prix, part du terrain, frais de notaire, travaux et mobilier avec leurs durées d'amortissement, décomposition du bâti par composants (gros œuvre, façades, installations générales techniques, agencements).</li>
+      <li><strong>Renseignez le financement et l'exploitation.</strong> Emprunt (montant, taux, durée), loyer mensuel et indexation, honoraires comptables, entretien, taxe foncière, assurance, frais bancaires, type de location.</li>
+      <li><strong>Réglez la fiscalité et la sortie.</strong> Taux marginal d'imposition, taux de prélèvements sociaux, IS, prix de vente, durée de détention affichée, distribution annuelle et boni de liquidation de la SCI.</li>
+      <li><strong>Lisez le résultat.</strong> Trois cartes indiquent le montage le moins coûteux, un graphique donne le coût global par durée de détention, des tableaux détaillent chaque année et la sortie, et des points d'attention signalent les paramètres hors fourchette.</li>
+    </ol>
+
+    <h2>Ce que compare le simulateur</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Montage</th><th>Imposition annuelle</th><th>Amortissement</th><th>Coût de sortie</th></tr></thead>
+      <tbody>
+        <tr><td>SCI à l'IS</td><td>Impôt sur les sociétés : 15 % jusqu'à 42 500 € de bénéfice, puis 25 %. Distribution annuelle facultative au prélèvement forfaitaire unique.</td><td>Par composants, sans plafond. Déficit reporté sans limite de durée (art. 209 I).</td><td>IS sur la plus-value de la société, puis prélèvement forfaitaire unique sur le boni de liquidation (option).</td></tr>
+        <tr><td>LMNP au réel</td><td>Impôt sur le revenu au taux marginal, plus prélèvements sociaux, sur le bénéfice après charges et amortissements.</td><td>Déduit du résultat sans créer de déficit (art. 39 C) ; excédent reporté. Plafonné si l'option PLF 2027 est activée.</td><td>Plus-value des particuliers, avec réintégration des amortissements effectivement déduits.</td></tr>
+        <tr><td>Micro-BIC</td><td>Abattement forfaitaire sur les recettes, puis impôt sur le revenu et prélèvements sociaux.</td><td>Aucun.</td><td>Plus-value des particuliers, sans réintégration.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Micro-BIC : seuils et abattements pour les revenus perçus à compter de 2026</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Type de location meublée</th><th class="n">Plafond de recettes</th><th class="n">Abattement</th></tr></thead>
+      <tbody>
+        <tr><td>Longue durée et meublé de tourisme classé</td><td class="n">83 600 €</td><td class="n">50 %</td></tr>
+        <tr><td>Meublé de tourisme non classé</td><td class="n">15 000 €</td><td class="n">30 %</td></tr>
+      </tbody>
+    </table></div>
+    <p>Au-delà du plafond, le micro-BIC n'est plus éligible : le simulateur le signale et n'affiche plus de coût pour ce montage à partir de l'année concernée.</p>
+
+    <h3>Plus-value des particuliers : abattements pour durée de détention</h3>
+    <p>La plus-value brute est la différence entre le prix de cession et le prix d'acquisition corrigé. Elle bénéficie d'abattements à partir de la 6<sup>e</sup> année de détention (article 150 VC du CGI) :</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Prélèvement</th><th>Années 6 à 21</th><th>22<sup>e</sup> année</th><th>Années 23 à 30</th><th>Exonération</th></tr></thead>
+      <tbody>
+        <tr><td>Impôt sur le revenu (19 %)</td><td>6 % par an</td><td>4 %</td><td>—</td><td>après 22 ans</td></tr>
+        <tr><td>Prélèvements sociaux</td><td>1,65 % par an</td><td>1,60 %</td><td>9 % par an</td><td>après 30 ans</td></tr>
+      </tbody>
+    </table></div>
+    <p>S'ajoute, pour les plus-values imposables supérieures à 50 000 €, la taxe sur les plus-values immobilières élevées (article 1609 nonies G du CGI), calculée au barème complet.</p>
+
+    <h2>Les formules retenues</h2>
+    <div class="formula">
+      <p><b>Amortissement déduit en LMNP</b> = min(amortissement de l'année + report ; résultat avant amortissement)</p>
+      <p>L'amortissement ne peut pas créer de déficit : l'excédent est reporté sans limite de durée (art. 39 C du CGI).</p>
+    </div>
+    <div class="formula">
+      <p><b>Plus-value brute (LMNP au réel)</b> = prix de cession − (prix d'acquisition + frais d'acquisition + travaux − amortissements déduits)</p>
+      <p>Frais d'acquisition retenus : le plus élevé des frais réels et de 7,5 % du prix. En LMNP au réel, les travaux amortis ne majorent pas le prix : seul le forfait de 15 % du prix, après plus de 5 ans de détention, est retenu. En micro-BIC, c'est le plus élevé des travaux réels et de ce forfait.</p>
+    </div>
+    <div class="formula">
+      <p><b>Boni de liquidation (SCI)</b> = actif net − crédit vendeur − avances d'associés</p>
+      <p>Actif net = prix de vente − dette restante + trésorerie − IS de cession. Le prélèvement forfaitaire unique (12,8 % d'impôt sur le revenu plus prélèvements sociaux) s'applique au boni si l'option de distribution est cochée.</p>
+    </div>
+
+    <h2>Un exemple chiffré : les valeurs par défaut du simulateur</h2>
+    <p>Hypothèses : bien acheté 500 000 € (terrain 15 %), travaux de 100 000 € amortis sur 20 ans, prêt de 200 000 € à 4 % sur 20 ans, loyer de 2 000 € par mois sans indexation, taux marginal de 30 %, prix de vente de 750 000 €, distribution annuelle et boni de liquidation taxés pour la SCI. Coût global = fiscalité annuelle cumulée + honoraires + fiscalité de la cession.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Durée de détention</th><th class="n">SCI à l'IS</th><th class="n">LMNP au réel</th><th class="n">Micro-BIC</th></tr></thead>
+      <tbody>
+        <tr><td>10 ans, droit en vigueur</td><td class="n">142 407 €</td><td class="n">94 121 €</td><td class="n">92 611 €</td></tr>
+        <tr><td>20 ans, droit en vigueur</td><td class="n">234 038 €</td><td class="n">81 418 €</td><td class="n">133 338 €</td></tr>
+        <tr><td>30 ans, droit en vigueur</td><td class="n">333 748 €</td><td class="n">54 664 €</td><td class="n">174 960 €</td></tr>
+        <tr><td>10 ans, PLF 2027</td><td class="n">142 407 €</td><td class="n">103 245 €</td><td class="n">92 611 €</td></tr>
+        <tr><td>20 ans, PLF 2027</td><td class="n">234 038 €</td><td class="n">137 431 €</td><td class="n">133 338 €</td></tr>
+        <tr><td>30 ans, PLF 2027</td><td class="n">333 748 €</td><td class="n">173 127 €</td><td class="n">174 960 €</td></tr>
+      </tbody>
+    </table></div>
+    <p>Ce qu'il faut retenir de cet exemple : en droit en vigueur, le LMNP au réel est le moins coûteux à 20 et 30 ans, parce que l'amortissement efface l'impôt annuel et que la plus-value est exonérée après 30 ans. Avec le plafonnement du PLF 2027, son avantage disparaît : à 20 ans, le micro-BIC (133 338 €) devient légèrement moins coûteux que le LMNP (137 431 €). La SCI à l'IS reste la plus coûteuse dans ce scénario, essentiellement à cause de la fiscalité de sortie. Ces chiffres illustrent une configuration précise : ils changent avec le prix, le financement, le loyer, le taux marginal et la durée.</p>
+
+    <h2>Le PLF 2027 et l'amortissement du LMNP</h2>
+    <div class="notice"><p><b>Projet non voté.</b> Les règles ci-dessous ne sont pas en vigueur. Le simulateur applique par défaut le droit actuel et propose une option pour tester le texte déposé.</p></div>
+    <ul>
+      <li><strong>Plafond annuel</strong> : l'amortissement des locaux serait limité à 2,5 % et 7 000 € par an et par foyer fiscal (1,5 % et 5 000 € pour un meublé de tourisme).</li>
+      <li><strong>Excédent</strong> : il serait perdu définitivement, à compter des exercices clos en 2027.</li>
+      <li><strong>Stock antérieur</strong> : les amortissements reportés resteraient déductibles de 2027 à 2036, dans la limite de 50 % du bénéfice restant après les amortissements de l'exercice.</li>
+      <li><strong>Base d'application du taux</strong> : elle n'est pas confirmée par les sources consultées. Le simulateur la laisse paramétrable (bâti hors terrain par défaut).</li>
+    </ul>
+
+    <h2>Questions fréquentes</h2>
+    <div class="faq">
+      <h3>Quelle différence entre le LMNP au réel et le micro-BIC ?</h3>
+      <p>Le micro-BIC applique un abattement forfaitaire de 50 % sur les recettes (30 % pour un meublé de tourisme non classé), sans déduction des charges ni de l'amortissement. Pour les revenus perçus à compter de 2026, il est ouvert jusqu'à 83 600 € de recettes (15 000 € pour un meublé de tourisme non classé). Le LMNP au réel déduit les charges, les intérêts d'emprunt et l'amortissement, mais l'amortissement ne peut pas créer de déficit : l'excédent est reporté (article 39 C du CGI).</p>
+      <h3>L'amortissement du LMNP est-il réintégré dans la plus-value à la revente ?</h3>
+      <p>Le simulateur réintègre dans le calcul de la plus-value les amortissements effectivement déduits (article 150 VB III du CGI), ce qui réduit le prix d'acquisition retenu. En micro-BIC, aucun amortissement n'est déduit : rien n'est réintégré.</p>
+      <h3>Que prévoit le PLF 2027 pour l'amortissement du LMNP ?</h3>
+      <p>Selon l'article 7 du projet de loi de finances pour 2027, l'amortissement des locaux serait plafonné à 2,5 % et 7 000 € par an et par foyer fiscal (1,5 % et 5 000 € pour un meublé de tourisme). L'excédent serait perdu à compter des exercices clos en 2027, et le stock antérieur resterait utilisable jusqu'en 2036 dans la limite de 50 % du bénéfice restant. Il s'agit d'un projet non voté : le simulateur propose une option pour le tester, la version par défaut applique le droit en vigueur.</p>
+      <h3>Pourquoi la SCI à l'IS coûte-t-elle plus cher à la sortie dans le simulateur ?</h3>
+      <p>La SCI a amorti le bien : sa plus-value est calculée sur la valeur nette comptable et taxée à l'impôt sur les sociétés dès la cession. Le boni de liquidation distribué aux associés peut ensuite être taxé au prélèvement forfaitaire unique. Le simulateur permet de désactiver la distribution du boni pour voir l'effet de cette seconde taxation.</p>
+      <h3>À partir de quelle durée de détention la plus-value d'un particulier est-elle exonérée ?</h3>
+      <p>La plus-value immobilière des particuliers est exonérée d'impôt sur le revenu après 22 ans de détention et de prélèvements sociaux après 30 ans (article 150 VC du CGI). Les abattements démarrent à la 6<sup>e</sup> année. Ces repères sont matérialisés sur le graphique du simulateur.</p>
+      <h3>Faut-il examiner la qualification de loueur en meublé professionnel (LMP) ?</h3>
+      <p>Oui dès que les recettes annuelles du foyer excèdent 23 000 € (BOI-BIC-CHAMP-40-10, paragraphe 110). Le simulateur affiche une alerte, mais ne modélise pas la qualification de LMP ni les cotisations sociales qui en découlent.</p>
+      <h3>Le simulateur remplace-t-il un conseil ?</h3>
+      <p>Non. Il fournit une estimation indicative à valider par un expert-comptable sur votre situation réelle.</p>
+    </div>
+
+    <h2>Limites</h2>
+    <ul>
+      <li>Les résultats sont des estimations indicatives : ils ne remplacent pas un calcul réalisé sur votre situation réelle.</li>
+      <li>Les règles fiscales retenues pour la sortie dépendent du projet de loi de finances 2027, susceptible d'évoluer au cours des débats parlementaires.</li>
+      <li>Le taux marginal d'imposition est supposé constant sur toute la durée de détention.</li>
+      <li>Les taux de prélèvements sociaux (18,6 % sur la location meublée et les dividendes, 17,2 % sur les plus-values immobilières) sont des valeurs par défaut modifiables, à valider avant tout chiffrage de dossier.</li>
+    </ul>
+    <p>Ne sont pas modélisés : le quotient familial, la décote, la contribution exceptionnelle sur les hauts revenus, le déficit foncier, la qualification de LMP et ses cotisations sociales, la TVA, les droits de mutation, les frais de cession et le plafonnement des déficits supérieurs à 1 M€.</p>
+    <p>Avant toute décision, faites valider votre situation par un expert-comptable.</p>
+
+    <h2>Sources</h2>
+    <p class="src">CGI art. 39 C, 50-0, 150 VB, 150 VC, 209 I, 219 I, 1609 nonies G (Légifrance) ; loi n° 2026-103 du 19 février 2026 de finances pour 2026 ; BOFiP ACTU-2025-00127 (seuils et abattements du micro-BIC pour les locations meublées à compter de 2026), BOI-BIC-CHAMP-40-10 (qualification de loueur en meublé professionnel), BOI-RFPI-TPVIE-20 (taxe sur les plus-values immobilières élevées). Projet de loi de finances pour 2027, article 7 : texte déposé, analyse de LégiFiscal du 2 octobre 2026 (source secondaire, à vérifier dans le texte).</p>
+  </div>
   <div class="cta-box">    <h2>Testez votre situation</h2>    <p>Comparez les trois options de la location meublée en quelques clics — aucune inscription requise.</p>    <a class="btn-white" href="https://simullmnp.onrender.com/" target="_blank" rel="noopener">Lancer le simulateur gratuit →</a>  </div>
-</div><footer>  <p>© 2026 Benjamin Hofman — <a href="/">Simulateurs</a> · <a href="/tutos.html">Tutos</a> · <a href="/blog.html">Blog</a></p></footer></body></html>
+</div><footer>  <p>© 2026 Benjamin Hofman — <a href="/">Simulateurs</a> · <a href='/tutos'>Tutos</a> · <a href='/blog'>Blog</a></p></footer></body></html>
