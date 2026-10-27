@@ -34,6 +34,7 @@
       "address": { "@type": "PostalAddress", "addressRegion": "Bretagne", "addressCountry": "FR" }
     },
     "hasPart": [
+      { "@type": "WebApplication", "name": "Apport-cession : report d'imposition, remploi et comparaison", "url": "https://fiscalite-entrepreneur.fr/simulateurs/apport-cession.html", "description": "Apport de titres à une holding puis cession (art. 150-0 B ter du CGI) : plus-value en report, remploi de 70 % après la loi de finances 2026, IS de la holding et comparaison avec une vente directe", "applicationCategory": "FinanceApplication", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" } },
       { "@type": "WebApplication", "name": "Plus-values professionnelles : quelle exonération choisir ?", "url": "https://fiscalite-entrepreneur.fr/simulateurs/exoneration-plus-values.html", "description": "Comparaison des exonérations de plus-values professionnelles 151 septies, 151 septies A, 151 septies B et 238 quindecies (IR et IS) : impôt, prélèvements sociaux, cotisations et meilleur choix", "applicationCategory": "FinanceApplication", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" } },
       { "@type": "WebApplication", "name": "Location meublée : SCI à l'IS, LMNP ou micro-BIC ?", "url": "https://fiscalite-entrepreneur.fr/simulateurs/location-meublee.html", "description": "Coût fiscal annuel et coût de sortie de la SCI à l'IS, du LMNP au réel et du micro-BIC selon la durée de détention, plus-value, boni de liquidation et PLF 2027", "applicationCategory": "FinanceApplication", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" } },
       { "@type": "WebApplication", "name": "Cession de parts de SARL ou d'actions de SAS : combien vous reste-t-il réellement ?", "url": "https://fiscalite-entrepreneur.fr/simulateurs/cession-titres.html", "description": "Fiscalité d'une cession de titres : PFU, barème progressif, abattements, départ à la retraite, droits d'enregistrement et coût pour l'acquéreur", "applicationCategory": "FinanceApplication", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" } },
@@ -583,9 +584,21 @@
   </section>
 
   <section class="grid-section" id="simulateurs">
-    <p class="count-label"><span id="count">11</span> simulateurs disponibles</p>
+    <p class="count-label"><span id="count">12</span> simulateurs disponibles</p>
 
     <div class="grid" id="grid">
+      <!-- CARD : Apport-cession (150-0 B ter) -->
+      <article class="card" data-tags="apport-cession apport cession holding 150-0 b ter report d'imposition plus-value remploi réinvestissement vente entreprise titres loi de finances 2026 donation-cession abus de droit">
+        <div class="card-header">
+          <div class="card-icon">🔄</div>
+          <h2 class="card-title">Apport-cession : report d'imposition et remploi</h2>
+        </div>
+        <p class="card-desc">Apportez vos titres à une holding avant la vente : chiffrez la plus-value en report, le seuil de remploi de 70 % issu de la loi de finances 2026, l'IS de la holding et le net comparé à une vente directe.</p>
+        <a class="btn-primary" href="/simulateurs/apport-cession.html">
+          Accéder au simulateur
+        </a>
+      </article>
+
       <!-- CARD : Exonération des plus-values professionnelles -->
       <article class="card" data-tags="plus-value plus-values professionnelles exonération 151 septies 151 septies a 151 septies b 238 quindecies départ à la retraite cession fonds de commerce clientèle entreprise individuelle branche complète d'activité immobilier professionnel ir is prélèvements sociaux cotisations">
         <div class="card-header">
