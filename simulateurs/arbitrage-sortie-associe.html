@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sortie d'associé : rachat de titres, emprunt, achat direct ou holding LBO | Benjamin Hofman</title>
+<meta name="description" content="Simulateur gratuit d'arbitrage de sortie d'associé : rachat par la société, rachat avec emprunt, achat direct, holding LBO. Comparaison nette d'impôt et actualisée.">
+<link rel="canonical" href="https://fiscalite-entrepreneur.fr/simulateurs/arbitrage-sortie-associe.html">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fiscalite-entrepreneur.fr/simulateurs/arbitrage-sortie-associe.html">
+<meta property="og:title" content="Sortie d'associé : rachat de titres, emprunt, achat direct ou holding LBO">
+<meta property="og:description" content="Un associé part : comparez quatre façons de racheter ses parts et voyez ce qui reste réellement à l'associé qui reste (net d'impôt, actualisé).">
+<meta property="og:locale" content="fr_FR">
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Sortie d'associé : rachat de titres, emprunt, achat direct ou holding LBO",
+  "url": "https://fiscalite-entrepreneur.fr/simulateurs/arbitrage-sortie-associe.html",
+  "description": "Présentation du simulateur d'arbitrage de sortie d'associé : rachat par la société sur trésorerie ou avec emprunt, achat direct et holding LBO, comparés du point de vue de l'associé qui reste.",
+  "inLanguage": "fr-FR",
+  "dateModified": "2026-11-04",
+  "author": {"@type": "Person", "name": "Benjamin Hofman", "jobTitle": "Expert-comptable diplômé"},
+  "breadcrumb": {"@type": "BreadcrumbList", "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://fiscalite-entrepreneur.fr/"},
+    {"@type": "ListItem", "position": 2, "name": "Simulateurs", "item": "https://fiscalite-entrepreneur.fr/#simulateurs"},
+    {"@type": "ListItem", "position": 3, "name": "Arbitrage sortie d'associé"}
+  ]},
+  "mainEntity": {"@type": "WebApplication", "name": "Simulateur d'arbitrage de sortie d'associé", "url": "https://arbitragesortie.onrender.com/", "applicationCategory": "FinanceApplication", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}}
+}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Pourquoi l'achat direct est-il le plus coûteux ?", "acceptedAnswer": {"@type": "Answer", "text": "Parce que l'associé qui reste paie le prix avec de l'argent déjà imposé. S'il le tire de la société en dividendes, il supporte une friction de 31,4 % : 500 000 € nets demandent 728 863 € bruts. Le résultat dépend toutefois des paramètres saisis."}},
+    {"@type": "Question", "name": "Pourquoi le prix d'un rachat de titres par la société n'est-il pas un dividende ?", "acceptedAnswer": {"@type": "Answer", "text": "L'article 112, 6° du CGI exclut ces sommes des revenus distribués : pour l'associé dont les titres sont rachetés, le gain relève du régime des plus-values. Le Conseil d'État l'a confirmé le 15 octobre 2025 (n° 495120)."}},
+    {"@type": "Question", "name": "La holding est-elle toujours plus avantageuse ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. Elle ne l'emporte que si l'argent reste réinvesti ou est transmis. En cas de sortie par vente avec flat tax, elle peut être moins favorable, comme dans l'exemple de cette page."}},
+    {"@type": "Question", "name": "Que change la détention de moins de 2 ans ?", "acceptedAnswer": {"@type": "Answer", "text": "La plus-value de la holding est alors imposée à l'IS au taux normal, sans le régime à 0 % avec quote-part de 12 %."}},
+    {"@type": "Question", "name": "Le simulateur remplace-t-il un conseil ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. Il fournit une estimation à valider par un expert-comptable sur votre situation réelle."}},
+    {"@type": "Question", "name": "Pourquoi le simulateur met-il du temps à s'ouvrir ?", "acceptedAnswer": {"@type": "Answer", "text": "Il est sur un hébergement gratuit : le premier chargement peut prendre une trentaine de secondes."}}
+  ]
+}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;background:#f7f8fc;color:#0f1117}header{background:#fff;border-bottom:1px solid #e2e6f0;position:sticky;top:0;z-index:100}.header-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}.logo{display:flex;align-items:center;gap:12px;text-decoration:none}.logo-icon{width:36px;height:36px;background:#1a56e8;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}.logo-name{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:15px;color:#0f1117}.logo-title{font-size:11px;color:#8a909f}nav{display:flex;gap:24px}nav a{font-size:14px;font-weight:500;color:#4a4f5e;text-decoration:none}nav a:hover{color:#1a56e8}.container{max-width:860px;margin:0 auto;padding:48px 24px 80px}.breadcrumb{font-size:13px;color:#8a909f;margin-bottom:24px}.breadcrumb a{color:#1a56e8;text-decoration:none}h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(24px,4vw,36px);font-weight:800;line-height:1.2;color:#0f1117;margin-bottom:16px}.meta{font-size:13px;color:#8a909f;margin-bottom:32px;display:flex;gap:16px;flex-wrap:wrap}.content h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:700;color:#0f1117;margin:32px 0 12px}.content p{font-size:15px;color:#4a4f5e;line-height:1.7;margin-bottom:16px}
+
+.content ul{padding-left:20px;margin-bottom:16px}
+.content ul li{font-size:15px;color:#4a4f5e;line-height:1.7;margin-bottom:6px}
+.content a{color:#1a56e8}
+.intro{font-size:16px;color:#4a4f5e;line-height:1.7;margin-bottom:32px}
+.cta-box{background:linear-gradient(135deg,#1a56e8,#1446c0);border-radius:16px;padding:32px;text-align:center;color:#fff;margin-top:40px}
+.cta-box h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:8px}
+.cta-box p{font-size:14px;opacity:.85;margin-bottom:20px}
+.btn-white{display:inline-block;background:#fff;color:#1a56e8;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none}
+.faq h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:700;color:#0f1117;margin:20px 0 8px}
+.src{font-size:13px;color:#8a909f}
+footer{border-top:1px solid #e2e6f0;background:#fff;padding:24px;text-align:center;font-size:13px;color:#8a909f}
+footer a{color:#4a4f5e;text-decoration:none}
+
+.content h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.05rem;font-weight:700;color:#0f1117;margin:28px 0 10px}
+.content ol{padding-left:22px;margin-bottom:16px}
+.content ol li{font-size:15px;color:#4a4f5e;line-height:1.7;margin-bottom:8px}
+.content strong{color:#0f1117;font-weight:600}
+.tbl{overflow-x:auto;margin:0 0 20px;border:1px solid #e2e6f0;border-radius:12px;background:#fff}
+.tbl table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+.tbl th{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#4a4f5e;text-align:left;padding:12px 14px;background:#f7f8fc;border-bottom:1px solid #e2e6f0}
+.tbl td{padding:12px 14px;color:#4a4f5e;line-height:1.5;border-bottom:1px solid #e2e6f0;vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td:first-child{color:#0f1117;font-weight:600}
+.tbl-compact table{min-width:0}
+.tbl td.num{text-align:right;white-space:nowrap}
+.formula{background:#eef3fe;border-left:4px solid #1a56e8;border-radius:0 10px 10px 0;padding:14px 18px;margin:0 0 20px}
+.content .formula p{margin:0;font-size:14.5px;color:#0f1117}
+.content .formula p+p{margin-top:6px;color:#4a4f5e}
+.formula b{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:#1a56e8}
+.content p.src,.content .src{font-size:13px;color:#8a909f}
+.faq p{font-size:15px;color:#4a4f5e;line-height:1.7;margin-bottom:8px}
+.cta-box .cta-note{font-size:12.5px;opacity:.8;margin:14px 0 0}
+.final-note{font-size:13px;color:#8a909f;line-height:1.6;text-align:center;margin-top:24px}
+@media(max-width:600px){nav{display:none}.container{padding-left:16px;padding-right:16px}.cta-box{padding:24px 20px}}
+</style>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="ca3d5b5a-b5c6-4fdd-87d8-342b863784f4"></script></head>
+<body><header>  <div class="header-inner">    <a class="logo" href="/">      <div class="logo-icon">⚖</div>      <div>        <div class="logo-name">Benjamin Hofman</div>        <div class="logo-title">Expert-comptable diplômé</div>      </div>    </a>    <nav>      <a href="/#simulateurs">Simulateurs</a>      <a href='/tutos'>Tutos</a>      <a href='/blog'>Blog</a>    </nav>  </div></header>
+<div class="container">  <div class="breadcrumb"><a href="/">Accueil</a> › <a href="/#simulateurs">Simulateurs</a> › Arbitrage sortie d'associé</div>  <h1>Sortie d'associé : quel montage laisse le plus à l'associé qui reste ?</h1>  <div class="meta"><span>👤 Benjamin Hofman</span><span>Mis à jour en novembre 2026</span></div>
+  <p class="intro">Quand un associé quitte une société à l'IS, l'associé qui reste doit racheter ses parts. Quatre montages sont possibles : rachat par la société sur sa trésorerie, rachat par la société avec emprunt, achat direct avec l'argent personnel de l'associé qui reste, ou rachat via une holding financée par emprunt (LBO). Le simulateur chiffre, pour chacun, ce que l'associé qui reste possède à la fin de l'horizon choisi, après impôt et actualisation.</p>
+  <div class="cta-box">    <h2>Accéder au simulateur</h2>    <p>Gratuit et sans inscription : saisissez votre situation et obtenez le détail des calculs.</p>    <a class="btn-white" href="https://arbitragesortie.onrender.com/" target="_blank" rel="noopener noreferrer">Ouvrir le simulateur d'arbitrage de sortie d'associé (nouvel onglet) →</a>    <p class="cta-note">Le simulateur est sur un hébergement gratuit : le premier chargement peut prendre une trentaine de secondes.</p>  </div>
+  <div class="content">
+    <h2>À qui s'adresse ce simulateur</h2>
+    <ul>
+      <li><strong>Dirigeants et associés de SARL/SAS à l'IS</strong> qui préparent le départ d'un associé.</li>
+      <li><strong>Leurs conseils</strong> : experts-comptables, avocats et conseils en gestion de patrimoine.</li>
+    </ul>
+
+    <h2>Le point de vue : l'associé qui reste</h2>
+    <p>Le simulateur se place du côté de l'associé qui reste (l'acquéreur) et mesure ce qu'il possède à la fin. Le cédant encaisse le même prix et paie la même plus-value dans les quatre montages : son côté n'est donc pas comparé.</p>
+    <p>Pour l'arbitrage du dirigeant qui vend (vente directe ou apport-cession), voir la page <a href="/simulateurs/apport-cession.html">Apport-cession</a>.</p>
+
+    <h2>Les quatre montages comparés</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Montage</th><th>Qui paie</th><th>Financement</th><th>Ce qui coûte</th></tr></thead>
+      <tbody>
+        <tr><td>Rachat par la société sur trésorerie</td><td>La société, qui rachète et annule les titres</td><td>Trésorerie de la société</td><td>La sortie de trésorerie ; aucun dividende personnel</td></tr>
+        <tr><td>Rachat par la société avec emprunt</td><td>La société, qui s'endette</td><td>Emprunt remboursé avec son résultat</td><td>Les annuités d'emprunt ; aucun dividende personnel</td></tr>
+        <tr><td>Achat direct (associé)</td><td>L'associé qui reste</td><td>Fonds personnels, tirés de la société en dividendes</td><td>Les dividendes taxés à 31,4 % : coût brut = prix / (1 − 31,4 %)</td></tr>
+        <tr><td>Holding LBO</td><td>Une holding</td><td>Apport personnel et emprunt</td><td>La dette, remboursée par des dividendes remontés (régime mère-fille, quote-part de 1,25 %)</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>Comment fonctionne le simulateur</h2>
+    <ol>
+      <li><strong>Saisissez la société et le prix.</strong></li>
+      <li><strong>Choisissez le financement et l'horizon.</strong></li>
+      <li><strong>Lisez le bilan net actualisé</strong> de chaque montage.</li>
+      <li><strong>Lisez le verdict et les alertes.</strong></li>
+    </ol>
+
+    <h2>Les formules utilisées</h2>
+    <ul>
+      <li><strong>Annuité constante</strong> : D × t / (1 − (1 + t)^−n)</li>
+      <li><strong>Valeur future des titres</strong> : v ← v × (1 + g) + résultat net − annuité, année par année</li>
+      <li><strong>Flat tax (PFU)</strong> : 31,4 % = 12,8 % d'IR + 18,6 % de prélèvements sociaux (LFSS 2026)</li>
+      <li><strong>Droits d'enregistrement</strong> : SARL 3 % après abattement de 23 000 € au prorata de la quote-part cédée ; SAS 0,1 % (minimum 25 €)</li>
+      <li><strong>Quote-part de frais et charges (Copé)</strong> : 12 % × plus-value brute × taux d'IS, avec détention de 2 ans minimum (art. 219 I-a quinquies CGI)</li>
+      <li><strong>Régime mère-fille</strong> : quote-part de 5 % × 25 % = 1,25 % sur les dividendes remontés à la holding</li>
+      <li><strong>Actualisation</strong> : valeur / (1 + taux)^horizon</li>
+      <li><strong>Verdict</strong> : le montage faisable avec le meilleur bilan net actualisé</li>
+    </ul>
+
+    <h2>Exemple chiffré</h2>
+    <p>Ce scénario, qui est celui proposé par défaut dans le simulateur, est une illustration simplifiée. Hypothèses : valeur de la société 1 000 000 € ; 50 % cédés (prix 500 000 €) ; capital 10 000 € ; trésorerie 300 000 € ; résultat net 100 000 €/an ; croissance 5 % ; IS 25 % ; emprunt 4 % sur 7 ans ; horizon 10 ans ; actualisation 3 % ; SARL ; sortie par vente (flat tax).</p>
+    <div class="tbl tbl-compact"><table>
+      <thead><tr><th>Montage</th><th>Bilan net actualisé de l'associé qui reste</th></tr></thead>
+      <tbody>
+        <tr><td>Rachat sur trésorerie</td><td>Non réalisable (300 000 € disponibles pour 500 000 € de prix)</td></tr>
+        <tr><td>Rachat avec emprunt</td><td class="num">1 064 914 €</td></tr>
+        <tr><td>Holding LBO</td><td class="num">1 008 134 €</td></tr>
+        <tr><td>Achat direct (associé)</td><td class="num">969 646 €</td></tr>
+      </tbody>
+    </table></div>
+    <p>L'achat direct coûte 228 863 € de friction de financement (500 000 / (1 − 31,4 %) = 728 863 € bruts pour 500 000 € nets). La holding cumule le surcoût de l'apport financé par dividendes taxés, la Copé et la flat tax finale, et ne l'emporte que si la sortie se fait par transmission ou réinvestissement.</p>
+    <p>Exemple indicatif et simplifié. Les résultats dépendent de tous les paramètres saisis.</p>
+
+    <h2>Ce que le simulateur ne modélise pas</h2>
+    <ul>
+      <li>Le côté du cédant (sa plus-value, ses abattements éventuels) n'est pas comparé.</li>
+      <li>Pas d'option pour le barème progressif, pas d'abattement pour durée de détention (titres acquis avant 2018), pas d'abattement du dirigeant partant à la retraite (art. 150-0 D ter CGI), pas de CEHR/CDHR.</li>
+      <li>Holding : l'hypothèse est un apport des titres avec report d'imposition (art. 150-0 B ter CGI). Les conditions de remploi (70 % du produit net, 3 ans, conservation 5 ans, pour les cessions à partir du 21/02/2026) ne sont pas vérifiées par l'option « réinvestissement ».</li>
+      <li>Holding : aucune cotisation sociale de travailleur non salarié n'est appliquée sur les distributions. Cette hypothèse vaut pour une holding en SAS ou un dirigeant non TNS ; pour une holding SARL à gérant majoritaire, les dividendes au-delà de 10 % du capital (+ primes + comptes courants) supportent des cotisations (art. L. 131-6 CSS).</li>
+      <li>Le projet de loi de finances pour 2027 (article 5), non adopté à la date de mise à jour, supprimerait la purge du report d'imposition à la transmission ; le simulateur propose une option pour en tenir compte.</li>
+      <li>Risque d'abus de droit (LPF, art. L. 64) à examiner pour les montages avec holding.</li>
+    </ul>
+
+    <h2>Questions fréquentes</h2>
+    <div class="faq">
+      <h3>Pourquoi l'achat direct est-il le plus coûteux ?</h3>
+      <p>Parce que l'associé qui reste paie le prix avec de l'argent déjà imposé. S'il le tire de la société en dividendes, il supporte une friction de 31,4 % : 500 000 € nets demandent 728 863 € bruts. Le résultat dépend toutefois des paramètres saisis.</p>
+      <h3>Pourquoi le prix d'un rachat de titres par la société n'est-il pas un dividende ?</h3>
+      <p>L'article 112, 6° du CGI exclut ces sommes des revenus distribués : pour l'associé dont les titres sont rachetés, le gain relève du régime des plus-values. Le Conseil d'État l'a confirmé le 15 octobre 2025 (n° 495120).</p>
+      <h3>La holding est-elle toujours plus avantageuse ?</h3>
+      <p>Non. Elle ne l'emporte que si l'argent reste réinvesti ou est transmis. En cas de sortie par vente avec flat tax, elle peut être moins favorable, comme dans l'exemple de cette page.</p>
+      <h3>Que change la détention de moins de 2 ans ?</h3>
+      <p>La plus-value de la holding est alors imposée à l'IS au taux normal, sans le régime à 0 % avec quote-part de 12 %.</p>
+      <h3>Le simulateur remplace-t-il un conseil ?</h3>
+      <p>Non. Il fournit une estimation à valider par un expert-comptable sur votre situation réelle.</p>
+      <h3>Pourquoi le simulateur met-il du temps à s'ouvrir ?</h3>
+      <p>Il est sur un hébergement gratuit : le premier chargement peut prendre une trentaine de secondes.</p>
+    </div>
+
+    <h2>Sources</h2>
+    <ul>
+      <li><a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000046868562" target="_blank" rel="noopener noreferrer">CGI art. 219 I-a quinquies</a> ; BOFiP BOI-IS-BASE-20-20-10-20 (quote-part de frais et charges de 12 %)</li>
+      <li><a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000051203538" target="_blank" rel="noopener noreferrer">CGI art. 112, 6°</a> ; CE 15/10/2025 n° 495120</li>
+      <li><a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000053542872" target="_blank" rel="noopener noreferrer">CGI art. 150-0 B ter</a> (report d'imposition de l'apport de titres)</li>
+      <li><a href="https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000048683707/2026-01-27" target="_blank" rel="noopener noreferrer">CSS art. L. 131-6</a> (cotisations sur dividendes des dirigeants non salariés)</li>
+    </ul>
+    <p class="src">Doctrine consultable sur <a href="https://bofip.impots.gouv.fr/" target="_blank" rel="noopener noreferrer">le BOFiP</a>.</p>
+  </div>
+  <div class="cta-box">    <h2>Testez votre projet</h2>    <p>Quatre montages comparés, nets d'impôt et actualisés, en quelques minutes.</p>    <a class="btn-white" href="https://arbitragesortie.onrender.com/" target="_blank" rel="noopener noreferrer">Ouvrir le simulateur d'arbitrage de sortie d'associé (nouvel onglet) →</a>    <p class="cta-note">Hébergement gratuit : comptez une trentaine de secondes au premier démarrage.</p>  </div>
+  <p class="final-note">Outil indicatif, il ne constitue pas un conseil fiscal personnalisé. Faites valider votre situation par votre expert-comptable avant toute opération.</p>
+</div><footer>  <p>© 2026 Benjamin Hofman · <a href="/">Simulateurs</a> · <a href='/tutos'>Tutos</a> · <a href='/blog'>Blog</a></p></footer></body></html>
