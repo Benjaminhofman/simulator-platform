@@ -451,3 +451,92 @@ a.card:hover, .card--sim:hover { border-color: var(--accent); box-shadow: var(--
   .search-wrap { flex-basis: 100%; max-width: none; }
   .hero-actions .btn { width: 100%; }
 }
+
+/* ── Hero d'accueil : photo, halo, compteurs (CSS uniquement) ── */
+@property --count { syntax: '<integer>'; inherits: false; initial-value: 0; }
+
+.btn-secondary { border-color: var(--accent); background: var(--surface); color: var(--accent); }
+.btn-secondary:hover { background: var(--accent-2); color: var(--accent-hover); }
+
+.hero--home { overflow: hidden; }
+.nowrap { white-space: nowrap; }
+.hero--home .hero-inner { grid-template-columns: minmax(0, 1fr) 144px; gap: var(--space-6) var(--space-7); }
+.hero-subtitle { margin-bottom: var(--space-2); font-size: 18px; font-weight: 600; line-height: 1.4; color: var(--ink); }
+.hero--home .search-wrap { margin-top: var(--space-3); }
+
+.hero-photo { position: relative; width: 100%; max-width: 144px; justify-self: center; }
+.hero-photo::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: calc(var(--radius-lg) + 6px);
+  background: var(--accent);
+  filter: blur(14px);
+  opacity: .18;
+}
+.hero-photo img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  border: 3px solid var(--surface);
+  border-radius: var(--radius-lg);
+  background: var(--accent-2);
+  object-fit: cover;
+}
+
+.hero--home .hero-card {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
+  padding: var(--space-4) var(--space-5);
+}
+.hero--home .hero-card-title { margin: 0; }
+.hero--home .hero-card-title strong { display: inline-block; min-width: 2ch; text-align: right; }
+.hero--home .theme-list { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); }
+.hero--home .theme-list li { gap: var(--space-2); padding: 0; border: 0; }
+.count-up { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 900px) {
+  .hero--home .hero-inner { grid-template-columns: minmax(0, 1fr); }
+  .hero-photo { order: -1; justify-self: start; }
+}
+@media (max-width: 640px) {
+  .hero-subtitle { font-size: 16px; }
+  .hero--home .hero-card { padding: var(--space-4); }
+}
+
+/* Tout le mouvement est ici : sans cette préférence, le contenu reste statique et lisible. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes hero-rise { from { opacity: 0; transform: translateY(16px); } }
+  @keyframes halo-pulse { 50% { opacity: .3; transform: scale(1.02); } }
+  @keyframes count-up { from { --count: 0; } }
+
+  .hero--home .hero-copy > *, .hero-photo, .hero--home .hero-card { animation: hero-rise .6s ease-out both; }
+  .hero--home .hero-copy > :nth-child(2) { animation-delay: .08s; }
+  .hero--home .hero-copy > :nth-child(3) { animation-delay: .16s; }
+  .hero--home .hero-copy > :nth-child(4) { animation-delay: .24s; }
+  .hero--home .hero-copy > :nth-child(5) { animation-delay: .32s; }
+  .hero-photo { animation-delay: .12s; }
+  .hero--home .hero-card { animation-delay: .3s; }
+  .hero-photo::before { animation: halo-pulse 8s ease-in-out infinite; }
+
+  /* Le chiffre réel reste dans le HTML pour les lecteurs d'écran ; seul son rendu est animé. */
+  .count-up { --count: var(--to); counter-reset: n var(--count); animation: count-up 1.2s ease-out .3s both; }
+  .count-up > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .count-up::after { content: counter(n); content: counter(n) / ""; }
+
+  .card--sim, .post-card { transition: box-shadow .2s, border-color .2s, transform .2s; }
+  .card--sim:hover, .card--sim:focus-within, .post-card:hover, .post-card:focus-within { transform: translateY(-4px); }
+}

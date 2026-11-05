@@ -75,28 +75,32 @@
 </header>
 
 <main>
-  <section class="hero">
+  <section class="hero hero--home">
     <div class="hero-inner">
-      <div>
-        <p class="hero-eyebrow">Outils gratuits</p>
-        <h1>Mes simulateurs personnalisés</h1>
+      <div class="hero-copy">
+        <h1>Benjamin Hofman, <span class="nowrap">expert-comptable</span> diplômé</h1>
+        <p class="hero-subtitle">Fiscalité de l'entrepreneur : simulateurs gratuits</p>
         <p class="hero-lead">Des outils de simulation fiscale et patrimoniale créés avec mes compétences professionnelles et l'aide de l'IA.</p>
         <div class="hero-actions">
-          <div class="search-wrap">
-            <svg class="icon search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" id="search" placeholder="Rechercher un simulateur…" aria-label="Rechercher un simulateur" autocomplete="off" />
-          </div>
           <a class="btn btn-primary" href="#simulateurs">Voir les simulateurs</a>
+          <a class="btn btn-secondary" href="/about.html#contact">Me contacter</a>
+        </div>
+        <div class="search-wrap">
+          <svg class="icon search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="search" placeholder="Rechercher un simulateur…" aria-label="Rechercher un simulateur" autocomplete="off" />
         </div>
       </div>
+      <div class="hero-photo">
+        <img src="/photo.jpg" alt="Portrait de Benjamin Hofman, expert-comptable diplômé" width="240" height="240" loading="eager" fetchpriority="high" decoding="async" />
+      </div>
       <aside class="hero-card" aria-label="Simulateurs par thème">
-        <p class="hero-card-title"><strong>13</strong> simulateurs gratuits</p>
+        <p class="hero-card-title"><strong class="count-up" style="--to:13"><span>13</span></strong> simulateurs gratuits</p>
         <ul class="theme-list">
-          <li>Cession <b>4</b></li>
-          <li>Immobilier <b>3</b></li>
-          <li>Statut <b>2</b></li>
-          <li>Rémunération <b>2</b></li>
-          <li>Patrimoine et taxes <b>2</b></li>
+          <li>Cession <b class="count-up" style="--to:4"><span>4</span></b></li>
+          <li>Immobilier <b class="count-up" style="--to:3"><span>3</span></b></li>
+          <li>Statut <b class="count-up" style="--to:2"><span>2</span></b></li>
+          <li>Rémunération <b class="count-up" style="--to:2"><span>2</span></b></li>
+          <li>Patrimoine et taxes <b class="count-up" style="--to:2"><span>2</span></b></li>
         </ul>
       </aside>
     </div>
