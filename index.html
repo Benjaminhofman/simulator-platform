@@ -51,727 +51,222 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --ink:      #0f1117;
-      --ink-mid:  #4a4f5e;
-      --ink-soft: #8a909f;
-      --bg:       #f7f8fc;
-      --surface:  #ffffff;
-      --accent:   #1a56e8;
-      --accent-2: #e8f0fe;
-      --border:   #e2e6f0;
-      --radius:   12px;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      min-height: 100vh;
-    }
-
-    /* ── HEADER ── */
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .header-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-    }
-
-    .logo-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--accent);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 18px;
-    }
-
-    .logo-text {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.2;
-    }
-
-    .logo-name {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 700;
-      font-size: 15px;
-      color: var(--ink);
-    }
-
-    .logo-title {
-      font-size: 11px;
-      color: var(--ink-soft);
-      letter-spacing: 0.02em;
-    }
-
-    nav {
-      display: flex;
-      gap: 28px;
-    }
-
-    nav a {
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--ink-mid);
-      transition: color 0.15s;
-    }
-
-    nav a:hover { color: var(--accent); }
-
-    /* ── HERO ── */
-    .hero {
-    }
-
-    .hero-eyebrow {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 16px;
-    }
-
-    .hero h1 {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(32px, 5vw, 52px);
-      font-weight: 800;
-      line-height: 1.1;
-      color: var(--ink);
-      max-width: 680px;
-      margin-bottom: 20px;
-    }
-
-    .hero p {
-      font-size: 17px;
-      color: var(--ink-mid);
-      max-width: 560px;
-      line-height: 1.6;
-      margin-bottom: 36px;
-    }
-
-    /* ── SEARCH ── */
-    .search-wrap {
-      position: relative;
-      max-width: 480px;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--ink-soft);
-      pointer-events: none;
-    }
-
-    #search {
-      width: 100%;
-      padding: 14px 16px 14px 44px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-      background: var(--surface);
-      color: var(--ink);
-      outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-
-    #search:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(26,86,232,0.12);
-    }
-
-    #search::placeholder { color: var(--ink-soft); }
-
-    /* ── GRID ── */
-    .grid-section {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px 80px;
-    }
-
-    .count-label {
-      font-size: 13px;
-      color: var(--ink-soft);
-      margin-bottom: 24px;
-    }
-
-    .count-label span {
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 20px;
-    }
-
-    /* ── CARD ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
-    }
-
-    .card:hover {
-      box-shadow: 0 8px 32px rgba(26,86,232,0.12);
-      transform: translateY(-4px);
-      border-color: var(--accent);
-    }
-
-    .card[data-hidden="true"] { display: none; }
-
-    .card-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-    }
-
-    .card-icon {
-      width: 44px;
-      height: 44px;
-      min-width: 44px;
-      background: var(--accent-2);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-
-    .card-title {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--ink);
-      line-height: 1.25;
-    }
-
-    .card-desc {
-      font-size: 14px;
-      color: var(--ink-mid);
-      line-height: 1.6;
-      flex: 1;
-    }
-
-    .card-links {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .card-link-item {
-      font-size: 13px;
-      color: var(--ink-mid);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .card-link-item a {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .card-link-item a:hover { text-decoration: underline; }
-
-    .card-note {
-      font-size: 12px;
-      color: var(--ink-soft);
-      background: #fffbea;
-      border: 1px solid #f0e68c;
-      border-radius: 6px;
-      padding: 8px 10px;
-      line-height: 1.5;
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: var(--accent);
-      color: #fff;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 600;
-      padding: 12px 20px;
-      border-radius: 8px;
-      transition: background 0.15s, transform 0.1s;
-      margin-top: auto;
-    }
-
-    .btn-primary:hover {
-      background: #1445c4;
-      transform: translateY(-1px);
-    }
-
-    /* ── EMPTY STATE ── */
-    #empty {
-      display: none;
-      text-align: center;
-      padding: 64px 24px;
-      color: var(--ink-soft);
-    }
-
-    #empty svg { margin-bottom: 16px; opacity: 0.4; }
-    #empty p { font-size: 15px; }
-
-    /* ── BLOG : DERNIER ARTICLE ── */
-    .blog-latest {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px 64px;
-    }
-
-    .blog-section-title {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--ink);
-      margin-bottom: 20px;
-    }
-
-    .blog-section-title--sub {
-      font-size: 17px;
-      margin: 36px 0 16px;
-    }
-
-    .post-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
-    }
-
-    .post-card {
-      position: relative;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px 22px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
-    }
-
-    .post-card:hover,
-    .post-card:focus-within {
-      box-shadow: 0 8px 32px rgba(26,86,232,0.12);
-      transform: translateY(-2px);
-      border-color: var(--accent);
-    }
-
-    .post-card--featured {
-      border-radius: 16px;
-      border-left: 4px solid var(--accent);
-      padding: 32px;
-      gap: 14px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    }
-
-    .post-meta {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px 14px;
-    }
-
-    .post-cat {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      color: var(--accent);
-      background: var(--accent-2);
-      border-radius: 6px;
-      padding: 5px 10px;
-    }
-
-    .post-date {
-      font-size: 13px;
-      color: var(--ink-soft);
-    }
-
-    .post-title {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--ink);
-      line-height: 1.35;
-    }
-
-    .post-card--featured .post-title {
-      font-size: clamp(20px, 2.6vw, 26px);
-      line-height: 1.25;
-    }
-
-    /* Le lien du titre couvre toute la card */
-    .post-link {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .post-link::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-    }
-
-    .post-link:focus-visible { outline: none; }
-
-    .post-card:has(.post-link:focus-visible) {
-      outline: 3px solid var(--accent);
-      outline-offset: 3px;
-    }
-
-    .post-excerpt {
-      font-size: 13px;
-      color: var(--ink-mid);
-      line-height: 1.55;
-      flex: 1;
-    }
-
-    .post-card--featured .post-excerpt {
-      font-size: 15px;
-      line-height: 1.6;
-      max-width: 760px;
-    }
-
-    .post-more {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--accent);
-    }
-
-    .blog-all {
-      display: inline-block;
-      margin-top: 20px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    .blog-all:hover { text-decoration: underline; }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-    }
-
-    .footer-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 28px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .footer-inner p {
-      font-size: 13px;
-      color: var(--ink-soft);
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 20px;
-    }
-
-    .footer-links a {
-      font-size: 13px;
-      color: var(--ink-mid);
-      text-decoration: none;
-    }
-
-    .footer-links a:hover { color: var(--accent); }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-      nav { display: none; }
-      .grid-section { padding: 0 20px 60px; }
-      .grid { grid-template-columns: 1fr; }
-      .blog-latest { padding: 0 20px 48px; }
-      .post-grid { grid-template-columns: 1fr; }
-      .post-card--featured { padding: 22px 20px; }
-    }
-  </style>
+  <link rel="stylesheet" href="/assets/site.css" />
 </head>
 <body>
 
-<header>
-  <div class="header-inner">
+<header class="site-header">
+  <div class="site-header-inner">
     <a class="logo" href="https://www.linkedin.com/in/benjamin-hofman-expert-comptable-ia/" target="_blank" rel="noopener">
-      <div class="logo-icon">⚖</div>
-      <div class="logo-text">
+      <span class="logo-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></span>
+      <span class="logo-text">
         <span class="logo-name">Benjamin Hofman</span>
         <span class="logo-title">Expert-comptable diplômé</span>
-      </div>
+      </span>
     </a>
-    <div style="display:flex;align-items:center;gap:16px;">
-      <a href="/about.html#contact" style="background:#1a56e8;color:#fff;padding:8px 18px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;">Me contacter</a>
-      <nav>
-        <a href="#simulateurs">Simulateurs</a>
-        <a href="/tutos.html">Tutos</a>
-        <a href="/blog.html">Blog</a>
-        <a href="/about.html">À propos</a>
-      </nav>
-    </div>
+    <nav class="site-nav" aria-label="Navigation principale">
+      <a href="#simulateurs">Simulateurs</a>
+      <a href="/tutos.html">Tutos</a>
+      <a href="/blog.html">Blog</a>
+      <a href="/about.html">À propos</a>
+    </nav>
+    <a class="btn btn-primary site-contact" href="/about.html#contact">Me contacter</a>
   </div>
 </header>
 
 <main>
   <section class="hero">
-    <div style="max-width:1100px;margin:0 auto;padding:64px 24px 48px;display:flex;flex-wrap:wrap;align-items:center;gap:48px;">
-      <div style="flex:1 1 340px;">
+    <div class="hero-inner">
+      <div>
         <p class="hero-eyebrow">Outils gratuits</p>
         <h1>Mes simulateurs personnalisés</h1>
-        <p>Des outils de simulation fiscale et patrimoniale créés avec mes compétences professionnelles et l'aide de l'IA.</p>
-        <div class="search-wrap">
-          <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <input type="text" id="search" placeholder="Rechercher un simulateur…" autocomplete="off" />
+        <p class="hero-lead">Des outils de simulation fiscale et patrimoniale créés avec mes compétences professionnelles et l'aide de l'IA.</p>
+        <div class="hero-actions">
+          <div class="search-wrap">
+            <svg class="icon search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="search" placeholder="Rechercher un simulateur…" aria-label="Rechercher un simulateur" autocomplete="off" />
+          </div>
+          <a class="btn btn-primary" href="#simulateurs">Voir les simulateurs</a>
         </div>
       </div>
-      <div style="flex:1 1 340px;">
-        <img src="/og-image.jpg" alt="Simulateurs fiscaux" style="width:100%;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.12);" />
-      </div>
+      <aside class="hero-card" aria-label="Simulateurs par thème">
+        <p class="hero-card-title"><strong>13</strong> simulateurs gratuits</p>
+        <ul class="theme-list">
+          <li>Cession <b>4</b></li>
+          <li>Immobilier <b>3</b></li>
+          <li>Statut <b>2</b></li>
+          <li>Rémunération <b>2</b></li>
+          <li>Patrimoine et taxes <b>2</b></li>
+        </ul>
+      </aside>
     </div>
   </section>
 
   <section class="grid-section" id="simulateurs">
-    <p class="count-label"><span id="count">13</span> simulateurs disponibles</p>
+    <div class="filters" role="group" aria-label="Filtrer par thème">
+      <button type="button" class="filter" data-filter="all" aria-pressed="true">Tous <span>13</span></button>
+      <button type="button" class="filter" data-filter="cession" aria-pressed="false">Cession <span>4</span></button>
+      <button type="button" class="filter" data-filter="immobilier" aria-pressed="false">Immobilier <span>3</span></button>
+      <button type="button" class="filter" data-filter="statut" aria-pressed="false">Statut <span>2</span></button>
+      <button type="button" class="filter" data-filter="remuneration" aria-pressed="false">Rémunération <span>2</span></button>
+      <button type="button" class="filter" data-filter="patrimoine" aria-pressed="false">Patrimoine et taxes <span>2</span></button>
+    </div>
+    <p class="count-label" aria-live="polite"><span id="count">13</span> <span id="count-word">simulateurs disponibles</span></p>
 
     <div class="grid" id="grid">
-      <!-- CARD : Apport-cession (150-0 B ter) -->
-      <article class="card" data-tags="apport-cession apport cession holding 150-0 b ter report d'imposition plus-value remploi réinvestissement vente entreprise titres loi de finances 2026 donation-cession abus de droit">
-        <div class="card-header">
-          <div class="card-icon">🔄</div>
-          <h2 class="card-title">Apport-cession : est-ce vraiment intéressant ?</h2>
+      <article class="card card--sim" data-theme="cession" data-tags="apport-cession apport cession holding 150-0 b ter report d'imposition plus-value remploi réinvestissement vente entreprise titres loi de finances 2026 donation-cession abus de droit vente directe is seuil de 70 %">
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg></span>
+          <span class="card-theme">Cession</span>
         </div>
-        <p class="card-desc">Apportez vos titres à une holding avant la vente : chiffrez la plus-value en report, le seuil de remploi de 70 % issu de la loi de finances 2026, l'IS de la holding et le net comparé à une vente directe.</p>
-        <a class="btn-primary" href="/simulateurs/apport-cession.html">
-          Accéder au simulateur
-        </a>
+        <h2 class="card-title">Apport-cession : est-ce vraiment intéressant ?</h2>
+        <p class="card-desc">Report, remploi et net comparé.</p>
+        <a class="btn btn-primary" href="/simulateurs/apport-cession.html" aria-label="Ouvrir le simulateur : Apport-cession : est-ce vraiment intéressant ?">Ouvrir le simulateur</a>
       </article>
 
-      <!-- CARD : Arbitrage sortie d'associé -->
-      <article class="card" data-tags="sortie d'associé sortie associé rachat de titres rachat de parts réduction de capital annulation emprunt achat direct holding lbo mère-fille copé flat tax pfu cession de parts sarl sas">
-        <div class="card-header">
-          <div class="card-icon">🤝</div>
-          <h2 class="card-title">Rachat de parts d'associé : quel montage choisir ?</h2>
+      <article class="card card--sim" data-theme="cession" data-tags="sortie d'associé sortie associé rachat de titres rachat de parts réduction de capital annulation emprunt achat direct holding lbo mère-fille copé flat tax pfu cession de parts sarl sas actualisé">
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg></span>
+          <span class="card-theme">Cession</span>
         </div>
-        <p class="card-desc">Un associé part : comparez quatre façons de racheter ses parts et voyez ce qui reste réellement à l'associé qui reste (net d'impôt, actualisé).</p>
-        <a class="btn-primary" href="/simulateurs/arbitrage-sortie-associe.html">
-          Accéder au simulateur
-        </a>
+        <h2 class="card-title">Rachat de parts d'associé : quel montage choisir ?</h2>
+        <p class="card-desc">Quatre montages, nets d'impôt.</p>
+        <a class="btn btn-primary" href="/simulateurs/arbitrage-sortie-associe.html" aria-label="Ouvrir le simulateur : Rachat de parts d'associé : quel montage choisir ?">Ouvrir le simulateur</a>
       </article>
 
-      <!-- CARD : Exonération des plus-values professionnelles -->
-      <article class="card" data-tags="plus-value plus-values professionnelles exonération 151 septies 151 septies a 151 septies b 238 quindecies départ à la retraite cession fonds de commerce clientèle entreprise individuelle branche complète d'activité immobilier professionnel ir is prélèvements sociaux cotisations">
-        <div class="card-header">
-          <div class="card-icon">🏪</div>
-          <h2 class="card-title">Plus-values professionnelles : quelle exonération choisir ?</h2>
+      <article class="card card--sim" data-theme="cession" data-tags="plus-value plus-values professionnelles exonération 151 septies 151 septies a 151 septies b 238 quindecies départ à la retraite cession fonds de commerce clientèle entreprise individuelle branche complète d'activité immobilier professionnel ir is prélèvements sociaux cotisations impôt">
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg></span>
+          <span class="card-theme">Cession</span>
         </div>
-        <p class="card-desc">Comparez les régimes d'exonération des articles 151 septies, 151 septies A, 151 septies B et 238 quindecies, à l'IR comme à l'IS. Le simulateur chiffre l'impôt, les prélèvements sociaux et les cotisations, puis indique le meilleur choix selon votre dossier.</p>
-        <a class="btn-primary" href="/simulateurs/exoneration-plus-values.html">
-          Ouvrir le simulateur
-        </a>
+        <h2 class="card-title">Plus-values professionnelles : quelle exonération choisir ?</h2>
+        <p class="card-desc">151 septies et 238 quindecies.</p>
+        <a class="btn btn-primary" href="/simulateurs/exoneration-plus-values.html" aria-label="Ouvrir le simulateur : Plus-values professionnelles : quelle exonération choisir ?">Ouvrir le simulateur</a>
       </article>
 
-      <!-- CARD : Location meublée : SCI à l'IS, LMNP ou micro-BIC -->
-      <article class="card" data-tags="location meublée lmnp sci is micro-bic micro bic réel immobilier plus-value boni de liquidation abattements surtaxe durée de détention coût de sortie loi de finances 2027 plf">
-        <div class="card-header">
-          <div class="card-icon">🏘️</div>
-          <h2 class="card-title">Location meublée : SCI à l'IS, LMNP ou micro-BIC ?</h2>
+      <article class="card card--sim" data-theme="immobilier" data-tags="location meublée lmnp sci is micro-bic micro bic réel immobilier plus-value boni de liquidation abattements 150 vc surtaxe durée de détention coût de sortie coût fiscal annuel loi de finances 2027 plf">
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
+          <span class="card-theme">Immobilier</span>
         </div>
-        <p class="card-desc">Comparez le coût fiscal annuel et le coût de sortie de la SCI à l'IS, du LMNP au réel et du micro-BIC selon la durée de détention. Prise en compte de la plus-value des particuliers (abattements 150 VC, surtaxe), du boni de liquidation et du projet de loi de finances 2027. Résultat instantané.</p>
-        <a class="btn-primary" href="/simulateurs/location-meublee.html">
-          Accéder au simulateur
-        </a>
+        <h2 class="card-title">Location meublée : SCI à l'IS, LMNP ou micro-BIC ?</h2>
+        <p class="card-desc">Coût annuel et de sortie comparés.</p>
+        <a class="btn btn-primary" href="/simulateurs/location-meublee.html" aria-label="Ouvrir le simulateur : Location meublée : SCI à l'IS, LMNP ou micro-BIC ?">Ouvrir le simulateur</a>
       </article>
 
-      <!-- CARD : Cession de parts de SARL ou d'actions de SAS -->
-      <article class="card" data-tags="cession titres parts sociales actions sarl sas sasu plus-value plus-values pfu flat tax barème progressif abattement départ à la retraite droits d'enregistrement acquéreur vendeur vente entreprise">
-        <div class="card-header">
-          <div class="card-icon">💰</div>
-          <h2 class="card-title">Cession de parts de SARL ou d'actions de SAS : combien vous reste-t-il réellement ?</h2>
+      <article class="card card--sim" data-theme="cession" data-tags="cession titres parts sociales actions sarl sas sasu plus-value plus-values pfu flat tax barème progressif abattement abattements départ à la retraite droits d'enregistrement acquéreur vendeur vente entreprise net encaissé régime fiscal">
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg></span>
+          <span class="card-theme">Cession</span>
         </div>
-        <p class="card-desc">Simulez la fiscalité d'une cession de titres : comparez PFU, barème progressif, abattements et départ à la retraite. Calculez le net encaissé par le vendeur, les droits d'enregistrement et le coût total pour l'acquéreur. Identifiez le régime fiscal le plus avantageux en quelques clics.</p>
-        <a class="btn-primary" href="/simulateurs/cession-titres.html">
-          Accéder au simulateur
-        </a>
+        <h2 class="card-title">Cession de parts de SARL ou d'actions de SAS : combien vous reste-t-il réellement ?</h2>
+        <p class="card-desc">Net vendeur et coût acquéreur.</p>
+        <a class="btn btn-primary" href="/simulateurs/cession-titres.html" aria-label="Ouvrir le simulateur : Cession de parts de SARL ou d'actions de SAS : combien vous reste-t-il réellement ?">Ouvrir le simulateur</a>
       </article>
 
-      <!-- CARD : Succession conjoint survivant et enfants -->
-      <article class="card" data-tags="succession héritage usufruit conjoint enfants donation droits de succession">
-        <div class="card-header">
-          <div class="card-icon">👪</div>
-          <h2 class="card-title">Simulateur succession : conjoint survivant et enfants</h2>
+      <article class="card card--sim" data-theme="patrimoine" data-tags="succession héritage usufruit pleine propriété conjoint enfants donation au dernier vivant testament droits de succession base taxable répartition situation familiale">
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+          <span class="card-theme">Patrimoine et taxes</span>
         </div>
-        <p class="card-desc">Simulez simplement la répartition d'une succession entre conjoint survivant et enfants selon les différentes options possibles : usufruit, pleine propriété, donation au dernier vivant ou testament. Le simulateur estime automatiquement la part de chacun, la base taxable et les droits de succession selon la situation familiale.</p>
-        <a class="btn-primary" href="/simulateurs/succession.html">
-          ↗ Accéder au simulateur
-        </a>
+        <h2 class="card-title">Simulateur succession : conjoint survivant et enfants</h2>
+        <p class="card-desc">Répartition, base taxable et droits.</p>
+        <a class="btn btn-primary" href="/simulateurs/succession.html" aria-label="Ouvrir le simulateur : Simulateur succession : conjoint survivant et enfants">Ouvrir le simulateur</a>
       </article>
 
-      <!-- CARD : Simulateur TVS 2026 -->
-      <article class="card" data-tags="tvs taxe véhicule société voiture flotte fiscalité 2026">
-        <div class="card-header">
-          <div class="card-icon">🚗</div>
-          <h2 class="card-title">Simulateur TVS 2026</h2>
+      <article class="card card--sim" data-theme="patrimoine" data-tags="tvs taxe véhicule véhicules société voiture flotte fiscalité 2026 co2 émissions ancienneté usage mixte barèmes">
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></span>
+          <span class="card-theme">Patrimoine et taxes</span>
         </div>
-        <p class="card-desc">Calculez la taxe sur les véhicules de société selon les barèmes 2026 : émissions CO₂, ancienneté du véhicule, usage mixte. Résultat instantané.</p>
-        <a class="btn-primary" href="/simulateurs/tvs.html">
-          Accéder au simulateur
-        </a>
-      </article>
-      <!-- CARD : EI vs EURL — Quel régime fiscal choisir ? -->
-      <article class="card" data-tags="ei eurl ir is regime fiscal charges sociales">
-        <div class="card-header">
-          <div class="card-icon">⚖️</div>
-          <h2 class="card-title">EI vs EURL — Quel régime fiscal choisir ?</h2>
-        </div>
-        <p class="card-desc">Comparez le coût réel de l'EI à l'IR et de l'EURL à l'IS. Charges sociales, IR et IS calculés selon la réforme 2026.</p>
-        <a class="btn-primary" href="/simulateurs/ei-vs-eurl.html">
-          Accéder au simulateur
-        </a>
+        <h2 class="card-title">Simulateur TVS 2026</h2>
+        <p class="card-desc">Taxe véhicules, barèmes 2026.</p>
+        <a class="btn btn-primary" href="/simulateurs/tvs.html" aria-label="Ouvrir le simulateur : Simulateur TVS 2026">Ouvrir le simulateur</a>
       </article>
 
-      <!-- CARD : Holding Immobilier vs Dividendes & Rémunération -->
-      <article class="card" data-tags="holding immobilier dividendes remuneration sasu sarl is patrimoine" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <article class="card card--sim" data-theme="statut" data-tags="ei eurl ir is regime fiscal régime charges sociales réforme 2026 coût réel">
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></span>
+          <span class="card-theme">Statut</span>
+        </div>
+        <h2 class="card-title">EI vs EURL — Quel régime fiscal choisir ?</h2>
+        <p class="card-desc">Charges, IR et IS, réforme 2026.</p>
+        <a class="btn btn-primary" href="/simulateurs/ei-vs-eurl.html" aria-label="Ouvrir le simulateur : EI vs EURL — Quel régime fiscal choisir ?">Ouvrir le simulateur</a>
+      </article>
+
+      <article class="card card--sim" data-theme="immobilier" data-tags="holding immobilier dividendes remuneration rémunération sasu sarl is patrimoine investissement charges sociales impôt frais de structure coût réel" itemscope itemtype="https://schema.org/SoftwareApplication">
         <meta itemprop="applicationCategory" content="FinanceApplication" />
-        <div class="card-header">
-          <div class="card-icon">🏢</div>
-          <h2 class="card-title" itemprop="name">Holding Immobilier vs Dividendes & Rémunération</h2>
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></span>
+          <span class="card-theme">Immobilier</span>
         </div>
-        <p class="card-desc" itemprop="description">Investissement immobilier via holding ou retrait en dividendes et rémunération ? Comparez le coût réel, les charges sociales, l'impôt et les frais de structure pour optimiser votre patrimoine immobilier.</p>
-        <a class="btn-primary" href="/simulateurs/holding-immobilier.html" itemprop="url">
-          Accéder au simulateur
-        </a>
+        <h2 class="card-title" itemprop="name">Holding Immobilier vs Dividendes &amp; Rémunération</h2>
+        <p class="card-desc" itemprop="description">Coût réel, impôt et frais.</p>
+        <a class="btn btn-primary" href="/simulateurs/holding-immobilier.html" itemprop="url" aria-label="Ouvrir le simulateur : Holding Immobilier vs Dividendes &amp; Rémunération">Ouvrir le simulateur</a>
       </article>
 
-      <!-- CARD 1 : Auto-entrepreneur VS Régime réel -->
-      <article class="card" data-tags="auto-entrepreneur régime réel sasu sarl statut juridique fiscal">
-        <div class="card-header">
-          <div class="card-icon">🧾</div>
-          <h2 class="card-title">Simulateur auto-entrepreneur VS régime réel</h2>
+      <article class="card card--sim" data-theme="statut" data-tags="auto-entrepreneur auto entrepreneur micro-entreprise régime réel sasu sarl statut juridique fiscal activité professionnelle">
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg></span>
+          <span class="card-theme">Statut</span>
         </div>
-        <p class="card-desc">Comparez rapidement les régimes juridiques et fiscaux pour une activité professionnelle : auto-entrepreneur, SARL ou SASU. Identifiez le statut le plus avantageux selon votre situation.</p>
-        <a class="btn-primary" href="/simulateurs/auto-entrepreneur.html">
-          ↗ Accéder au simulateur
-        </a>
+        <h2 class="card-title">Simulateur auto-entrepreneur VS régime réel</h2>
+        <p class="card-desc">Micro, SARL ou SASU comparés.</p>
+        <a class="btn btn-primary" href="/simulateurs/auto-entrepreneur.html" aria-label="Ouvrir le simulateur : Simulateur auto-entrepreneur VS régime réel">Ouvrir le simulateur</a>
       </article>
 
-      <!-- CARD : Simulateur LMNP -->
-      <article class="card" data-tags="lmnp location meublée régime fiscal social tva micro bic réel loueur meuble non professionnel plus-value">
-        <div class="card-header">
-          <div class="card-icon">🛋️</div>
-          <h2 class="card-title">Simulateur LMNP</h2>
+      <article class="card card--sim" data-theme="immobilier" data-tags="lmnp location meublée régime fiscal social tva micro bic micro-bic réel loueur meuble non professionnel plus-value cotisations sociales">
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M4 18v2"/><path d="M20 18v2"/><path d="M12 4v9"/></svg></span>
+          <span class="card-theme">Immobilier</span>
         </div>
-        <p class="card-desc">Orientation des régimes fiscal, social et TVA de la location meublée. Statut LMNP, micro-BIC vs réel, cotisations sociales et TVA. Résultat instantané.</p>
-        <a class="btn-primary" href="/simulateurs/lmnp.html">
-          Accéder au simulateur
-        </a>
+        <h2 class="card-title">Simulateur LMNP</h2>
+        <p class="card-desc">Fiscal, social et TVA en meublé.</p>
+        <a class="btn btn-primary" href="/simulateurs/lmnp.html" aria-label="Ouvrir le simulateur : Simulateur LMNP">Ouvrir le simulateur</a>
       </article>
 
-
-      <!-- CARD 4 : Taxe PUMa -->
-      <article class="card" data-tags="PUMa cotisation subsidiaire maladie dividendes revenus fonciers plus-values">
-        <div class="card-header">
-          <div class="card-icon">🏥</div>
-          <h2 class="card-title">Simulateur taxe PUMa</h2>
+      <article class="card card--sim" data-theme="remuneration" data-tags="PUMa cotisation subsidiaire maladie dividendes revenus fonciers plus-values">
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg></span>
+          <span class="card-theme">Rémunération</span>
         </div>
-        <p class="card-desc">Simulez en quelques secondes votre taxe PUMa (Cotisation Subsidiaire Maladie) et vérifiez si vos dividendes, revenus fonciers ou plus-values peuvent générer une cotisation supplémentaire.</p>
-        <a class="btn-primary" href="/simulateurs/taxe-puma.html">
-          ↗ Accéder au simulateur
-        </a>
+        <h2 class="card-title">Simulateur taxe PUMa</h2>
+        <p class="card-desc">Cotisation subsidiaire maladie.</p>
+        <a class="btn btn-primary" href="/simulateurs/taxe-puma.html" aria-label="Ouvrir le simulateur : Simulateur taxe PUMa">Ouvrir le simulateur</a>
       </article>
 
-      <!-- CARD : Arbitrage rémunération dividendes -->
-      <article class="card" data-tags="salaire dividendes rémunération sas sasu sarl gérant arbitrage cotisations retraite impôt revenu net">
-        <div class="card-header">
-          <div class="card-icon">⚖️</div>
-          <h2 class="card-title">Arbitrage rémunération dividendes</h2>
+      <article class="card card--sim" data-theme="remuneration" data-tags="salaire dividendes rémunération sas sasu sarl gérant arbitrage cotisations retraite impôt impôts revenu net stratégie">
+        <div class="card-head">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></span>
+          <span class="card-theme">Rémunération</span>
         </div>
-        <p class="card-desc">Trouvez en quelques clics la stratégie qui maximise votre revenu net après impôts, cotisations et retraite.</p>
-        <a class="btn-primary" href="/simulateurs/salaire-ou-dividendes.html">
-          Accéder au simulateur
-        </a>
+        <h2 class="card-title">Arbitrage rémunération dividendes</h2>
+        <p class="card-desc">Maximisez votre revenu net.</p>
+        <a class="btn btn-primary" href="/simulateurs/salaire-ou-dividendes.html" aria-label="Ouvrir le simulateur : Arbitrage rémunération dividendes">Ouvrir le simulateur</a>
       </article>
-
     </div>
 
     <div id="empty">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-      </svg>
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       <p>Aucun simulateur ne correspond à cette recherche.</p>
     </div>
   </section>
 
-  <!-- SECTION : Dernier article — alimentée par /blog/articles.json (repli statique ci-dessous) -->
-  <section class="blog-latest" id="dernier-article" aria-labelledby="dernier-article-titre">
-    <h2 class="blog-section-title" id="dernier-article-titre">Dernier article</h2>
-
-    <div id="latest-post">
-      <article class="post-card post-card--featured">
+  <!-- SECTION : Derniers articles — alimentée par /blog/articles.json (repli statique ci-dessous) -->
+  <section class="blog-latest" id="derniers-articles" aria-labelledby="derniers-articles-titre">
+    <div class="section-head">
+      <h2 class="section-title" id="derniers-articles-titre">Derniers articles</h2>
+      <a class="link-more" href="/blog.html">Voir tous les articles <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+    </div>
+    <div class="post-grid" id="latest-posts">
+      <article class="post-card">
         <div class="post-meta">
           <span class="post-cat">Succession</span>
-          <span class="post-date"><time datetime="2026-10-20">20 octobre 2026</time> · 11 min de lecture</span>
+          <span class="post-date"><time datetime="2026-10-20">20 octobre 2026</time></span>
         </div>
         <h3 class="post-title"><a class="post-link" href="/blog/mariage-vs-pacs-differences-de-droit-v4.html">Mariage ou Pacs : 6 différences qui peuvent coûter très cher à votre partenaire</a></h3>
         <p class="post-excerpt">Mariage ou Pacs ? Droits du survivant, protection du logement, pension de réversion, donation au dernier vivant : les différences qui comptent.</p>
-        <span class="post-more" aria-hidden="true">Lire l'article →</span>
       </article>
-    </div>
-
-    <h2 class="blog-section-title blog-section-title--sub">Articles précédents</h2>
-    <div class="post-grid" id="previous-posts">
       <article class="post-card">
         <div class="post-meta">
           <span class="post-cat">Agricole &amp; MSA</span>
@@ -788,71 +283,78 @@
         <h3 class="post-title"><a class="post-link" href="/blog/prime-partage-valeur-fin-regime-2026.html">Prime de partage de la valeur : fin du régime de faveur au 31 décembre 2026</a></h3>
         <p class="post-excerpt">Dans les entreprises de moins de 50 salariés, l'exonération renforcée de la PPV prend fin le 31 décembre 2026. CSG-CRDS et impôt sur le revenu dus dès 2027.</p>
       </article>
-      <article class="post-card">
-        <div class="post-meta">
-          <span class="post-cat">Holding</span>
-          <span class="post-date"><time datetime="2026-09-25">25 septembre 2026</time></span>
-        </div>
-        <h3 class="post-title"><a class="post-link" href="/blog/taxe-holdings-patrimoniales-2026.html">Taxe sur les holdings patrimoniales 2026 : ce qui est vraiment taxé à 20 %</a></h3>
-        <p class="post-excerpt">Taxe holding 2026 (CGI art. 235 ter C) : seuil de 5 M€, contrôle à 50 %, revenus passifs, 7 catégories d'actifs taxés à 20 %. Trésorerie et titres exclus.</p>
-      </article>
     </div>
-
-    <a class="blog-all" href="/blog.html">Voir tous les articles →</a>
   </section>
 </main>
 
-<footer>
-  <div class="footer-inner">
-    <p>© 2025 Benjamin Hofman — Expert-comptable diplômé, Bretagne</p>
-    <nav class="footer-links">
-      <a href="/">Simulateurs</a>
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <p class="site-footer-brand">Benjamin Hofman<span>Expert-comptable diplômé, Bretagne</span></p>
+    <nav class="site-footer-links" aria-label="Pied de page">
+      <a href="/#simulateurs">Simulateurs</a>
       <a href="/tutos.html">Tutos</a>
       <a href="/blog.html">Blog</a>
       <a href="/about.html">À propos</a>
+      <a href="https://www.linkedin.com/in/benjamin-hofman-expert-comptable-ia/" target="_blank" rel="noopener">LinkedIn</a>
     </nav>
-    <p>Outils à titre indicatif — ne constituent pas un conseil fiscal personnalisé</p>
+    <div class="site-footer-legal">
+      <p>Outils à titre indicatif — ne constituent pas un conseil fiscal personnalisé</p>
+      <p>© 2026 Benjamin Hofman</p>
+    </div>
   </div>
 </footer>
 
 <script>
-  const search = document.getElementById('search');
-  const cards  = document.querySelectorAll('.card');
-  const empty  = document.getElementById('empty');
-  const count  = document.getElementById('count');
+  const search  = document.getElementById('search');
+  const cards   = document.querySelectorAll('.card');
+  const filters = document.querySelectorAll('.filter');
+  const empty   = document.getElementById('empty');
+  const count   = document.getElementById('count');
+  const countWord = document.getElementById('count-word');
+  let theme = 'all';
 
-  search.addEventListener('input', () => {
+  function applyFilters() {
     const q = search.value.toLowerCase().trim();
     let visible = 0;
 
     cards.forEach(card => {
-      const text = (card.innerText + ' ' + (card.dataset.tags || '')).toLowerCase();
-      const match = !q || text.includes(q);
+      const text = (card.textContent + ' ' + (card.dataset.tags || '')).toLowerCase();
+      const match = (theme === 'all' || card.dataset.theme === theme) && (!q || text.includes(q));
       card.dataset.hidden = match ? 'false' : 'true';
       if (match) visible++;
     });
 
     count.textContent = visible;
+    countWord.textContent = visible > 1 ? 'simulateurs disponibles' : 'simulateur disponible';
     empty.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  search.addEventListener('input', applyFilters);
+
+  filters.forEach(button => {
+    button.addEventListener('click', () => {
+      theme = button.dataset.filter;
+      filters.forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+      applyFilters();
+    });
   });
 
-  // Dernier article : lu depuis /blog/articles.json. En cas d'échec, le HTML statique reste affiché.
+  // Derniers articles : lus depuis /blog/articles.json. En cas d'échec, le HTML statique reste affiché.
   (function () {
-    const latest   = document.getElementById('latest-post');
-    const previous = document.getElementById('previous-posts');
+    const list = document.getElementById('latest-posts');
 
     const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const fmtDate = iso => new Date(iso + 'T00:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
-    function postCard(a, featured) {
+    function postCard(a) {
       return `
-      <article class="post-card${featured ? ' post-card--featured' : ''}">
+      <article class="post-card">
         <div class="post-meta">
           <span class="post-cat">${esc(a.categorie)}</span>
-          <span class="post-date"><time datetime="${esc(a.date)}">${fmtDate(a.date)}</time>${featured && a.lecture ? ' · ' + esc(a.lecture) + ' de lecture' : ''}</span>
+          <span class="post-date"><time datetime="${esc(a.date)}">${fmtDate(a.date)}</time></span>
         </div>
         <h3 class="post-title"><a class="post-link" href="${esc(a.url)}">${esc(a.titre)}</a></h3>
-        <p class="post-excerpt">${esc(a.extrait)}</p>${featured ? '\n        <span class="post-more" aria-hidden="true">Lire l\'article →</span>' : ''}
+        <p class="post-excerpt">${esc(a.extrait)}</p>
       </article>`;
     }
 
@@ -861,8 +363,7 @@
       .then(articles => {
         if (!Array.isArray(articles) || !articles.length) return;
         articles.sort((a, b) => b.date.localeCompare(a.date));
-        latest.innerHTML   = postCard(articles[0], true);
-        previous.innerHTML = articles.slice(1, 4).map(a => postCard(a, false)).join('');
+        list.innerHTML = articles.slice(0, 3).map(postCard).join('');
       })
       .catch(() => {});
   })();

@@ -52,17 +52,6 @@
       --accent-2: #e8f0fe; --border: #e2e6f0; --radius: 12px;
     }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); }
-    header { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-    .header-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
-    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-    .logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
-    .logo-text { display: flex; flex-direction: column; line-height: 1.2; }
-    .logo-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; color: var(--ink); }
-    .logo-title { font-size: 11px; color: var(--ink-soft); }
-    .header-right { display: flex; align-items: center; gap: 16px; }
-    .btn-contact { background: var(--accent); color: #fff; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; text-decoration: none; }
-    nav a { text-decoration: none; font-size: 14px; font-weight: 500; color: var(--ink-mid); margin-left: 20px; }
-    nav a:hover { color: var(--accent); }
     .article-wrap { max-width: 740px; margin: 0 auto; padding: 56px 24px 80px; }
     .back { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--ink-soft); text-decoration: none; margin-bottom: 32px; }
     .back:hover { color: var(--accent); }
@@ -114,31 +103,228 @@
     .cta-box h3 { color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; margin-bottom: 10px; }
     .cta-box p { color: rgba(255,255,255,0.85); margin-bottom: 20px; }
     .cta-btn { display: inline-block; background: #fff; color: var(--accent); font-weight: 700; font-size: 15px; padding: 12px 28px; border-radius: 8px; text-decoration: none; }
-    footer { border-top: 1px solid var(--border); background: var(--surface); }
-    .footer-inner { max-width: 1100px; margin: 0 auto; padding: 28px 24px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-    .footer-inner p { font-size: 13px; color: var(--ink-soft); }
-    @media (max-width: 600px) { nav { display: none; } .article-wrap { padding: 40px 20px 60px; } }
+    @media (max-width: 600px) { .article-wrap { padding: 40px 20px 60px; } }
   </style>
+<style id="design-system">
+/* ── SOCLE : variables ── */
+:root {
+  --ink: #0f1117;
+  --ink-mid: #4a4f5e;
+  --ink-soft: #5f6675;
+  --bg: #f7f8fc;
+  --surface: #ffffff;
+  --border: #e2e6f0;
+  --accent: #1a56e8;
+  --accent-hover: #1445c4;
+  --accent-2: #e8f0fe;
+  --dark: #0f1a2e;
+  --dark-2: #1b2942;
+  --dark-border: #2c3b57;
+  --on-dark: #ffffff;
+  --on-dark-soft: #c3cbdb;
+  --ok: #15803d;
+  --warn: #b45309;
+  --no: #b91c1c;
+
+  --font-title: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 1px 2px rgba(15, 26, 46, .06);
+  --shadow-md: 0 4px 16px rgba(15, 26, 46, .08);
+  --shadow-lg: 0 10px 28px rgba(26, 86, 232, .14);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --container: 1140px;
+  --tap: 44px;
+}
+
+/* ── SOCLE : base ── */
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+body { font-family: var(--font-body); }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible,
+select:focus-visible, summary:focus-visible, video:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.icon { width: 1.15em; height: 1.15em; vertical-align: -.2em; flex: none; }
+.icon-ok { color: var(--ok); }
+.icon-warn { color: var(--warn); }
+.icon-no { color: var(--no); }
+
+/* ── SOCLE : boutons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); color: #fff; }
+
+/* ── SOCLE : en-tête ── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.site-header-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  max-width: var(--container);
+  min-height: 68px;
+  margin: 0 auto;
+  padding: var(--space-2) var(--space-5);
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap);
+  margin-right: auto;
+  color: var(--ink);
+  text-decoration: none;
+}
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-size: 18px;
+}
+.logo-text { display: flex; flex-direction: column; line-height: 1.25; }
+.logo-name { font-family: var(--font-title); font-size: 15px; font-weight: 700; color: var(--ink); }
+.logo-title { font-size: 12px; color: var(--ink-soft); }
+.site-nav { display: flex; align-items: center; gap: var(--space-1); }
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-mid);
+  text-decoration: none;
+  transition: background-color .15s, color .15s;
+}
+.site-nav a:hover { background: var(--accent-2); color: var(--accent); }
+.site-nav a[aria-current="page"] { color: var(--accent); font-weight: 600; }
+
+/* ── SOCLE : pied de page ── */
+.site-footer { background: var(--dark); color: var(--on-dark-soft); font-family: var(--font-body); }
+.site-footer-inner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-4) var(--space-6);
+  align-items: center;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5);
+}
+.site-footer .site-footer-brand { margin: 0; font-family: var(--font-title); font-size: 15px; font-weight: 700; color: var(--on-dark); }
+.site-footer-legal p { margin: 0; font-size: inherit; line-height: inherit; color: var(--on-dark-soft); }
+.site-footer-brand span { display: block; margin-top: 2px; font-family: var(--font-body); font-size: 13px; font-weight: 400; color: var(--on-dark-soft); }
+.site-footer-links { display: flex; flex-wrap: wrap; gap: var(--space-1); }
+.site-footer-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--on-dark);
+  text-decoration: none;
+}
+.site-footer-links a:hover { background: var(--dark-2); }
+.site-footer a:focus-visible { outline-color: #fff; }
+.site-footer-legal {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--dark-border);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  html { scroll-padding-top: 16px; }
+  .site-header { position: static; }
+  .site-header-inner { flex-wrap: wrap; gap: var(--space-1) var(--space-3); padding: var(--space-2) var(--space-4); }
+  .site-nav { order: 3; width: 100%; justify-content: space-between; margin: 0 -8px; width: calc(100% + 16px); }
+  .site-nav a { padding: 0 var(--space-2); }
+  .site-footer-inner { grid-template-columns: 1fr; padding: var(--space-6) var(--space-4); }
+  .site-footer-links { margin: 0 -12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+:root { --navy: var(--dark); --orange: var(--accent); --muted: var(--ink-soft); --bleu: var(--dark); --bleu-clair: var(--accent); --fond: var(--bg); }
+body { font-family: var(--font-body); }
+.back { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--ink-mid); }
+.back:hover { color: var(--accent); }
+.cta-btn { display: inline-flex; align-items: center; justify-content: center; min-height: var(--tap); }
+@media (max-width: 640px) {
+  table:not(.table-wrapper table) { display: block; max-width: 100%; overflow-x: auto; }
+  .chiffre-bloc { flex-wrap: wrap; }
+}
+</style>
 </head>
 <body>
 
-<header>
-  <div class="header-inner">
+<header class="site-header">
+  <div class="site-header-inner">
     <a class="logo" href="https://www.linkedin.com/in/benjamin-hofman-expert-comptable-ia/" target="_blank" rel="noopener">
-      <div class="logo-icon">⚖</div>
-      <div class="logo-text">
+      <span class="logo-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></span>
+      <span class="logo-text">
         <span class="logo-name">Benjamin Hofman</span>
         <span class="logo-title">Expert-comptable diplômé</span>
-      </div>
+      </span>
     </a>
-    <div class="header-right">
-      <a href="/about.html#contact" class="btn-contact">Me contacter</a>
-      <nav>
-        <a href="/">Simulateurs</a>
-        <a href="/blog.html">Blog</a>
-        <a href="/about.html">À propos</a>
-      </nav>
-    </div>
+    <nav class="site-nav" aria-label="Navigation principale">
+      <a href="/#simulateurs">Simulateurs</a>
+      <a href="/tutos.html">Tutos</a>
+      <a href="/blog.html">Blog</a>
+      <a href="/about.html">À propos</a>
+    </nav>
+    <a class="btn btn-primary site-contact" href="/about.html#contact">Me contacter</a>
   </div>
 </header>
 
@@ -158,11 +344,11 @@
   <p class="intro">Le concubinage est une situation précaire en matière de succession. Contrairement aux couples mariés ou pacsés, les concubins n'ont aucun droit successoral automatique. En cas de décès, le survivant ne peut prétendre à rien, sauf si des dispositions ont été prises en amont.</p>
 
   <div class="danger-box">
-    <p>🚨 Sans disposition préalable : aucune transmission automatique du patrimoine · Taxation à 60 % sur l'héritage (après un abattement de seulement 1 594 €) · Risque d'éviction par les héritiers légaux du défunt.</p>
+    <p><svg class="icon icon-no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18v-6a5 5 0 1 1 10 0v6"/><path d="M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z"/><path d="M21 12h1"/><path d="M18.5 4.5 18 5"/><path d="M2 12h1"/><path d="M12 2v1"/><path d="m4.929 4.929.707.707"/><path d="M12 12v6"/></svg> Sans disposition préalable : aucune transmission automatique du patrimoine · Taxation à 60 % sur l'héritage (après un abattement de seulement 1 594 €) · Risque d'éviction par les héritiers légaux du défunt.</p>
   </div>
 
   <div class="highlight-box">
-    <p>💡 Le PACS permet une exonération totale des droits de succession, mais ne remplace pas un testament pour organiser la transmission du patrimoine.</p>
+    <p><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> Le PACS permet une exonération totale des droits de succession, mais ne remplace pas un testament pour organiser la transmission du patrimoine.</p>
   </div>
 
   <h2>Les 4 solutions pour protéger son concubin</h2>
@@ -174,8 +360,8 @@
       <span class="solution-title">Rédiger un testament</span>
     </div>
     <p>Le testament est le moyen le plus simple pour transmettre une partie de son patrimoine à son concubin. Il permet d'attribuer une part de ses biens, dans la limite de la quotité disponible si le défunt a des enfants. Il peut être rédigé sous seing privé ou déposé chez un notaire.</p>
-    <div class="pros"><p>✅ Facile à mettre en place · Protège contre l'éviction par la famille · Personnalisable selon les volontés du testateur</p></div>
-    <div class="cons"><p>⚠️ Droits de succession élevés : 60 % sur la part transmise. Le testament seul ne suffit pas — il doit être complété par d'autres outils.</p></div>
+    <div class="pros"><p><svg class="icon icon-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Facile à mettre en place · Protège contre l'éviction par la famille · Personnalisable selon les volontés du testateur</p></div>
+    <div class="cons"><p><svg class="icon icon-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Droits de succession élevés : 60 % sur la part transmise. Le testament seul ne suffit pas — il doit être complété par d'autres outils.</p></div>
   </div>
 
   <!-- SOLUTION 2 -->
@@ -185,8 +371,8 @@
       <span class="solution-title">Souscrire une assurance-vie</span>
     </div>
     <p>L'assurance-vie est le meilleur outil pour transmettre un capital à son concubin sans fiscalité lourde. Le souscripteur désigne son concubin comme bénéficiaire. À son décès, le capital est transmis directement au bénéficiaire sans passer par la succession.</p>
-    <div class="pros"><p>✅ Abattement de 152 500 € par bénéficiaire sur les capitaux issus des versements réalisés avant 70 ans · Puis 20 % jusqu'à 700 000 € taxables, et 31,25 % au-delà · L'assurance-vie prime sur les héritiers légaux</p></div>
-    <div class="cons"><p>⚠️ Versements après 70 ans : abattement réduit à 30 500 € global · Clause bénéficiaire à rédiger avec soin pour éviter toute contestation.</p></div>
+    <div class="pros"><p><svg class="icon icon-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Abattement de 152 500 € par bénéficiaire sur les capitaux issus des versements réalisés avant 70 ans · Puis 20 % jusqu'à 700 000 € taxables, et 31,25 % au-delà · L'assurance-vie prime sur les héritiers légaux</p></div>
+    <div class="cons"><p><svg class="icon icon-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Versements après 70 ans : abattement réduit à 30 500 € global · Clause bénéficiaire à rédiger avec soin pour éviter toute contestation.</p></div>
   </div>
 
   <!-- SOLUTION 3 -->
@@ -196,8 +382,8 @@
       <span class="solution-title">Acheter en tontine</span>
     </div>
     <p>La clause de tontine garantit que le concubin survivant devient automatiquement l'unique propriétaire du bien. Incluse dans l'acte d'achat, elle fait que le bien n'entre pas dans la succession et ne peut pas être réclamé par la famille du défunt.</p>
-    <div class="pros"><p>✅ Transmission automatique sans formalité successorale · Empêche les héritiers de revendiquer le bien</p></div>
-    <div class="cons"><p>⚠️ Si la valeur du bien dépasse 76 000 €, il sera taxé comme une donation (jusqu'à 60 %) · Irréversible une fois mise en place.</p></div>
+    <div class="pros"><p><svg class="icon icon-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Transmission automatique sans formalité successorale · Empêche les héritiers de revendiquer le bien</p></div>
+    <div class="cons"><p><svg class="icon icon-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Si la valeur du bien dépasse 76 000 €, il sera taxé comme une donation (jusqu'à 60 %) · Irréversible une fois mise en place.</p></div>
   </div>
 
   <!-- SOLUTION 4 -->
@@ -207,8 +393,8 @@
       <span class="solution-title">Créer une SCI avec démembrement</span>
     </div>
     <p>Une SCI permet aux concubins d'acheter un bien en nom collectif et d'organiser la transmission via le démembrement de propriété : l'usufruitier (le survivant) peut vivre dans le bien ou le louer, tandis que les nu-propriétaires (souvent les enfants) héritent automatiquement de la pleine propriété au décès du survivant, sans frais supplémentaires.</p>
-    <div class="pros"><p>✅ Le concubin survivant garde l'usufruit · Les héritiers récupèrent la pleine propriété sans droits de succession · Fiscalité allégée sur la transmission des parts sociales</p></div>
-    <div class="cons"><p>⚠️ Tenue d'une comptabilité et rédaction des statuts obligatoires · Décision commune nécessaire entre usufruitier et nu-propriétaire pour la gestion du bien.</p></div>
+    <div class="pros"><p><svg class="icon icon-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Le concubin survivant garde l'usufruit · Les héritiers récupèrent la pleine propriété sans droits de succession · Fiscalité allégée sur la transmission des parts sociales</p></div>
+    <div class="cons"><p><svg class="icon icon-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Tenue d'une comptabilité et rédaction des statuts obligatoires · Décision commune nécessaire entre usufruitier et nu-propriétaire pour la gestion du bien.</p></div>
   </div>
 
   <h2>Comparatif des solutions</h2>
@@ -246,7 +432,7 @@
   </table>
 
   <div class="astuce">
-    <h3>💡 Astuce : combiner plusieurs solutions</h3>
+    <h3><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> Astuce : combiner plusieurs solutions</h3>
     <ul>
       <li>Assurance-vie pour transmettre un capital en exonération fiscale</li>
       <li>Testament pour officialiser les volontés</li>
@@ -281,10 +467,20 @@
   </div>
 </main>
 
-<footer>
-  <div class="footer-inner">
-    <p>© 2026 Benjamin Hofman — Expert-comptable diplômé</p>
-    <p>Articles à titre informatif — ne constituent pas un conseil fiscal personnalisé</p>
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <p class="site-footer-brand">Benjamin Hofman<span>Expert-comptable diplômé, Bretagne</span></p>
+    <nav class="site-footer-links" aria-label="Pied de page">
+      <a href="/#simulateurs">Simulateurs</a>
+      <a href="/tutos.html">Tutos</a>
+      <a href="/blog.html">Blog</a>
+      <a href="/about.html">À propos</a>
+      <a href="https://www.linkedin.com/in/benjamin-hofman-expert-comptable-ia/" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+    <div class="site-footer-legal">
+      <p>Articles à titre informatif — ne constituent pas un conseil fiscal personnalisé</p>
+      <p>© 2026 Benjamin Hofman</p>
+    </div>
   </div>
 </footer>
 
