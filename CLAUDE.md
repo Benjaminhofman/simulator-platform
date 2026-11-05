@@ -19,7 +19,7 @@ Police : Plus Jakarta Sans (titres) + Inter (corps)
 - sitemap.xml / robots.txt / _redirects / netlify.toml
 
 ## Simulateurs
-- Auto-entrepreneur vs SARL/SASU → https://simul-auto.netlify.app/
+- Auto-entrepreneur vs SARL/SASU → https://simulationautoentre.onrender.com/
 - Taxe PUMa → https://taxepuma.netlify.app/
 
 ## Blog
