@@ -23,3 +23,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Prompts et brouillons locaux (non publiés)
+PROMPT_*.txt
+prompt-*.txt
+prompt_*.txt
+/simulateur-*.html
