@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulateur patrimonial — Arbitrage sortie d'associé</title>
+<meta property="og:title" content="Arbitrage patrimonial — sortie d'associé">
+<meta property="og:description" content="Comparez rachat trésorerie, rachat emprunt, achat direct par l'associé et holding LBO. Simulation fiscale complète — flat tax 31,4% (LFSS 2026). Par Benjamin Hofman, expert-comptable.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://fiscalite-entrepreneur.fr/simulateurs/outils/arbitrage-sortie-associe.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Arbitrage patrimonial — sortie d'associé">
+<meta name="twitter:description" content="Comparez rachat trésorerie, rachat emprunt, achat direct par l'associé et holding LBO. Simulation fiscale complète — flat tax 31,4% (LFSS 2026).">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:2rem 3rem;max-width:1600px;margin:0 auto}
+:root{
+  --color-text-primary:#1a1a1a;
+  --color-text-secondary:#555;
+  --color-text-tertiary:#888;
+  --color-text-success:#085041;
+  --color-text-danger:#E24B4A;
+  --color-text-warning:#854F0B;
+  --color-text-info:#042C53;
+  --color-background-primary:#fff;
+  --color-background-secondary:#f5f5f5;
+  --color-border-tertiary:#ddd;
+  --color-border-secondary:#ccc;
+  --color-background-success:#E1F5EE;
+  --color-border-success:#1D9E75;
+  --border-radius-lg:10px;
+  --border-radius-md:6px;
+  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+input[type=number],select{padding:6px 8px;border:1px solid #ddd;border-radius:6px;font-size:13px;width:100%}
+input[type=range]{accent-color:#1D9E75}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.root{padding:1.5rem 0;font-size:14px;color:var(--color-text-primary);font-family:var(--font-sans)}
+.page-title{font-size:28px;font-weight:700;margin-bottom:.35rem;background:linear-gradient(135deg,#1D9E75,#0F6E56);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.3px}
+.page-sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.5rem}
+.prix-banner{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.5rem;margin-bottom:1.5rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;border:0.5px solid var(--color-border-secondary)}
+.pb-item{display:flex;flex-direction:column;gap:3px}
+.pb-label{font-size:11px;color:var(--color-text-tertiary)}
+.pb-val{font-size:18px;font-weight:500}
+.pb-val.accent{color:var(--color-text-success)}
+.pb-sub{font-size:11px;color:var(--color-text-secondary)}
+.pb-sub.danger{color:#E24B4A}
+.grid-params{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1.5rem}
+.param-section{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem}
+.param-section.full{grid-column:1/-1}
+.ps-title{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem;display:flex;align-items:center;gap:6px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:12px;color:var(--color-text-secondary)}
+.f input.calc{background:var(--color-background-secondary);color:var(--color-text-secondary);font-style:italic;cursor:not-allowed}
+.f .calc-note{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.sl-row{display:flex;align-items:center;gap:8px;margin-top:3px}
+.sl-row input[type=range]{flex:1}
+.sl-row .sv{font-size:13px;font-weight:500;min-width:44px;text-align:right}
+.verdict-banner{border-radius:var(--border-radius-lg);padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem}
+.vb-icon{font-size:28px;flex-shrink:0}
+.vb-title{font-size:16px;font-weight:500;margin-bottom:3px}
+.vb-sub{font-size:13px;line-height:1.5}
+.alert-box{background:#FCEBEB;border-radius:var(--border-radius-md);padding:.875rem 1rem;margin-bottom:.5rem;font-size:13px;color:#791F1F;display:flex;gap:8px;line-height:1.5;border-left:3px solid #E24B4A}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.25rem}
+.kpi{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem 1rem}
+.kpi-l{font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px;line-height:1.3}
+.kpi-v{font-size:16px;font-weight:500}
+.kpi-s{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.rcard{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem}
+.rcard.winner{border:2px solid var(--color-border-success)}
+.rcard.disabled{opacity:.5}
+.rcard-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem;flex-wrap:wrap;gap:6px}
+.rcard-title{font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px}
+.badge-win{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;font-weight:500;background:var(--color-background-success);color:var(--color-text-success)}
+.badge-lbo{background:#EEEDFE;color:#3C3489;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500}
+.badge-emp{background:#FAEEDA;color:#633806;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500}
+.rline{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px;gap:6px}
+.rline:last-child{border:none}
+.rline .lb{color:var(--color-text-secondary);flex:1;font-size:11px}
+.rline .vl{font-weight:500;white-space:nowrap;font-size:12px}
+.rline.pos .vl{color:var(--color-text-success)}
+.rline.neg .vl{color:var(--color-text-danger)}
+.rline.hl{background:var(--color-background-secondary);margin:2px -4px;padding:4px;border-radius:4px;border-bottom:none}
+.rline.sub .lb,.rline.sub .vl{font-size:11px;color:var(--color-text-tertiary)}
+.rtot{display:flex;justify-content:space-between;padding:8px 0 0;font-size:14px;font-weight:500;border-top:1px solid var(--color-border-secondary);margin-top:4px}
+.section-bloc{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
+.bloc-title{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem;display:flex;align-items:center;gap:6px}
+.info-box{background:#E6F1FB;border-radius:var(--border-radius-md);padding:.875rem 1rem;margin-bottom:.875rem;font-size:12px;color:#042C53;line-height:1.7;border-left:3px solid #185FA5}
+.info-box strong{color:#0C447C}
+.act-box{background:#E6F1FB;border-radius:var(--border-radius-md);padding:.875rem 1rem;margin-top:.875rem;font-size:12px;color:#042C53;line-height:1.7}
+.act-box strong{color:#0C447C}
+.risk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.risk-card{border-radius:var(--border-radius-md);padding:.875rem 1rem}
+.risk-card.high{background:#FCEBEB;border-left:3px solid #E24B4A}
+.risk-card.med{background:#FAEEDA;border-left:3px solid #EF9F27}
+.risk-card.low{background:#E1F5EE;border-left:3px solid #1D9E75}
+.risk-head{display:flex;align-items:center;gap:6px;margin-bottom:.4rem}
+.risk-ico{font-size:15px}
+.risk-card.high .risk-ico,.risk-card.high .risk-name{color:#791F1F}
+.risk-card.med .risk-ico,.risk-card.med .risk-name{color:#633806}
+.risk-card.low .risk-ico,.risk-card.low .risk-name{color:#085041}
+.risk-name{font-size:12px;font-weight:500}
+.risk-body{font-size:12px;line-height:1.55}
+.risk-card.high .risk-body{color:#A32D2D}
+.risk-card.med .risk-body{color:#854F0B}
+.risk-card.low .risk-body{color:#0F6E56}
+.risk-trigger{margin-top:.4rem;font-size:11px;padding:3px 8px;border-radius:4px;display:inline-block}
+.risk-card.high .risk-trigger{background:#F7C1C1;color:#791F1F}
+.risk-card.med .risk-trigger{background:#FAC775;color:#633806}
+.risk-card.low .risk-trigger{background:#9FE1CB;color:#085041}
+.warn-banner{background:#FAEEDA;border-radius:var(--border-radius-md);padding:.75rem 1rem;font-size:12px;color:#633806;margin-top:.5rem;display:flex;gap:8px;line-height:1.5}
+.warn-banner i{font-size:15px;flex-shrink:0;margin-top:1px;color:#854F0B}
+.jur-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.jc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.875rem 1rem}
+.jct{font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:.5rem}
+.ji{font-size:12px;color:var(--color-text-secondary);padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;gap:6px;line-height:1.5}
+.ji:last-child{border:none}
+.ji i{font-size:13px;flex-shrink:0;margin-top:2px}
+.conclusion{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem 1.5rem;margin-top:1rem}
+.concl-title{font-size:15px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.concl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:1rem}
+.concl-step{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.875rem 1rem;border-top:3px solid #1D9E75}
+.concl-step-num{font-size:11px;font-weight:500;color:#0F6E56;margin-bottom:4px}
+.concl-step-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.concl-step-body{font-size:12px;color:var(--color-text-secondary);line-height:1.55}
+.concl-highlight{background:#E1F5EE;border-radius:var(--border-radius-md);padding:1rem 1.25rem;font-size:13px;color:#085041;line-height:1.7;border-left:3px solid #1D9E75}
+.concl-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:0.5px solid #9FE1CB;color:#085041}
+.concl-row:last-child{border:none}
+.concl-row.total{font-weight:500;font-size:14px;padding-top:8px;color:#04342C}
+.concl-row.sub{font-size:12px;color:#0F6E56}
+.concl-warn{background:#FAEEDA;border-radius:var(--border-radius-md);padding:.75rem 1rem;font-size:12px;color:#633806;margin-top:.75rem;display:flex;gap:8px;line-height:1.5}
+.concl-warn i{font-size:14px;flex-shrink:0;margin-top:1px;color:#854F0B}
+</style>
+</head>
+<body>
+<div class="root">
+<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;padding:.6rem .75rem;border-radius:8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);width:fit-content">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+  <a href="https://www.linkedin.com/in/benjamin-hofman-expert-comptable-ia/" target="_blank" style="font-size:13px;font-weight:500;color:#0A66C2;text-decoration:none">Benjamin Hofman — Expert-comptable & IA</a>
+</div>
+<h2 class="sr-only">Simulateur patrimonial v26</h2>
+<!-- Bandeau d'en-tête. Pour remettre votre ancienne photo : ajoutez ici votre balise <img ...> d'origine
+     (elle doit être la première balise à l'intérieur de ce div, avant le div du texte). -->
+<div style="position:relative;width:100%;height:220px;border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1.5rem;background:linear-gradient(135deg,#0A3D2E 0%,#0F6E56 55%,#1D9E75 100%)">
+  <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(5,30,20,0.55) 0%,rgba(10,60,45,0.25) 60%,rgba(0,0,0,0.05) 100%);display:flex;flex-direction:column;justify-content:center;padding:2rem 2.5rem">
+    <div style="font-size:28px;font-weight:700;color:#fff;letter-spacing:-.3px;text-shadow:0 2px 8px rgba(0,0,0,0.3)">Arbitrage patrimonial — sortie d'associé</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.85);margin-top:.4rem">Rachat tréso · Rachat emprunt · Achat direct (associé) · Holding LBO — flat tax 31,4% (LFSS 2026)</div>
+  </div>
+</div>
+<div class="info-box" style="margin-bottom:1rem"><strong>Point de vue : l'associé qui reste (l'acquéreur).</strong> Ce simulateur compare quatre façons de racheter les parts de l'associé qui part, et mesure ce que l'associé qui reste possède à la fin. Le cédant encaisse le même prix et paie la même plus-value dans les quatre cas : son côté n'est donc pas comparé.</div>
+
+<div class="prix-banner" id="prix_banner"></div>
+
+<div class="grid-params">
+  <!-- Section 1 : Société d'exploitation — pleine largeur, 4 colonnes -->
+  <div class="param-section">
+    <div class="ps-title"><i class="ti ti-building"></i>Société d'exploitation</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      <div class="f"><label>Forme sociale</label><select id="forme"><option value="" disabled>Forme sociale</option><option value="sarl">SARL</option><option value="sas">SAS / SA</option></select></div>
+      <div class="f"><label>Valeur vénale actuelle totale (€)</label><input type="number" id="venal" value="1000000" step="10000"></div>
+      <div class="f"><label>Capital nominal total (€)</label><input type="number" id="capital" value="10000" step="100"></div>
+      <div class="f"><label>Quote-part cédée (%)</label><div class="sl-row"><input type="range" id="qsl" min="1" max="99" step="1" value="50"><span class="sv" id="qout">50%</span></div></div>
+      <div class="f"><label>Trésorerie disponible (€)</label><input type="number" id="treso" value="300000" step="10000"></div>
+      <div class="f"><label>Taux IS société (%)</label><div class="sl-row"><input type="range" id="tis" min="15" max="33" step="1" value="25"><span class="sv" id="tisout">25%</span></div></div>
+      <div class="f"><label>Résultat net annuel (€)</label><input type="number" id="rnet" value="100000" step="5000"></div>
+      <div class="f"><label>Croissance annuelle société (%)</label><div class="sl-row"><input type="range" id="tcroiss" min="0" max="20" step="1" value="5"><span class="sv" id="tcroissout">5%</span></div></div>
+    </div>
+  </div>
+
+  <!-- Section 2 : Cédant + Cessionnaire — pleine largeur, 4 colonnes -->
+  <div class="param-section">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      <div>
+        <div class="ps-title"><i class="ti ti-users"></i>Cédant</div>
+        <div class="f"><label>PR cédant / cessionnaire (€) <span style="font-size:10px;color:var(--color-text-tertiary)">calculé</span></label><input type="number" id="pr_calc" class="calc" readonly><span class="calc-note">= capital × quote-part</span></div>
+      </div>
+      <div style="grid-column:span 3">
+        <div class="ps-title"><i class="ti ti-user-check"></i>Cessionnaire</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+          <div class="f"><label>Source de financement de l'achat direct</label><select id="source"><option value="" disabled>Source de financement</option><option value="0.314">Dividendes société (31,4%)</option><option value="0.55">Rémunération TNS (~55%)</option><option value="0.60">Rémunération salarié (~60%)</option></select></div>
+          <div class="f"><label>Mode de financement</label><select id="mode_financement" onchange="updateModeFinancement()"><option value="" disabled selected>Sélectionner</option><option value="moment">Au moment de la cession</option><option value="avant">Constitué avant l'opération</option><option value="emprunt">Emprunt PP (lissage sur plusieurs années)</option></select></div>
+          <div class="f"><label>Horizon (années)</label><div class="sl-row"><input type="range" id="horsl" min="1" max="30" step="1" value="10"><span class="sv" id="horout">10</span></div></div>
+          <div class="f"><label>Taux actualisation (%/an)</label><div class="sl-row"><input type="range" id="tact" min="0" max="10" step="1" value="3"><span class="sv" id="tactout">3%</span></div></div>
+          <div class="f"><label>Sortie cessionnaire</label><select id="sortie_cess"><option value="" disabled>Sortie cessionnaire</option><option value="vente">Vente — PFU 31,4%</option><option value="transmission">Transmission / décès (purge PV)</option></select></div>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="financement_avant" value="false"><input type="hidden" id="emprunt_pp" value="false">
+    <div id="emprunt_pp_params" style="display:none;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:.75rem">
+      <div class="f"><label>Taux emprunt PP (%/an)</label><div class="sl-row"><input type="range" id="taux_pp" min="1" max="10" step="0.5" value="4"><span class="sv" id="taux_ppout">4%</span></div></div>
+      <div class="f"><label>Durée emprunt PP (années)</label><div class="sl-row"><input type="range" id="duree_pp" min="1" max="20" step="1" value="7"><span class="sv" id="duree_ppout">7</span></div></div>
+      <div class="f"><label>Annuité emprunt PP (€/an) <span style="font-size:10px;color:var(--color-text-tertiary)">calculé</span></label><input type="number" id="annuite_pp_val" class="calc" readonly></div>
+    </div>
+  </div>
+
+  <!-- Section 3 : Emprunt & Holding — pleine largeur, 4 colonnes -->
+  <div class="param-section">
+    <div class="ps-title"><i class="ti ti-credit-card"></i>Emprunt société (rachat) & Holding LBO — paramètres communs</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      <div class="f"><label>Taux emprunt (%/an)</label><div class="sl-row"><input type="range" id="taux_emp" min="1" max="10" step="1" value="4"><span class="sv" id="taux_empout">4%</span></div></div>
+      <div class="f"><label>Durée emprunt (années)</label><div class="sl-row"><input type="range" id="duree_emp" min="3" max="20" step="1" value="7"><span class="sv" id="duree_empout">7</span></div></div>
+      <div class="f"><label>Annuité emprunt société (€/an) <span style="font-size:10px;color:var(--color-text-tertiary)">calculé</span></label><input type="number" id="annuite_soc" class="calc" readonly><span class="calc-note">= (dette × taux) / (1 − (1+taux)^−durée)</span></div>
+      <div class="f"><label>Apport personnel holding (%)</label><div class="sl-row"><input type="range" id="apport_lbo" min="0" max="50" step="5" value="20"><span class="sv" id="apport_lboout">20%</span></div></div>
+      <div class="f"><label>Annuité holding (€/an) <span style="font-size:10px;color:var(--color-text-tertiary)">calculé</span></label><input type="number" id="annuite_lbo" class="calc" readonly><span class="calc-note">= (dette holding × taux) / (1 − (1+taux)^−durée)</span></div>
+      <div class="f"><label>Friction dividende mère-fille (%)</label><div class="sl-row"><input type="range" id="friction_mf" min="1" max="5" step="0.25" value="1.25"><span class="sv" id="friction_mfout">1.25%</span></div></div>
+      <div class="f"><label>Sortie holding</label><select id="sortie_holding"><option value="" disabled>Sortie holding</option><option value="vente">Vente + distribution (Copé + FT)</option><option value="transmission">Transmission / décès (purge PV)</option><option value="reinvest">Réinvestissement économique (0 impôt)</option></select></div>
+      <div class="f"><label>Purge du report 150-0 B ter à la transmission</label><select id="regime_report"><option value="actuel">Droit actuel — report purgé</option><option value="plf2027">PLF 2027 art. 5 — report taxé</option></select></div>
+      <div style="font-size:11px;color:var(--color-text-tertiary);line-height:1.5;padding:.4rem 0 0;grid-column:span 1">* <strong>Copé</strong> : exonération quasi-totale des PV sur titres IS détenus +2 ans — seuls 12% imposables (~3% net). Avantage fiscal majeur de la holding.</div>
+    </div>
+  </div>
+</div>
+
+<div id="alert_zone"></div>
+<div id="verdict-banner"></div>
+<div class="kpi-row" id="kpi"></div>
+<div id="result_grids"></div>
+<div class="section-bloc" id="mecanique"></div>
+<div class="section-bloc" id="symetrie_expl"></div>
+<div class="section-bloc" id="risques"></div>
+<div class="section-bloc" id="juridique"></div>
+
+<div style="margin-top:1.5rem;padding:1.25rem 1.5rem;border-radius:var(--border-radius-lg);border:1.5px solid #E53E3E;background:#FFF5F5;color:#742A2A;font-size:13px;line-height:1.7">
+  <div style="font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem"><i class="ti ti-alert-circle" style="font-size:16px;color:#E53E3E"></i>Avertissement</div>
+  Le présent simulateur compare les conséquences économiques, fiscales et financières des principaux schémas de sortie d'associé. Les résultats reposent sur des hypothèses simplificatrices et ne prennent pas en compte certains facteurs déterminants tels que les objectifs patrimoniaux des associés, les projets de transmission ou de revente, l'utilisation future de la trésorerie, la capacité réelle de financement, les garanties bancaires, la situation familiale, les pactes d'associés, les dispositifs de faveur (Dutreil, apport-cession, holding de réinvestissement, etc.) ou encore les contraintes juridiques propres à chaque dossier. <strong>Une analyse personnalisée demeure indispensable avant toute décision.</strong>
+</div>
+
+<div style="margin-top:1rem;padding:1.25rem 1.5rem;border-radius:var(--border-radius-lg);background:linear-gradient(135deg,#1D9E75,#0F6E56);color:#fff;font-size:14px;font-weight:500;line-height:1.6;text-align:center">
+  Les opérations de sortie d'associés représentent souvent plusieurs dizaines voire centaines de milliers d'euros d'enjeu financier. Une validation préalable des hypothèses est fortement recommandée.
+</div>
+
+<div style="margin-top:1rem;text-align:center">
+  <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fsimulateur-patrimonial.onrender.com" target="_blank" style="display:inline-flex;align-items:center;gap:.6rem;background:#0A66C2;color:#fff;padding:.75rem 1.5rem;border-radius:50px;font-size:14px;font-weight:600;text-decoration:none;box-shadow:0 4px 12px rgba(10,102,194,0.3);transition:transform .15s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+    Partager sur LinkedIn
+  </a>
+</div>
+
+</div>
+
+<script>
+const fmt=n=>Math.round(n).toLocaleString('fr-FR')+'€'
+const pct=n=>(Math.round(n*10)/10).toFixed(1)+'%'
+const act=(v,t,h)=>h===0?v:v/Math.pow(1+t,h)
+const PFU=0.314,PFU_IR=0.128,PFU_PS=0.186
+
+function impCedPP(pv){return pv*PFU}
+function droits(forme,prix,quote){
+  if(forme==='sas') return Math.max(25,prix*0.001)
+  return Math.max(25,Math.max(0,prix-23000*quote)*0.03)
+}
+function annuiteConstante(dette,taux,duree){
+  if(dette<=0) return 0
+  if(taux===0) return dette/duree
+  return dette*taux/(1-Math.pow(1+taux,-duree))
+}
+function detteFin(dette,taux,annuite,horizon){
+  let d=dette
+  for(let y=1;y<=horizon;y++){
+    if(d<=0) break
+    const int=d*taux
+    d=Math.max(0,d-(annuite-int))
+  }
+  return d
+}
+function vfutOpcoLBO(venal, tcroiss, rnet, div_annuel, duree_emp, horizon){
+  let v = venal
+  for(let y = 1; y <= horizon; y++){
+    v = v * (1 + tcroiss) + rnet
+    if(y <= duree_emp) v = Math.max(0, v - div_annuel)
+  }
+  return v
+}
+function interetsTotaux(dette,taux,annuite,duree){
+  let d=dette,total=0
+  for(let y=1;y<=duree;y++){
+    if(d<=0) break
+    const int=d*taux
+    total+=int
+    d=Math.max(0,d-(annuite-int))
+  }
+  return total
+}
+
+function calc(){
+  const forme=document.getElementById('forme').value
+  const venal=+document.getElementById('venal').value||0
+  const capital=+document.getElementById('capital').value||0
+  const quote=+document.getElementById('qsl').value/100
+  const treso=+document.getElementById('treso').value||0
+  const tis=+document.getElementById('tis').value/100
+  const rnet=+document.getElementById('rnet').value||0
+  const tcroiss=+document.getElementById('tcroiss').value/100
+  const source=+document.getElementById('source').value
+  const horizon=+document.getElementById('horsl').value
+  const tact=+document.getElementById('tact').value/100
+  const sortie_cess=document.getElementById('sortie_cess').value
+  const taux_emp=+document.getElementById('taux_emp').value/100
+  const duree_emp=+document.getElementById('duree_emp').value
+  const apport_pct=+document.getElementById('apport_lbo').value/100
+  const friction_mf=+document.getElementById('friction_mf').value/100
+  const sortie_holding=document.getElementById('sortie_holding').value
+  const plf2027=(document.getElementById('regime_report')||{}).value==='plf2027'
+
+  const vp=venal*quote
+  const cp=capital*quote
+  const ratio_vn=vp/Math.max(cp,1)
+  const pr=Math.round(cp)
+  document.getElementById('pr_calc').value=pr
+
+  // Durée emprunt plafonnée à l'horizon — garantit dette remboursée à l'horizon, pas de résidu
+  const duree_emp_calc=Math.min(duree_emp,horizon)
+  const emprunt_soc=Math.max(0,vp-treso)
+  const annuite_soc=annuiteConstante(emprunt_soc,taux_emp,duree_emp_calc)
+  document.getElementById('annuite_soc').value=Math.round(annuite_soc)
+  const dette_soc_res=detteFin(emprunt_soc,taux_emp,annuite_soc,horizon)
+
+  const apport_lbo=vp*apport_pct
+  const apport_lbo_brut=apport_lbo/(1-PFU)
+  const dette_lbo=vp-apport_lbo
+  const annuite_lbo=annuiteConstante(dette_lbo,taux_emp,duree_emp_calc)
+  document.getElementById('annuite_lbo').value=Math.round(annuite_lbo)
+  const dette_lbo_res=detteFin(dette_lbo,taux_emp,annuite_lbo,horizon)
+  const interets_lbo=interetsTotaux(dette_lbo,taux_emp,annuite_lbo,duree_emp_calc)
+
+  const div_nets_dispo=rnet*(1-friction_mf)
+  const lbo_faisable=div_nets_dispo>=annuite_lbo
+  const rachat_emp_faisable=rnet>=annuite_soc
+
+  const pv_ced=Math.max(0,vp-pr)
+  const imp_ced=impCedPP(pv_ced)
+  const dr=droits(forme,vp,quote)
+
+  const cout_brut=vp/(1-source)
+  const friction_pp=cout_brut-vp
+  const financement_avant=document.getElementById('mode_financement').value==='avant'
+  const use_emprunt_pp=document.getElementById('mode_financement').value==='emprunt'
+  const taux_pp=+document.getElementById('taux_pp').value/100
+  const duree_pp_raw=+document.getElementById('duree_pp').value
+  const duree_pp=Math.min(duree_pp_raw,horizon)
+  const annuite_pp=use_emprunt_pp?annuiteConstante(cout_brut,taux_pp,duree_pp):0
+  if(document.getElementById('annuite_pp_val')) document.getElementById('annuite_pp_val').value=Math.round(annuite_pp)
+
+  const vfut_cession_base=vfutOpcoLBO(venal,tcroiss,rnet,0,0,horizon)
+  // Financement avant : valeur pleine, cout_brut déduit du bilan
+  // Emprunt PP : annuités lissées sur duree_pp, société verse chaque année
+  // Financement au moment : base réduite de cout_brut en année 0
+  const base_cession=financement_avant?venal:Math.max(0,venal-cout_brut)
+  const vfut_cession=financement_avant?vfut_cession_base
+    :use_emprunt_pp?vfutOpcoLBO(venal,tcroiss,rnet,annuite_pp,duree_pp,horizon)
+    :vfutOpcoLBO(base_cession,tcroiss,rnet,0,0,horizon)
+  const vfut_cession_part=vfut_cession
+
+  const base_rachat=venal-vp
+  // Rachat tréso : vp sort intégralement en année 0 depuis tréso
+  const vfut_rachat_treso = vfutOpcoLBO(base_rachat, tcroiss, rnet, 0, 0, horizon)
+  // Rachat emprunt : tréso sort en année 0, annuités sur duree_emp_calc
+  const base_apres_treso=venal-Math.min(treso,vp)
+  const vfut_rachat_brut=vfutOpcoLBO(base_apres_treso,tcroiss,rnet,annuite_soc,duree_emp_calc,horizon)
+  const vfut_rachat_net_dette=vfut_rachat_brut  // dette_res = 0 car duree_emp_calc <= horizon
+  // Achat direct (associé) : société intacte, aucune sortie
+  // Holding LBO : dividendes sortent des CP Soc. exploitation sur duree_emp_calc
+  const div_annuel_soc_expl=annuite_lbo/(1-friction_mf)
+  const vfut_holding_brut=vfutOpcoLBO(venal,tcroiss,rnet,div_annuel_soc_expl,duree_emp_calc,horizon)
+  const vfut_holding=vfut_holding_brut  // dette_res = 0 car duree_emp_calc <= horizon
+
+  // PR et PV
+  const pr_r=pr
+  const pv_r=Math.max(0,vfut_rachat_treso-pr_r)
+  const pv_re=Math.max(0,vfut_rachat_net_dette-pr_r)
+  const pv_c=Math.max(0,vfut_cession_part-vp)
+  // PR fiscal des titres chez la holding = valeur vénale de 100 % du groupe (titres achetés + titres apportés à leur valeur d'apport)
+  const pr_holding=venal
+  const pv_holding=Math.max(0,vfut_holding-pr_holding)
+  const imp_r_nom=sortie_cess==='transmission'?0:pv_r*PFU
+  const imp_re_nom=sortie_cess==='transmission'?0:pv_re*PFU
+  const imp_c_nom=sortie_cess==='transmission'?0:pv_c*PFU
+
+  // Art. 219 I-a quinquies CGI : le régime à 0 % (quote-part 12 %) exige une détention ≥ 2 ans.
+  // En deçà, la plus-value est imposée à l'IS au taux normal (100 % de la PV).
+  const cope_eligible=horizon>=2
+  const cope_h=pv_holding*(cope_eligible?0.12:1)*tis
+  const produit_net_cope=vfut_holding-cope_h
+  const gain_h_pp=Math.max(0,produit_net_cope-apport_lbo-interets_lbo)
+  const imp_l_cope=cope_h
+  // PLF 2027 art. 5 (projet, non adopté) : la transmission mettrait fin au report du 150-0 B ter.
+  // PV d'origine en report = (valeur vénale − capital) × part apportée (1 − quote-part cédée), taxée au PFU de l'année d'apport.
+  const pv_report=Math.max(0,(venal-capital)*(1-quote))
+  const imp_report_plf=(plf2027&&sortie_holding==='transmission')?pv_report*PFU:0
+  const imp_l_ft=sortie_holding==='vente'?gain_h_pp*PFU:imp_report_plf
+  const imp_l_nom=imp_l_cope+imp_l_ft
+
+  const val_r_act=act(vfut_rachat_treso-imp_r_nom,tact,horizon)
+  const val_re_act=act(vfut_rachat_net_dette-imp_re_nom,tact,horizon)
+  const val_c_act=act(vfut_cession_part-imp_c_nom,tact,horizon)
+  const val_l_act=act(vfut_holding-imp_l_nom,tact,horizon)
+
+  const bil_r_treso=treso>=vp?val_r_act:-Infinity
+  const bil_r_emp=rachat_emp_faisable||emprunt_soc===0?val_re_act:-Infinity
+  // Financement avant : cout_brut déduit du bilan car venal inchangé
+  // Financement au moment : cout_brut déjà dans vfut_cession réduit → seuls droits déduits
+  const bil_c=financement_avant?val_c_act-cout_brut-dr:val_c_act-dr
+  const bil_l=lbo_faisable?val_l_act-dr-apport_lbo_brut:-Infinity
+
+  const scores={'Rachat trésorerie':treso>=vp?bil_r_treso:-Infinity,'Rachat emprunt':bil_r_emp,'Achat direct (associé)':bil_c,'Holding LBO':bil_l}
+  const maxB=Math.max(...Object.values(scores))
+  const winner=Object.keys(scores).find(k=>scores[k]===maxB&&scores[k]>-Infinity)||'Achat direct (associé)'
+
+  document.getElementById('prix_banner').innerHTML=`
+    <div class="pb-item"><span class="pb-label">Prix de cession</span><span class="pb-val accent">${fmt(vp)}</span><span class="pb-sub">${(quote*100).toFixed(0)}% × ${fmt(venal)}</span></div>
+    <div class="pb-item"><span class="pb-label">Impôt cédant (PFU 31,4%)</span><span class="pb-val">${fmt(imp_ced)}</span><span class="pb-sub">PV ${fmt(pv_ced)}</span></div>
+    <div class="pb-item"><span class="pb-label">Coût brut cessionnaire PP</span><span class="pb-val">${fmt(cout_brut)}</span><span class="pb-sub">Friction : ${fmt(friction_pp)}</span></div>
+    <div class="pb-item"><span class="pb-label">Emprunt société (rachat)</span><span class="pb-val">${fmt(emprunt_soc)}</span><span class="pb-sub ${!rachat_emp_faisable&&emprunt_soc>0?'danger':''}">${emprunt_soc>0?'Annuité '+fmt(annuite_soc)+'/an'+(!rachat_emp_faisable?' ⚠ rnet insuffisant':''):'Tréso suffisante'}</span></div>
+    <div class="pb-item"><span class="pb-label">Dette holding / intérêts</span><span class="pb-val">${fmt(dette_lbo)}</span><span class="pb-sub ${!lbo_faisable?'danger':''}">Intérêts totaux ${fmt(Math.round(interets_lbo))} — déduits base FT${!lbo_faisable?' ⚠':''}</span></div>
+  `
+
+  const alerts=[]
+  if(treso<vp) alerts.push(`<div class="alert-box"><i class="ti ti-alert-triangle"></i><span>Trésorerie insuffisante pour le rachat trésorerie (${fmt(treso)} disponible, ${fmt(vp)} requis). Utilisez le rachat emprunt.</span></div>`)
+  if(emprunt_soc>0&&!rachat_emp_faisable) alerts.push(`<div class="alert-box"><i class="ti ti-alert-triangle"></i><span>Résultat net insuffisant pour l'annuité emprunt société (${fmt(annuite_soc)}/an requis, ${fmt(rnet)}/an disponible).</span></div>`)
+  if(!lbo_faisable) alerts.push(`<div class="alert-box"><i class="ti ti-alert-triangle"></i><span>Résultat net insuffisant pour l'annuité LBO (${fmt(annuite_lbo)}/an requis, ${fmt(Math.round(div_nets_dispo))}/an disponible après friction mère-fille).</span></div>`)
+  if(!cope_eligible) alerts.push(`<div class="alert-box"><i class="ti ti-alert-triangle"></i><span><strong>Holding LBO — détention inférieure à 2 ans.</strong> Le régime des plus-values à long terme sur titres de participation (taux 0 % + quote-part de 12 %, art. 219 I-a quinquies CGI) n'est pas applicable : la plus-value de la holding (${fmt(pv_holding)}) est imposée à l'IS au taux normal de ${pct(tis*100)}, soit ${fmt(cope_h)} au lieu de ${fmt(pv_holding*0.12*tis)}. Allongez l'horizon à 2 ans minimum.</span></div>`)
+  if(plf2027) alerts.push(`<div class="alert-box"><i class="ti ti-alert-triangle"></i><span><strong>Hypothèse PLF 2027 (article 5) — projet non adopté.</strong> La transmission (donation ou décès) mettrait fin au report d'imposition du 150-0 B ter, y compris pour les reports en cours, pour les transmissions à compter du 1er octobre 2026. Seul le scénario « Transmission » du Holding LBO est concerné. L'étalement sur 5 ans prévu pour l'impôt sur le revenu n'est pas modélisé. À vérifier sur le texte déposé.</span></div>`)
+  document.getElementById('alert_zone').innerHTML=alerts.join('')
+
+  document.getElementById('symetrie_expl').innerHTML=`
+    <div class="bloc-title"><i class="ti ti-scale"></i>Principe de symétrie patrimoniale</div>
+    ${financement_avant?`<div class="info-box" style="margin-top:.5rem"><strong>Pourquoi la valeur des titres est plus élevée dans l'achat direct.</strong> Dans l'achat direct, la société n'effectue aucune sortie — elle reste intacte à ${fmt(venal)} et croît librement sur cette base entière. En contrepartie, le cessionnaire finance l'acquisition sur ses fonds propres (${fmt(cout_brut)}). Dans les trois autres schémas, c'est la société ou la holding qui supporte la sortie : trésorerie immédiate dans le rachat tréso (${fmt(vp)} sortis en année 0), annuités sur résultat net dans le rachat emprunt, dividendes annuels vers la holding dans le LBO — ce qui réduit mécaniquement la valeur des titres à l'horizon. Le compromis est donc : valeur des titres maximale dans l'achat direct, mais coût d'entrée maximal pour le cessionnaire. Dans le rachat et le LBO, la valeur est réduite mais l'entrée est gratuite.</div>`:''}
+  `
+
+  const colors_map={'Rachat trésorerie':{bg:'#E1F5EE',bd:'#5DCAA5',t:'#085041',s:'#0F6E56',icon:'ti-building'},'Rachat emprunt':{bg:'#FFF8ED',bd:'#EF9F27',t:'#4A2C00',s:'#854F0B',icon:'ti-building'},'Achat direct (associé)':{bg:'#E6F1FB',bd:'#85B7EB',t:'#042C53',s:'#185FA5',icon:'ti-arrows-exchange'},'Holding LBO':{bg:'#EEEDFE',bd:'#AFA9EC',t:'#26215C',s:'#534AB7',icon:'ti-building-skyscraper'}}
+  const wc=colors_map[winner]
+  document.getElementById('verdict-banner').innerHTML=`<div class="verdict-banner" style="background:${wc.bg};border:0.5px solid ${wc.bd}"><div class="vb-icon" style="color:${wc.s}"><i class="ti ${wc.icon}"></i></div><div><div class="vb-title" style="color:${wc.t}">${winner} — meilleur bilan patrimonial net</div><div class="vb-sub" style="color:${wc.s}">Bilan de <strong>${fmt(maxB)}</strong> sur ${horizon} ans.</div></div></div>`
+
+  document.getElementById('kpi').innerHTML=`
+    <div class="kpi"><div class="kpi-l">Prix de cession</div><div class="kpi-v" style="color:var(--color-text-success)">${fmt(vp)}</div><div class="kpi-s">${(quote*100).toFixed(0)}% de ${fmt(venal)}</div></div>
+    <div class="kpi"><div class="kpi-l">PR cédant / cessionnaire</div><div class="kpi-v">${fmt(pr)}</div><div class="kpi-s">capital × quote-part</div></div>
+    <div class="kpi"><div class="kpi-l">Friction évitée vs cession</div><div class="kpi-v" style="color:var(--color-text-success)">${fmt(friction_pp+dr)}</div><div class="kpi-s">droits + sur-coût financement</div></div>
+    ${emprunt_soc>0?`<div class="kpi"><div class="kpi-l">Intérêts emprunt société</div><div class="kpi-v">${fmt(Math.round(interetsTotaux(emprunt_soc,taux_emp,annuite_soc,duree_emp_calc)))}</div><div class="kpi-s">coût total du financement rachat emprunt</div></div>`:''}
+    <div class="kpi"><div class="kpi-l">Intérêts holding (déduits flat tax)</div><div class="kpi-v">${fmt(Math.round(interets_lbo))}</div><div class="kpi-s">coût du financement par emprunt holding</div></div>
+    <div class="kpi"><div class="kpi-l">Double imposition holding</div><div class="kpi-v">${fmt(imp_l_nom)}</div><div class="kpi-s">Copé ${fmt(imp_l_cope)} + FT ${fmt(imp_l_ft)}</div></div>
+  `
+
+  const isW=n=>winner===n
+  function card(id,title,badge,badgeClass,bilan,faisable,lines){
+    return `<div class="rcard ${isW(title)&&faisable?'winner':''} ${!faisable?'disabled':''}">
+      <div class="rcard-head">
+        <div class="rcard-title"><i class="ti ti-${id==='lbo'?'building-skyscraper':id==='cess'?'arrows-exchange':'building'}"></i>${title}</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">${badge?`<span class="${badgeClass}">${badge}</span>`:''} ${isW(title)&&faisable?'<span class="badge-win">Meilleur</span>':''}</div>
+      </div>
+      ${!faisable?'<div style="font-size:12px;color:#791F1F;background:#FCEBEB;padding:6px 8px;border-radius:4px;margin-bottom:8px">Non faisable — voir alertes</div>':''}
+      ${lines}
+      <div class="rtot"><span>Bilan net total</span><span>${faisable?fmt(bilan):'N/A'}</span></div>
+    </div>`
+  }
+
+  const lR=`
+    <div class="rline"><span class="lb">Droits d'enregistrement</span><span class="vl">0€</span></div>
+    <div class="rline"><span class="lb">Coût d'entrée cessionnaire</span><span class="vl">0€ — société rachète</span></div>
+    <div class="rline hl"><span class="lb">Titres : 100% société ${fmt(base_rachat)} → ${fmt(vfut_rachat_treso)} — PV ${fmt(pv_r)}</span><span class="vl"></span></div>
+    <div class="rline neg"><span class="lb">Impôt futur titres${sortie_cess==='transmission'?' (purgé)':' (PFU 31,4%)'} — inclus dans valeur nette</span><span class="vl">− ${fmt(imp_r_nom)}</span></div>
+    <div class="rline pos"><span class="lb">Valeur titre nette actualisée</span><span class="vl">+ ${fmt(val_r_act)}</span></div>
+  `
+  const lRE=`
+    <div class="rline"><span class="lb">Droits d'enregistrement</span><span class="vl">0€</span></div>
+    <div class="rline"><span class="lb">Coût d'entrée cessionnaire</span><span class="vl">0€ — société rachète</span></div>
+    <div class="rline sub"><span class="lb">Emprunt société ${fmt(emprunt_soc)} à ${(taux_emp*100).toFixed(0)}% / ${duree_emp_calc} ans — annuité ${fmt(annuite_soc)}/an (rnet)</span><span class="vl"></span></div>
+    <div class="rline hl"><span class="lb">Titres : société ${fmt(venal)} − tréso sortie en année 0 (${fmt(Math.min(treso,vp))}) = ${fmt(base_apres_treso)} + valeur augmentée des résultats à ${horizon} ans, nette des annuités d'emprunt (${fmt(annuite_soc)}/an × ${duree_emp_calc} ans) = ${fmt(vfut_rachat_brut)} — PV ${fmt(pv_re)}</span><span class="vl"></span></div>
+    <div class="rline neg"><span class="lb">Impôt futur titres${sortie_cess==='transmission'?' (purgé)':' (PFU 31,4%)'} — inclus dans valeur nette</span><span class="vl">− ${fmt(imp_re_nom)}</span></div>
+    <div class="rline pos"><span class="lb">Valeur titre nette actualisée</span><span class="vl">+ ${fmt(val_re_act)}</span></div>
+  `
+  const lC=`
+    <div class="rline neg"><span class="lb">Droits d'enregistrement</span><span class="vl">− ${fmt(dr)}</span></div>
+    ${financement_avant
+      ?`<div class="rline neg"><span class="lb">Prix d'acquisition — sortie cash réelle (dont friction ${fmt(friction_pp)})</span><span class="vl">− ${fmt(cout_brut)}</span></div>
+    <div class="rline hl"><span class="lb">Titres : 100% société ${fmt(venal)} → ${fmt(vfut_cession)} — PV ${fmt(pv_c)}</span><span class="vl"></span></div>`
+      :use_emprunt_pp
+      ?`<div class="rline sub"><span class="lb">Emprunt PP ${fmt(cout_brut)} à ${(taux_pp*100).toFixed(1)}% / ${duree_pp} ans — annuité ${fmt(Math.round(annuite_pp))}/an versée par la société</span><span class="vl"></span></div>
+    <div class="rline hl"><span class="lb">Titres : société ${fmt(venal)} + valeur augmentée des résultats, nette des annuités PP (${fmt(Math.round(annuite_pp))}/an × ${duree_pp} ans) = ${fmt(vfut_cession)} — PV ${fmt(pv_c)}</span><span class="vl"></span></div>`
+      :`<div class="rline sub"><span class="lb">Financement au moment — société part de ${fmt(venal)} − ${fmt(cout_brut)} = ${fmt(base_cession)} en année 0</span><span class="vl"></span></div>
+    <div class="rline hl"><span class="lb">Titres : base ${fmt(base_cession)} + valeur augmentée des résultats à ${horizon} ans = ${fmt(vfut_cession)} — PV ${fmt(pv_c)}</span><span class="vl"></span></div>`
+    }
+    <div class="rline neg"><span class="lb">Impôt futur (PFU 31,4%) — inclus dans valeur nette</span><span class="vl">− ${fmt(imp_c_nom)}</span></div>
+    <div class="rline pos"><span class="lb">Valeur titre nette actualisée</span><span class="vl">+ ${fmt(val_c_act)}</span></div>
+  `
+  const lL=`
+    <div class="rline neg"><span class="lb">Droits d'enregistrement</span><span class="vl">− ${fmt(dr)}</span></div>
+    <div class="rline neg"><span class="lb">Apport holding brut (${fmt(apport_lbo)} / (1−31,4%))</span><span class="vl">− ${fmt(apport_lbo_brut)}</span></div>
+    <div class="rline sub"><span class="lb">dette ${fmt(dette_lbo)} à ${(taux_emp*100).toFixed(0)}% / ${duree_emp_calc} ans — intérêts totaux ${fmt(Math.round(interets_lbo))} déduits base FT</span><span class="vl"></span></div>
+    <div class="rline hl"><span class="lb">Titres : 100% groupe ${fmt(venal)} — valeur augmentée des résultats à ${horizon} ans, nette des dividendes remontés vers la holding (${fmt(Math.round(div_annuel_soc_expl))}/an × ${duree_emp_calc} ans) = ${fmt(vfut_holding)} — PV holding ${fmt(pv_holding)} (prix de revient ${fmt(pr_holding)} : titres achetés + titres apportés à leur valeur d'apport)</span><span class="vl"></span></div>
+    <div class="rline neg"><span class="lb">${cope_eligible?'Copé IS ('+pct(0.12*tis*100)+')':'IS plein taux sur PV (détention < 2 ans, '+pct(tis*100)+')'} — inclus dans valeur nette</span><span class="vl">− ${fmt(imp_l_cope)}</span></div>
+    ${sortie_holding==='vente'
+      ?`<div class="rline neg"><span class="lb">Flat tax PP sur gain net (${fmt(gain_h_pp)} × 31,4%) — apport net + intérêts déduits</span><span class="vl">− ${fmt(imp_l_ft)}</span></div>`
+      :sortie_holding==='reinvest'
+      ?`<div class="rline neg"><span class="lb">${cope_eligible?'Copé IS ('+pct(0.12*tis*100)+')':'IS plein taux sur PV (détention < 2 ans, '+pct(tis*100)+')'} — inclus dans valeur nette</span><span class="vl">− ${fmt(imp_l_cope)}</span></div>`
+      :imp_report_plf>0
+      ?`<div class="rline neg"><span class="lb">PLF 2027 : report 150-0 B ter taxé à la transmission (${fmt(pv_report)} × 31,4%)</span><span class="vl">− ${fmt(imp_report_plf)}</span></div>`
+      :`<div class="rline"><span class="lb">Flat tax PP — purgée au décès (droit actuel)</span><span class="vl">0€</span></div>`
+    }
+    <div class="rline pos"><span class="lb">Valeur titre nette actualisée</span><span class="vl">+ ${fmt(val_l_act)}</span></div>
+  `
+
+  document.getElementById('result_grids').innerHTML=`
+    <div class="result-grid">${card('r','Rachat trésorerie','','',bil_r_treso,treso>=vp,lR)}${card('re','Rachat emprunt','Emprunt soc.','badge-emp',bil_r_emp,rachat_emp_faisable||emprunt_soc===0,lRE)}</div>
+    <div class="result-grid">${card('cess','Achat direct (associé)','','',bil_c,true,lC)}${card('lbo','Holding LBO','Copé+FT','badge-lbo',bil_l,lbo_faisable,lL)}</div>
+  `
+
+  document.getElementById('mecanique').innerHTML=`
+    <div class="bloc-title"><i class="ti ti-math-function"></i>Ce qui crée réellement la différence</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:.75rem 0">
+      <div style="background:#E1F5EE;border-radius:6px;padding:.75rem 1rem;border-left:3px solid #1D9E75"><div style="font-size:11px;font-weight:500;color:#085041;margin-bottom:4px">Friction évitée (rachat)</div><div style="font-size:15px;font-weight:500;color:#085041">${fmt(friction_pp+dr)}</div><div style="font-size:11px;color:#0F6E56;margin-top:3px;line-height:1.4">Droits + sur-coût financement PP. Avantage certain vs cession directe.</div></div>
+      <div style="background:#EEEDFE;border-radius:6px;padding:.75rem 1rem;border-left:3px solid #534AB7"><div style="font-size:11px;font-weight:500;color:#26215C;margin-bottom:4px">Double imposition holding</div><div style="font-size:15px;font-weight:500;color:#26215C">${fmt(imp_l_nom)}</div><div style="font-size:11px;color:#534AB7;margin-top:3px;line-height:1.4">${sortie_holding==='reinvest'?'Flat tax neutralisée — Copé IS '+fmt(imp_l_cope)+' reste dû':'Copé '+fmt(imp_l_cope)+' + flat tax '+fmt(imp_l_ft)+' sur base réduite des intérêts ('+fmt(Math.round(interets_lbo))+'). '+(sortie_holding==='transmission'?'Purgé si transmission.':'')}</div></div>
+      <div style="background:#FFF8ED;border-radius:6px;padding:.75rem 1rem;border-left:3px solid #EF9F27"><div style="font-size:11px;font-weight:500;color:#633806;margin-bottom:4px">Intérêts banque — fuite réelle</div><div style="font-size:15px;font-weight:500;color:#633806">${fmt(Math.round(interets_lbo))}</div><div style="font-size:11px;color:#854F0B;margin-top:3px;line-height:1.4">Seule somme définitivement sortie hors groupe LBO. Déduite de la base flat tax PP.</div></div>
+    </div>
+    <div class="act-box"><strong>Base flat tax holding.</strong> Produit net Copé (${fmt(Math.round(produit_net_cope))}) − apport net PR fiscal (${fmt(apport_lbo)}) − intérêts banque (${fmt(Math.round(interets_lbo))}) = <strong>${fmt(gain_h_pp)}</strong>.</div>
+    <div class="act-box"><strong>Hypothèse : apport avec report d'imposition (art. 150-0 B ter CGI).</strong> L'associé qui reste apporte ses titres à la holding sans être taxé immédiatement : sa plus-value d'origine est « en report ». <strong>Vente + distribution (non réinvesti) :</strong> le report tombe, la plus-value d'origine est taxée avec celle de la sortie (flat tax sur le produit − apport). <strong>Réinvestissement économique :</strong> le report est maintenu, flat tax à 0 € (sous réserve des conditions du 150-0 B ter : délai et part réinvestie, durée de conservation, nature de l'investissement — non modélisées, à valider au BOFiP). <strong>Transmission :</strong> le report est purgé en droit actuel ; le PLF 2027 (art. 5, projet non adopté) le ferait tomber — option « Purge du report » à basculer. Dans tous les cas, la Copé IS de la holding reste due. Prix de revient fiscal des titres chez la holding : valeur vénale à 100 % (titres achetés + titres apportés à leur valeur d'apport). <br><br><strong>Cotisations sociales sur dividendes (art. L. 131-6 CSS).</strong> Le simulateur n'applique aucune cotisation TNS sur les distributions de la holding. Cette hypothèse vaut si la holding est une SAS (président assimilé salarié) ou si le dirigeant n'est pas travailleur non salarié. <strong>Holding SARL (gérant majoritaire) :</strong> la fraction des dividendes qu'elle distribue au-delà de 10 % de (capital + primes + comptes courants) est soumise aux cotisations ; avec un capital de holding faible, le seuil est vite dépassé. <strong>Professions libérales (SEL, SPFPL) :</strong> la Cour de cassation a soumis aux cotisations les bénéfices distribués à la holding elle-même (Cass. civ. 2e, 19/10/2023, n° 21-20.366) ; la portée de cet arrêt reste débattue (réponse ministérielle du 27/02/2025). <strong>Rachat de titres :</strong> le prix suit le régime des plus-values (art. 112 6° CGI), hors assiette des cotisations, mais la réduction de capital abaisse le seuil de 10 % pour les dividendes futurs du dirigeant restant.</div>
+  `
+
+  const r_abus=(treso>0&&vp/treso>0.8)?'high':'med'
+  const r_valo=ratio_vn>5?'high':ratio_vn>2?'med':'low'
+  const r_lbo=!lbo_faisable?'high':dette_lbo_res>dette_lbo*0.3?'med':'low'
+  const r_emp=emprunt_soc>0&&!rachat_emp_faisable?'high':emprunt_soc>0?'med':'low'
+  const hasHigh=[r_abus,r_valo,r_lbo,r_emp].includes('high')
+  function rCard(lv,ic,nm,bd,tr){return`<div class="risk-card ${lv}"><div class="risk-head"><i class="ti ti-${ic} risk-ico"></i><span class="risk-name">${nm}</span></div><div class="risk-body">${bd}</div><span class="risk-trigger">${tr}</span></div>`}
+  document.getElementById('risques').innerHTML=`
+    <div class="bloc-title"><i class="ti ti-shield-exclamation"></i>Risques par schéma</div>
+    <div class="risk-grid">
+      ${rCard(r_abus,'gavel','Abus de droit (rachat)',"Abus de droit envisageable en présence d'un montage artificiel dépourvu de substance économique.",r_abus==='high'?"Documenter l'intérêt économique de l'opération":'Vigilance en cas de restructurations successives sans justification économique')}
+      ${rCard(r_valo,'chart-line','Valorisation excessive','Valorisation significativement supérieure à la valeur vénale : risque de contestation fiscale et sociétaire.',r_valo==='high'?`Ratio ${ratio_vn.toFixed(1)}× — valorisation contradictoire indispensable`:'Établir une valorisation contradictoire')}
+      ${rCard(r_emp,'credit-card','Emprunt société (rachat)',`Annuité ${fmt(annuite_soc)}/an financée par le résultat net (${fmt(rnet)}/an).`,emprunt_soc===0?'Pas d\'emprunt nécessaire':!rachat_emp_faisable?'Résultat net insuffisant':'Résultat net suffisant — surveiller les covenants')}
+      ${rCard(r_lbo,'building-skyscraper','Capacité remboursement (LBO)',`Annuité ${fmt(annuite_lbo)}/an couverte par rnet net mère-fille (${fmt(Math.round(div_nets_dispo))}/an).`,!lbo_faisable?'Insuffisant — augmenter apport ou allonger durée':dette_lbo_res>0?`Dette résiduelle : ${fmt(dette_lbo_res)}`:'Dette remboursée dans la durée')}
+      ${rCard('med','shield','Opposition créanciers (rachat)',"Délai légal d'opposition des créanciers après publicité de l'opération (délai variable selon la forme sociale).","Anticiper dans le calendrier de l'opération")}
+      ${rCard('low','check','Sécurité juridique','CE 15/10/2025 n°495120 : régime des plus-values sécurisé, sans incidence du motif ni du financement.','Abus de droit invocable dans les situations artificielles — valorisation justifiée recommandée')}
+    </div>
+    ${hasHigh?'<div class="warn-banner"><i class="ti ti-alert-triangle"></i><span>Plusieurs facteurs de risque élevé. Avis juridique et fiscal préalable fortement recommandé.</span></div>':''}
+  `
+
+  const agr=forme==='sarl'?'Entre associés : libre sauf clause statutaire. Vers tiers : agrément légal (3 mois).':'Agrément si prévu aux statuts.'
+  const proc='Procédure de rachat-annulation soumise aux règles propres à la forme sociale : offre aux associés, publicité légale, opposition des créanciers, annulation des parts, modification statutaire.'
+  document.getElementById('juridique').innerHTML=`
+    <div class="bloc-title"><i class="ti ti-file-description"></i>Points juridiques</div>
+    <div class="jur-grid">
+      <div class="jc"><div class="jct">Rachat société (tréso ou emprunt)</div>
+        <div class="ji"><i class="ti ti-circle-check" style="color:#1D9E75"></i><span>${proc}</span></div>
+        <div class="ji"><i class="ti ti-circle-check" style="color:#1D9E75"></i><span>Pas de droits d'enregistrement sur le rachat-annulation.</span></div>
+        <div class="ji"><i class="ti ti-circle-check" style="color:#1D9E75"></i><span>Imposition du cédant selon le régime des plus-values — CE 15/10/2025 n°495120 (sans incidence du motif ni du mode de financement).</span></div>
+        <div class="ji"><i class="ti ti-alert-triangle" style="color:#EF9F27"></i><span>Valorisation cohérente et justification économique recommandées.</span></div>
+        <div class="ji"><i class="ti ti-alert-triangle" style="color:#EF9F27"></i><span>L'abus de droit demeure théoriquement invocable dans les situations artificielles.</span></div>
+      </div>
+      <div class="jc"><div class="jct">Achat direct (associé) / holding LBO</div>
+        <div class="ji"><i class="ti ti-circle-check" style="color:#1D9E75"></i><span>${agr}</span></div>
+        <div class="ji"><i class="ti ti-circle-check" style="color:#1D9E75"></i><span>Droits : ${forme==='sarl'?'3% après abat. 23k€':'0,1% min. 25€'}. Mère-fille dès 5%. Copé : titres de participation ≥2 ans.</span></div>
+        <div class="ji"><i class="ti ti-alert-triangle" style="color:#EF9F27"></i><span>LBO : garantie personnelle souvent exigée par la banque.</span></div>
+        <div class="ji"><i class="ti ti-alert-triangle" style="color:#EF9F27"></i><span>Double imposition Copé + flat tax si vente + distribution sans transmission ni réinvestissement économique.</span></div>
+      </div>
+    </div>
+  `
+
+}
+
+document.getElementById('qsl').oninput=function(){document.getElementById('qout').textContent=this.value+'%';calc()}
+document.getElementById('horsl').oninput=function(){
+  document.getElementById('horout').textContent=this.value
+  const sl=document.getElementById('duree_emp')
+  sl.max=this.value
+  if(+sl.value>+this.value){sl.value=this.value;document.getElementById('duree_empout').textContent=this.value}
+  calc()
+}
+document.getElementById('tact').oninput=function(){document.getElementById('tactout').textContent=this.value+'%';calc()}
+document.getElementById('tis').oninput=function(){document.getElementById('tisout').textContent=this.value+'%';calc()}
+document.getElementById('tcroiss').oninput=function(){document.getElementById('tcroissout').textContent=this.value+'%';calc()}
+document.getElementById('taux_emp').oninput=function(){document.getElementById('taux_empout').textContent=this.value+'%';calc()}
+document.getElementById('duree_emp').oninput=function(){
+  const maxVal=+document.getElementById('horsl').value
+  if(+this.value>maxVal) this.value=maxVal
+  document.getElementById('duree_empout').textContent=this.value
+  calc()
+}
+document.getElementById('apport_lbo').oninput=function(){document.getElementById('apport_lboout').textContent=this.value+'%';calc()}
+document.getElementById('friction_mf').oninput=function(){document.getElementById('friction_mfout').textContent=this.value+'%';calc()}
+document.querySelectorAll('input[type=number]:not(.calc),select').forEach(el=>el.addEventListener('input',calc))
+function updateModeFinancement(){
+  const mode=document.getElementById('mode_financement').value
+  document.getElementById('emprunt_pp_params').style.display=mode==='emprunt'?'grid':'none'
+  calc()
+}
+document.getElementById('taux_pp').oninput=function(){document.getElementById('taux_ppout').textContent=this.value+'%';calc()}
+document.getElementById('duree_pp').oninput=function(){
+  const maxVal=+document.getElementById('horsl').value
+  if(+this.value>maxVal) this.value=maxVal
+  document.getElementById('duree_ppout').textContent=this.value
+  calc()
+}
+
+document.getElementById('duree_emp').max=document.getElementById('horsl').value
+calc()
+</script>
+
+</body>
+</html>

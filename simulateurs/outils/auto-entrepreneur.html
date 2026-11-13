@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulateur de statut juridique</title>
+<style>/*! tailwindcss v4.3.4 | MIT License | https://tailwindcss.com */
+@layer properties{@supports (((-webkit-hyphens:none)) and (not (margin-trim:block))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b)))){*,:before,:after,::backdrop{--tw-space-y-reverse:0;--tw-border-style:solid;--tw-font-weight:initial;--tw-shadow:0 0 #0000;--tw-shadow-color:initial;--tw-shadow-alpha:100%;--tw-inset-shadow:0 0 #0000;--tw-inset-shadow-color:initial;--tw-inset-shadow-alpha:100%;--tw-ring-color:initial;--tw-ring-shadow:0 0 #0000;--tw-inset-ring-color:initial;--tw-inset-ring-shadow:0 0 #0000;--tw-ring-inset:initial;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-offset-shadow:0 0 #0000}}}@layer theme{:root,:host{--font-sans:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";--font-mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;--color-red-50:oklch(97.1% .013 17.38);--color-red-100:oklch(93.6% .032 17.717);--color-red-500:oklch(63.7% .237 25.331);--color-red-600:oklch(57.7% .245 27.325);--color-green-50:oklch(98.2% .018 155.826);--color-green-700:oklch(52.7% .154 150.069);--color-green-800:oklch(44.8% .119 151.328);--color-blue-50:oklch(97% .014 254.604);--color-blue-100:oklch(93.2% .032 255.585);--color-blue-500:oklch(62.3% .214 259.815);--color-blue-600:oklch(54.6% .245 262.881);--color-blue-700:oklch(48.8% .243 264.376);--color-rose-600:oklch(58.6% .253 17.585);--color-gray-50:oklch(98.5% .002 247.839);--color-gray-200:oklch(92.8% .006 264.531);--color-gray-300:oklch(87.2% .01 258.338);--color-gray-500:oklch(55.1% .027 264.364);--color-gray-600:oklch(44.6% .03 256.802);--color-gray-700:oklch(37.3% .034 259.733);--color-gray-900:oklch(21% .034 264.665);--color-white:#fff;--spacing:.25rem;--container-4xl:56rem;--text-xs:.75rem;--text-xs--line-height:calc(1 / .75);--text-sm:.875rem;--text-sm--line-height:calc(1.25 / .875);--text-lg:1.125rem;--text-lg--line-height:calc(1.75 / 1.125);--text-2xl:1.5rem;--text-2xl--line-height:calc(2 / 1.5);--font-weight-medium:500;--font-weight-semibold:600;--font-weight-bold:700;--radius-md:.375rem;--radius-lg:.5rem;--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4, 0, .2, 1);--default-font-family:var(--font-sans);--default-mono-font-family:var(--font-mono)}}@layer base{*,:after,:before,::backdrop{box-sizing:border-box;border:0 solid;margin:0;padding:0}::file-selector-button{box-sizing:border-box;border:0 solid;margin:0;padding:0}html,:host{-webkit-text-size-adjust:100%;tab-size:4;line-height:1.5;font-family:var(--default-font-family,-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");font-feature-settings:var(--default-font-feature-settings,normal);font-variation-settings:var(--default-font-variation-settings,normal);-webkit-tap-highlight-color:transparent}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;-webkit-text-decoration:inherit;-webkit-text-decoration:inherit;-webkit-text-decoration:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,samp,pre{font-family:var(--default-mono-font-family,ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);font-feature-settings:var(--default-mono-font-feature-settings,normal);font-variation-settings:var(--default-mono-font-variation-settings,normal);font-size:1em}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}:-moz-focusring:where(:not(iframe)){outline:auto}progress{vertical-align:baseline}summary{display:list-item}ol,ul,menu{list-style:none}img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:block}img,video{max-width:100%;height:auto}button,input,select,optgroup,textarea{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}::file-selector-button{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}:where(select:is([multiple],[size])) optgroup{font-weight:bolder}:where(select:is([multiple],[size])) optgroup option{padding-inline-start:20px}::file-selector-button{margin-inline-end:4px}::placeholder{opacity:1}@supports (not ((-webkit-appearance:-apple-pay-button))) or (contain-intrinsic-size:1px){::placeholder{color:currentColor}@supports (color:color-mix(in lab, red, red)){::placeholder{color:color-mix(in oklab, currentcolor 50%, transparent)}}}textarea{resize:vertical}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-date-and-time-value{min-height:1lh;text-align:inherit}::-webkit-datetime-edit{display:inline-flex}::-webkit-datetime-edit-fields-wrapper{padding:0}::-webkit-datetime-edit{padding-block:0}::-webkit-datetime-edit-year-field{padding-block:0}::-webkit-datetime-edit-month-field{padding-block:0}::-webkit-datetime-edit-day-field{padding-block:0}::-webkit-datetime-edit-hour-field{padding-block:0}::-webkit-datetime-edit-minute-field{padding-block:0}::-webkit-datetime-edit-second-field{padding-block:0}::-webkit-datetime-edit-millisecond-field{padding-block:0}::-webkit-datetime-edit-meridiem-field{padding-block:0}::-webkit-calendar-picker-indicator{line-height:1}:-moz-ui-invalid{box-shadow:none}button,input:where([type=button],[type=reset],[type=submit]){appearance:button}::file-selector-button{appearance:button}::-webkit-inner-spin-button{height:auto}::-webkit-outer-spin-button{height:auto}[hidden]:where(:not([hidden=until-found])){display:none!important}}@layer components;@layer utilities{.mx-auto{margin-inline:auto}.mt-1{margin-top:var(--spacing)}.mt-2{margin-top:calc(var(--spacing) * 2)}.mt-3{margin-top:calc(var(--spacing) * 3)}.mt-6{margin-top:calc(var(--spacing) * 6)}.mt-8{margin-top:calc(var(--spacing) * 8)}.mb-1{margin-bottom:var(--spacing)}.mb-4{margin-bottom:calc(var(--spacing) * 4)}.mb-6{margin-bottom:calc(var(--spacing) * 6)}.mb-8{margin-bottom:calc(var(--spacing) * 8)}.block{display:block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.min-h-screen{min-height:100vh}.w-full{width:100%}.max-w-4xl{max-width:var(--container-4xl)}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.items-center{align-items:center}.justify-between{justify-content:space-between}.gap-6{gap:calc(var(--spacing) * 6)}:where(.space-y-3>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 3) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-y-reverse)))}:where(.space-y-4>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 4) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-y-reverse)))}.rounded-full{border-radius:2147483647px}.rounded-lg{border-radius:var(--radius-lg)}.rounded-md{border-radius:var(--radius-md)}.border{border-style:var(--tw-border-style);border-width:1px}.border-2{border-style:var(--tw-border-style);border-width:2px}.border-t{border-top-style:var(--tw-border-style);border-top-width:1px}.border-blue-500{border-color:var(--color-blue-500)}.border-gray-200{border-color:var(--color-gray-200)}.border-gray-300{border-color:var(--color-gray-300)}.border-red-500{border-color:var(--color-red-500)}.bg-blue-50{background-color:var(--color-blue-50)}.bg-blue-100{background-color:var(--color-blue-100)}.bg-blue-600{background-color:var(--color-blue-600)}.bg-gray-50{background-color:var(--color-gray-50)}.bg-green-50{background-color:var(--color-green-50)}.bg-red-50{background-color:var(--color-red-50)}.bg-red-100{background-color:var(--color-red-100)}.bg-white{background-color:var(--color-white)}.p-2{padding:calc(var(--spacing) * 2)}.p-3{padding:calc(var(--spacing) * 3)}.p-6{padding:calc(var(--spacing) * 6)}.px-2{padding-inline:calc(var(--spacing) * 2)}.px-4{padding-inline:calc(var(--spacing) * 4)}.py-1{padding-block:var(--spacing)}.py-2{padding-block:calc(var(--spacing) * 2)}.py-8{padding-block:calc(var(--spacing) * 8)}.pt-3{padding-top:calc(var(--spacing) * 3)}.text-2xl{font-size:var(--text-2xl);line-height:var(--tw-leading,var(--text-2xl--line-height))}.text-lg{font-size:var(--text-lg);line-height:var(--tw-leading,var(--text-lg--line-height))}.text-sm{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}.text-xs{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height))}.font-bold{--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold)}.font-medium{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium)}.font-semibold{--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold)}.text-blue-600{color:var(--color-blue-600)}.text-gray-500{color:var(--color-gray-500)}.text-gray-600{color:var(--color-gray-600)}.text-gray-700{color:var(--color-gray-700)}.text-gray-900{color:var(--color-gray-900)}.text-green-700{color:var(--color-green-700)}.text-green-800{color:var(--color-green-800)}.text-red-600{color:var(--color-red-600)}.text-rose-600{color:var(--color-rose-600)}.text-white{color:var(--color-white)}.shadow-sm{--tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)}.transition-colors{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}@media (hover:hover){.hover\:bg-blue-700:hover{background-color:var(--color-blue-700)}}.focus\:border-blue-500:focus{border-color:var(--color-blue-500)}.focus\:ring-2:focus{--tw-ring-shadow:var(--tw-ring-inset, ) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)}.focus\:ring-blue-500:focus{--tw-ring-color:var(--color-blue-500)}.focus\:ring-offset-2:focus{--tw-ring-offset-width:2px;--tw-ring-offset-shadow:var(--tw-ring-inset, ) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color)}.focus\:outline-none:focus{--tw-outline-style:none;outline-style:none}@media (min-width:48rem){.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}}@property --tw-space-y-reverse{syntax:"*";inherits:false;initial-value:0}@property --tw-border-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-font-weight{syntax:"*";inherits:false}@property --tw-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-shadow-color{syntax:"*";inherits:false}@property --tw-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-inset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-shadow-color{syntax:"*";inherits:false}@property --tw-inset-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-ring-color{syntax:"*";inherits:false}@property --tw-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-ring-color{syntax:"*";inherits:false}@property --tw-inset-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-ring-inset{syntax:"*";inherits:false}@property --tw-ring-offset-width{syntax:"<length>";inherits:false;initial-value:0}@property --tw-ring-offset-color{syntax:"*";inherits:false;initial-value:#fff}@property --tw-ring-offset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}</style>
+</head>
+<body class="bg-gray-50">
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-6">
+    <h1 class="text-2xl font-bold mb-6">Simulateur de statut juridique</h1>
+
+    <div class="space-y-4 mb-8">
+      <div>
+        <label for="typeActivite" class="block text-sm font-medium text-gray-700 mb-1">Type d'activité</label>
+        <select id="typeActivite" class="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></select>
+      </div>
+
+      <div>
+        <label for="chiffreAffaires" class="block text-sm font-medium text-gray-700 mb-1">Chiffre d'affaires annuel</label>
+        <input id="chiffreAffaires" type="number" class="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <div>
+        <label for="depenses" class="block text-sm font-medium text-gray-700 mb-1">Dépenses annuelles</label>
+        <input id="depenses" type="number" class="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <div>
+        <label for="remuneration" class="block text-sm font-medium text-gray-700 mb-1">Rémunération nette souhaitée (avant impôt)</label>
+        <input id="remuneration" type="number" class="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        <p id="remunerationMax" class="mt-1 text-sm text-gray-500 hidden"></p>
+      </div>
+
+      <div>
+        <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Âge</label>
+        <input id="age" type="number" class="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <div>
+        <label for="nbParts" class="block text-sm font-medium text-gray-700 mb-1">Nombre de parts fiscales</label>
+        <select id="nbParts" class="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option value="1">1 (Personne seule)</option>
+          <option value="2">2 (Couple)</option>
+          <option value="2.5">2.5 (Couple + 1 enfant)</option>
+          <option value="3">3 (Couple + 2 enfants)</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="revenuFiscalReference" class="block text-sm font-medium text-gray-700 mb-1">Revenu fiscal de référence 2024 (facultatif)</label>
+        <input id="revenuFiscalReference" type="number" placeholder="Pour le versement libératoire (RFR N-2)" class="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <button id="calculer" type="button" class="w-full bg-blue-600 text-white rounded-md py-2 px-4 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">Calculer</button>
+    </div>
+
+    <div id="resultats"></div>
+
+    <p id="note" class="mt-6 text-xs text-gray-500 hidden">
+      Simulation indicative, paramètres 2026. SASU : AT/MP 1 %, aucune réduction générale, sans chômage.
+      SARL : gérant majoritaire TNS, assiette sociale unique (abattement 26 %), sans cotisations minimales
+      ni dividendes. IR : barème 2026 avec plafonnement du quotient familial et décote, hors réductions
+      et crédits d'impôt, sur la seule rémunération ou le seul revenu de l'activité.
+      EI : régime réel à l'IR, cotisations TNS sur CA − dépenses − prévoyance, sans abattement de 10 %.
+    </p>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// PARAMÈTRES 2026 (mise à jour du 05/11/2026)
+// ─────────────────────────────────────────────────────────────
+
+// Plafond annuel de la sécurité sociale 2026 (arrêté du 22/12/2025)
+const PASS = 48060;
+
+// ───────── Micro-entrepreneur ─────────
+// Taux URSSAF 2026 (métropole), hors ACRE
+//  social = cotisations sociales sur CA encaissé
+//  cfp    = contribution à la formation professionnelle
+//           (BIC services : 0,1 % commerçants / 0,3 % artisans → 0,3 % retenu par prudence)
+//  fiscal = taux du versement forfaitaire libératoire (VFL)
+//  seuil  = plafond de CA HT du régime micro 2026-2028
+//  abattement = abattement forfaitaire micro-fiscal (minimum 305 €)
+const TypeActivite = {
+  'Vente de marchandises': {
+    social: 0.123,
+    cfp: 0.001,
+    fiscal: 0.01,
+    seuil: 203100,
+    abattement: 0.71
+  },
+  'Prestation de services BIC': {
+    social: 0.212,
+    cfp: 0.003,
+    fiscal: 0.017,
+    seuil: 83600,
+    abattement: 0.50
+  }
+};
+
+const ABATTEMENT_MINIMUM = 305;
+
+// Versement libératoire 2026 : RFR 2024 (N-2) ≤ 29 315 € par part
+// (limite de la 2e tranche du barème appliqué aux revenus 2024), +50 % par demi-part
+const SEUILS_VERSEMENT_LIBERATOIRE = {
+  1: 29315,
+  2: 58630,
+  2.5: 73287,
+  3: 87945
+};
+
+// ───────── Impôt sur les sociétés ─────────
+// IS : 15 % jusqu'à 42 500 € (PME éligibles), 25 % au-delà
+const SEUIL_IS_REDUIT = 42500;
+
+// ───────── SASU : président assimilé salarié (régime général hors chômage) ─────────
+// Pas de cotisation chômage/AGS (président non affilié à France Travail) et pas de
+// réduction générale (RGDU). Les taux réduits maladie 7 % / AF 3,45 % sont abrogés
+// depuis le 01/01/2026 (intégrés à la RGDU) → taux pleins 13 % et 5,25 %.
+const AA_APPEL = 1.27;               // taux d'appel Agirc-Arrco
+const AA_T1 = 0.062 * AA_APPEL;      // 7,874 % sur tranche 1 (≤ 1 PASS)
+const AA_T2 = 0.17 * AA_APPEL;       // 21,59 % sur tranche 2 (1 à 8 PASS)
+const PART_EMPLOYEUR_AA = 0.60;      // répartition 60 % employeur / 40 % salarié
+
+const SASU = {
+  // Hypothèse à adapter : taux AT/MP selon code risque (0,5 % à 10 %)
+  atmp: 0.01,
+  maladie: 0.13,
+  vieillessePlafonnee: { employeur: 0.0855, salarie: 0.069 },
+  vieillesseDeplafonnee: { employeur: 0.0211, salarie: 0.004 },
+  allocationsFamiliales: 0.0525,
+  fnal: 0.001,                       // < 50 salariés, sur tranche A (≤ PASS)
+  csa: 0.003,
+  formationProfessionnelle: 0.0055,  // < 11 salariés
+  taxeApprentissage: 0.0068,
+  contributionDialogueSocial: 0.00016,
+  ceg: {
+    t1: { employeur: 0.0129, salarie: 0.0086 },
+    t2: { employeur: 0.0162, salarie: 0.0108 }
+  },
+  cet: { employeur: 0.0021, salarie: 0.0014 }, // si salaire > 1 PASS
+  csgDeductible: 0.068,
+  csgCrdsTotal: 0.097,               // CSG 9,2 % + CRDS 0,5 %
+  abattementAssietteCsg: 0.9825      // jusqu'à 4 PASS
+};
+
+// ───────── SARL : gérant majoritaire (TNS, artisan/commerçant/PLNR) ─────────
+// Assiette sociale unique 2026 = rémunération − abattement 26 %
+// (abattement borné : plancher 1,76 % PASS, plafond 130 % PASS)
+const TNS = {
+  abattement: 0.26,
+  abattementMin: 0.0176 * PASS,      // ≈ 845,86 €
+  abattementMax: 1.3 * PASS,         // 62 478 €
+  // Maladie-maternité : taux progressif, interpolation linéaire [assiette en % PASS, taux]
+  maladie: [[0.2, 0], [0.4, 0.015], [0.6, 0.04], [1.1, 0.065], [2, 0.077], [3, 0.085]],
+  maladieAuDela3Pass: 0.065,
+  ij: 0.005,                         // indemnités journalières, jusqu'à 5 PASS
+  retraiteBase: { t1: 0.1787, deplafonne: 0.0072 },
+  retraiteComplementaire: { t1: 0.081, t2: 0.091 }, // ≤ 1 PASS puis 1 à 4 PASS
+  invaliditeDeces: 0.013,            // jusqu'à 1 PASS
+  // Allocations familiales : 0 % jusqu'à 110 % PASS, progressif jusqu'à 3,1 % à 140 % PASS
+  allocationsFamiliales: [[1.1, 0], [1.4, 0.031]],
+  csgCrds: 0.097,
+  csgDeductible: 0.068,
+  cfp: 0.0025 * PASS                 // ≈ 120 € (commerçant)
+};
+
+const calculPrevoyance = (age) => {
+  if (age < 30) return 1000;
+  if (age < 40) return 1250;
+  return 1500;
+};
+
+const formatMontant = (montant) => {
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(montant);
+};
+
+const calculIS = (benefice) => {
+  if (benefice <= 0) return 0;
+  return benefice <= SEUIL_IS_REDUIT
+    ? benefice * 0.15
+    : SEUIL_IS_REDUIT * 0.15 + (benefice - SEUIL_IS_REDUIT) * 0.25;
+};
+
+// ───────── Impôt sur le revenu 2026 (revenus 2025) – LF 2026 n° 2026-103, +0,9 % ─────────
+// Barème : 0 % ≤ 11 600 | 11 % ≤ 29 579 | 30 % ≤ 84 577 | 41 % ≤ 181 917 | 45 % au-delà
+const PLAFOND_AVANTAGE_DEMI_PART = 1807;   // BOI-IR-LIQ-20-20-20 § 40
+const DECOTE = {
+  taux: 0.4525,                            // BOI-IR-LIQ-20-20-30 § 40
+  plafondCelibataire: 897,                 // applicable si impôt brut < 1 982 €
+  plafondCouple: 1483                      // applicable si impôt brut < 3 277 €
+};
+// Déduction forfaitaire de 10 % pour frais professionnels (traitements et salaires, art. 62)
+const FRAIS_PRO = { taux: 0.10, minimum: 509, maximum: 14555 };
+
+// Impôt brut du barème progressif pour un nombre de parts donné (sans arrondi)
+const impotBareme = (revenuImposable, parts) => {
+  const quotient = revenuImposable / parts;
+  let impot = 0;
+
+  if (quotient > 181917) impot += (quotient - 181917) * 0.45;
+  if (quotient > 84577) impot += (Math.min(quotient, 181917) - 84577) * 0.41;
+  if (quotient > 29579) impot += (Math.min(quotient, 84577) - 29579) * 0.30;
+  if (quotient > 11600) impot += (Math.min(quotient, 29579) - 11600) * 0.11;
+
+  return impot * parts;
+};
+
+// IR = barème × quotient familial, avec plafonnement de l'avantage par demi-part
+// supplémentaire (par rapport à 1 part ou 2 parts), puis décote. Hors réductions et crédits d'impôt.
+const calculIR = (revenuImposable, nbParts) => {
+  if (revenuImposable <= 0) return 0;
+
+  // 1. Impôt avec le quotient familial complet
+  let impotBrut = impotBareme(revenuImposable, nbParts);
+
+  // 2. Plafonnement de l'avantage lié aux demi-parts supplémentaires
+  const partsDeBase = nbParts >= 2 ? 2 : 1;
+  const demiPartsSupplementaires = (nbParts - partsDeBase) * 2;
+  if (demiPartsSupplementaires > 0) {
+    const impotSansDemiParts = impotBareme(revenuImposable, partsDeBase);
+    const impotPlafonne = impotSansDemiParts - PLAFOND_AVANTAGE_DEMI_PART * demiPartsSupplementaires;
+    impotBrut = Math.max(impotBrut, impotPlafonne);
+  }
+
+  // 3. Décote (après plafonnement, avant réductions d'impôt)
+  const plafondDecote = nbParts >= 2 ? DECOTE.plafondCouple : DECOTE.plafondCelibataire;
+  let decote = 0;
+  if (impotBrut < plafondDecote / DECOTE.taux) {
+    decote = Math.min(impotBrut, plafondDecote - DECOTE.taux * impotBrut);
+  }
+
+  return Math.round(impotBrut - decote);
+};
+
+// Revenu net imposable après déduction forfaitaire de 10 % (minimum 509 €, maximum 14 555 €)
+const apresFraisPro = (revenu) => {
+  if (revenu <= 0) return 0;
+  const deduction = Math.min(revenu, Math.min(Math.max(revenu * FRAIS_PRO.taux, FRAIS_PRO.minimum), FRAIS_PRO.maximum));
+  return revenu - deduction;
+};
+
+// Recherche par dichotomie de x tel que f(x) = cible (f croissante)
+const resoudre = (f, cible, haut) => {
+  let bas = 0;
+  let h = haut;
+  for (let i = 0; i < 80; i++) {
+    const milieu = (bas + h) / 2;
+    if (f(milieu) < cible) bas = milieu;
+    else h = milieu;
+  }
+  return (bas + h) / 2;
+};
+
+// Interpolation linéaire d'un barème progressif [[x, taux], ...]
+const interpoler = (x, points, apres = null) => {
+  if (x <= points[0][0]) return points[0][1];
+  for (let i = 1; i < points.length; i++) {
+    const [x0, y0] = points[i - 1];
+    const [x1, y1] = points[i];
+    if (x <= x1) return y0 + ((y1 - y0) * (x - x0)) / (x1 - x0);
+  }
+  return apres !== null ? apres : points[points.length - 1][1];
+};
+
+// ─────────────────────────────────────────────────────────────
+// SASU : détail d'un salaire BRUT annuel de président assimilé salarié
+// ─────────────────────────────────────────────────────────────
+const detailSalaireSASU = (brut) => {
+  if (brut <= 0) {
+    return { brut: 0, salariales: 0, patronales: 0, csgCrds: 0, csgDeductible: 0,
+      netPaye: 0, netImposable: 0, coutEmployeur: 0, charges: 0 };
+  }
+  const t1 = Math.min(brut, PASS);                                   // tranche 1 / tranche A
+  const t2 = Math.max(0, Math.min(brut, 8 * PASS) - PASS);           // tranche 2 Agirc-Arrco
+  const baseCET = brut > PASS ? Math.min(brut, 8 * PASS) : 0;
+
+  const salariales =
+    t1 * (SASU.vieillessePlafonnee.salarie + AA_T1 * (1 - PART_EMPLOYEUR_AA) + SASU.ceg.t1.salarie) +
+    brut * SASU.vieillesseDeplafonnee.salarie +
+    t2 * (AA_T2 * (1 - PART_EMPLOYEUR_AA) + SASU.ceg.t2.salarie) +
+    baseCET * SASU.cet.salarie;
+
+  const patronales =
+    t1 * (SASU.vieillessePlafonnee.employeur + AA_T1 * PART_EMPLOYEUR_AA + SASU.ceg.t1.employeur + SASU.fnal) +
+    brut * (SASU.maladie + SASU.vieillesseDeplafonnee.employeur + SASU.allocationsFamiliales +
+      SASU.csa + SASU.formationProfessionnelle + SASU.taxeApprentissage +
+      SASU.contributionDialogueSocial + SASU.atmp) +
+    t2 * (AA_T2 * PART_EMPLOYEUR_AA + SASU.ceg.t2.employeur) +
+    baseCET * SASU.cet.employeur;
+
+  // CSG-CRDS : 98,25 % du brut jusqu'à 4 PASS, 100 % au-delà
+  const assietteCSG = SASU.abattementAssietteCsg * Math.min(brut, 4 * PASS) + Math.max(0, brut - 4 * PASS);
+  const csgCrds = assietteCSG * SASU.csgCrdsTotal;
+  const csgDeductible = assietteCSG * SASU.csgDeductible;
+
+  const netPaye = brut - salariales - csgCrds;
+  const netImposable = brut - salariales - csgDeductible;
+  const coutEmployeur = brut + patronales;
+
+  return {
+    brut, salariales, patronales, csgCrds, csgDeductible,
+    netPaye, netImposable, coutEmployeur,
+    charges: coutEmployeur - netPaye   // = tout ce qui s'intercale entre le coût et le net
+  };
+};
+
+// Salaire brut permettant d'obtenir le net payé souhaité
+const salaireSASUDepuisNet = (netSouhaite) => {
+  if (netSouhaite <= 0) return detailSalaireSASU(0);
+  const brut = resoudre((b) => detailSalaireSASU(b).netPaye, netSouhaite, netSouhaite * 2 + 1000);
+  return detailSalaireSASU(brut);
+};
+
+// ─────────────────────────────────────────────────────────────
+// SARL : cotisations TNS du gérant majoritaire sur une rémunération R
+// (R = montant déductible du résultat de la société, avant cotisations personnelles)
+// ─────────────────────────────────────────────────────────────
+const detailChargesTNS = (R) => {
+  if (R <= 0) {
+    return { remuneration: 0, assiette: 0, cotisations: 0, csgCrds: 0, csgDeductible: 0, total: 0 };
+  }
+  const abattement = Math.min(Math.max(R * TNS.abattement, TNS.abattementMin), TNS.abattementMax);
+  const A = Math.max(0, R - abattement);        // assiette sociale unique
+  const ratioPass = A / PASS;
+
+  const maladie = A * interpoler(ratioPass, TNS.maladie, TNS.maladieAuDela3Pass);
+  const ij = Math.min(A, 5 * PASS) * TNS.ij;
+  const retraiteBase = Math.min(A, PASS) * TNS.retraiteBase.t1 + A * TNS.retraiteBase.deplafonne;
+  const retraiteCompl =
+    Math.min(A, PASS) * TNS.retraiteComplementaire.t1 +
+    Math.max(0, Math.min(A, 4 * PASS) - PASS) * TNS.retraiteComplementaire.t2;
+  const invalidite = Math.min(A, PASS) * TNS.invaliditeDeces;
+  const allocFam = A * interpoler(ratioPass, TNS.allocationsFamiliales);
+
+  const cotisations = maladie + ij + retraiteBase + retraiteCompl + invalidite + allocFam + TNS.cfp;
+  const csgCrds = A * TNS.csgCrds;
+  const csgDeductible = A * TNS.csgDeductible;
+
+  return {
+    remuneration: R, assiette: A, cotisations, csgCrds, csgDeductible,
+    total: cotisations + csgCrds
+  };
+};
+
+// Rémunération R telle que R − cotisations TNS − CSG/CRDS = net souhaité avant IR
+const remunerationTNSDepuisNet = (netSouhaite) => {
+  if (netSouhaite <= 0) return detailChargesTNS(0);
+  const R = resoudre((r) => r - detailChargesTNS(r).total, netSouhaite, netSouhaite * 3 + 1000);
+  return detailChargesTNS(R);
+};
+
+// Simulation complète des quatre statuts à partir des champs du formulaire (fonction pure, testable)
+const simuler = (inputs) => {
+  const ca = Number(inputs.chiffreAffaires) || 0;
+  const rem = Number(inputs.remuneration) || 0;   // rémunération NETTE avant IR
+  const dep = Number(inputs.depenses) || 0;
+  const age = Number(inputs.age) || 0;
+  const nbParts = Number(inputs.nbParts) || 1;
+  const rfr = inputs.revenuFiscalReference === '' ? null : Number(inputs.revenuFiscalReference);
+  const prevoyance = calculPrevoyance(age);
+
+  // SARL – gérant majoritaire TNS
+  const calculSARL = () => {
+    const tns = remunerationTNSDepuisNet(rem);
+    const chargesSociales = tns.total;                       // cotisations + CSG/CRDS + CFP
+    const coutRemuneration = rem + chargesSociales;          // = R, déductible de l'IS
+    const beneficeImposable = ca - coutRemuneration - dep - prevoyance;
+    const is = calculIS(beneficeImposable);
+    // Revenu imposable = R − cotisations − CSG déductible, puis déduction forfaitaire de 10 %
+    const baseIR = apresFraisPro(tns.remuneration - tns.cotisations - tns.csgDeductible);
+    const ir = calculIR(baseIR, nbParts);
+    const coutTotal = chargesSociales + is + ir + prevoyance;
+
+    return {
+      statut: 'SARL',
+      chiffreAffaires: ca,
+      depenses: dep,
+      prevoyance,
+      chargesSociales,
+      is,
+      ir,
+      coutTotal,
+      remunerationNette: rem - ir,
+      resultatNet: beneficeImposable - is
+    };
+  };
+
+  // SASU – président assimilé salarié
+  const calculSASU = () => {
+    const salaire = salaireSASUDepuisNet(rem);
+    const chargesSociales = salaire.charges;                 // patronales + salariales + CSG/CRDS
+    const beneficeImposable = ca - salaire.coutEmployeur - dep;
+    const is = calculIS(beneficeImposable);
+    // Net imposable = brut − cotisations salariales − CSG déductible, puis déduction forfaitaire de 10 %
+    const baseIR = apresFraisPro(salaire.netImposable);
+    const ir = calculIR(baseIR, nbParts);
+    const coutTotal = chargesSociales + is + ir;
+
+    return {
+      statut: 'SASU',
+      chiffreAffaires: ca,
+      depenses: dep,
+      chargesSociales,
+      is,
+      ir,
+      coutTotal,
+      remunerationNette: rem - ir,
+      resultatNet: beneficeImposable - is
+    };
+  };
+
+  // AE
+  const calculAE = () => {
+    const taux = TypeActivite[inputs.typeActivite];
+
+    if (ca > taux.seuil) {
+      return {
+        statut: 'Auto-Entrepreneur',
+        depassementSeuil: true,
+        chiffreAffaires: ca,
+        seuilMax: taux.seuil
+      };
+    }
+
+    // Cotisations sociales + CFP, assises sur le CA encaissé
+    const chargesSociales = ca * (taux.social + taux.cfp);
+    const seuilVersementLiberatoire = SEUILS_VERSEMENT_LIBERATOIRE[nbParts];
+    let ir;
+    let versementLiberatoire = false;
+
+    if (rfr !== null && seuilVersementLiberatoire !== undefined && rfr <= seuilVersementLiberatoire) {
+      ir = ca * taux.fiscal;
+      versementLiberatoire = true;
+    } else {
+      // Abattement forfaitaire (minimum 305 €), puis barème progressif
+      const abattement = Math.min(ca, Math.max(ca * taux.abattement, ABATTEMENT_MINIMUM));
+      const baseImposable = ca - abattement;
+      ir = calculIR(baseImposable, nbParts);
+    }
+
+    // Prévoyance (même montant que pour la SARL) : composante de coût, sans effet sur l'IR
+    // (en micro, les charges réelles ne sont pas déductibles, l'abattement est forfaitaire)
+    const coutTotal = chargesSociales + ir + prevoyance;
+
+    return {
+      statut: 'Auto-Entrepreneur',
+      chiffreAffaires: ca,
+      depenses: dep,
+      prevoyance,
+      chargesSociales,
+      ir,
+      coutTotal,
+      versementLiberatoire,
+      tauxSocial: (taux.social + taux.cfp) * 100,
+      tauxFiscal: taux.fiscal * 100
+    };
+  };
+
+  // EI – entreprise individuelle au régime réel (IR, pas d'IS)
+  // Revenu = CA − dépenses ; cotisations TNS sur ce revenu (R = revenu, avant charges sociales)
+  const calculEI = () => {
+    const revenuBrut = Math.max(0, ca - dep - prevoyance);
+    const tns = detailChargesTNS(revenuBrut);
+    const chargesSociales = tns.total;                       // cotisations + CSG/CRDS + CFP
+    // Bénéfice imposable = revenu − cotisations − CSG déductible (pas d'abattement de 10 %)
+    const baseIR = Math.max(0, revenuBrut - tns.cotisations - tns.csgDeductible);
+    const ir = calculIR(baseIR, nbParts);
+    const coutTotal = chargesSociales + ir + prevoyance;
+
+    return {
+      statut: 'EI (réel)',
+      chiffreAffaires: ca,
+      depenses: dep,
+      prevoyance,
+      chargesSociales,
+      ir,
+      coutTotal,
+      remunerationNette: revenuBrut - chargesSociales - ir,
+      resultatNet: 0
+    };
+  };
+
+  const tousResultats = [calculSARL(), calculSASU(), calculAE(), calculEI()];
+
+  return tousResultats.sort((a, b) =>
+    a.depassementSeuil ? 1 : b.depassementSeuil ? -1 : a.coutTotal - b.coutTotal
+  );
+};
+
+// Rémunération nette maximale compatible avec le budget (CA − dépenses), charges sociales comprises :
+//  - SARL : R + prévoyance = budget, puis net = R − cotisations TNS − CSG/CRDS
+//  - SASU : coût employeur (brut + cotisations patronales) = budget, puis net payé
+// (au maximum, le résultat avant IS est nul ; l'auto-entrepreneur n'est pas concerné)
+const remunerationNetteMax = (chiffreAffaires, depenses, age) => {
+  const budget = Math.max(0, chiffreAffaires - depenses);
+
+  const budgetSARL = Math.max(0, budget - calculPrevoyance(age));
+  const sarl = Math.max(0, budgetSARL - detailChargesTNS(budgetSARL).total);
+
+  const brut = resoudre((b) => detailSalaireSASU(b).coutEmployeur, budget, budget + 1000);
+  const sasu = budget > 0 ? detailSalaireSASU(brut).netPaye : 0;
+
+  return { sarl, sasu };
+};
+
+
+// ─────────────────────────────────────────────────────────────
+// INTERFACE
+// ─────────────────────────────────────────────────────────────
+const $ = (id) => document.getElementById(id);
+
+Object.keys(TypeActivite).forEach((type) => {
+  const option = document.createElement('option');
+  option.value = type;
+  option.textContent = type;
+  $('typeActivite').appendChild(option);
+});
+
+const lireFormulaire = () => ({
+  typeActivite: $('typeActivite').value,
+  chiffreAffaires: $('chiffreAffaires').value,
+  remuneration: $('remuneration').value,
+  depenses: $('depenses').value,
+  age: $('age').value,
+  nbParts: $('nbParts').value,
+  revenuFiscalReference: $('revenuFiscalReference').value
+});
+
+const majRemunerationMax = () => {
+  const ca = $('chiffreAffaires').value;
+  const p = $('remunerationMax');
+  if (ca) {
+    const max = remunerationNetteMax(Number(ca) || 0, Number($('depenses').value) || 0, Number($('age').value) || 0);
+    p.textContent = 'Maximum, charges sociales comprises : SARL ' + formatMontant(max.sarl) + ' · SASU ' + formatMontant(max.sasu);
+    p.classList.remove('hidden');
+  } else {
+    p.classList.add('hidden');
+  }
+};
+['chiffreAffaires', 'depenses', 'age'].forEach((id) => $(id).addEventListener('input', majRemunerationMax));
+
+const ligne = (libelle, valeur) =>
+  `<div class="flex justify-between items-center"><span class="text-gray-600">${libelle}</span><span class="font-medium">${valeur}</span></div>`;
+
+const carte = (r, index) => {
+  const classe = r.depassementSeuil
+    ? 'bg-red-50 border-2 border-red-500'
+    : index === 0
+    ? 'bg-blue-50 border-2 border-blue-500'
+    : 'bg-white border border-gray-200';
+
+  const badge = r.depassementSeuil
+    ? '<span class="px-2 py-1 text-xs font-medium text-red-600 bg-red-100 rounded-full">Seuil dépassé</span>'
+    : index === 0
+    ? '<span class="px-2 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full">Optimal</span>'
+    : '';
+
+  let corps;
+  if (r.depassementSeuil) {
+    corps = `<p class="text-red-600">Le chiffre d'affaires (${formatMontant(r.chiffreAffaires)}) dépasse le seuil autorisé (${formatMontant(r.seuilMax)})</p>`;
+  } else {
+    corps = '<div class="space-y-3">';
+    corps += ligne('CA', formatMontant(r.chiffreAffaires));
+    if (r.prevoyance) corps += ligne('Prévoyance', formatMontant(r.prevoyance));
+    corps += ligne('Charges sociales', formatMontant(r.chargesSociales));
+    if (r.is !== undefined) corps += ligne('IS', formatMontant(r.is));
+    corps += ligne('IR', formatMontant(r.ir));
+    corps += `<div class="flex justify-between items-center pt-3 border-t border-gray-200"><span class="text-rose-600 font-semibold">Coût total</span><span class="text-rose-600 font-semibold">${formatMontant(r.coutTotal)}</span></div>`;
+    if (r.versementLiberatoire) {
+      corps += `<div class="mt-3 p-3 bg-green-50 rounded-lg text-sm"><p class="font-medium text-green-800">Versement libératoire applicable :</p><p class="text-green-700">• Charges sociales (CFP incluse) : ${r.tauxSocial.toFixed(1)}%</p><p class="text-green-700">• Impôt : ${r.tauxFiscal.toFixed(1)}%</p></div>`;
+    }
+    if (r.statut !== 'Auto-Entrepreneur') {
+      corps += '<div class="pt-3 border-t border-gray-200">' + ligne('Net après impôts', formatMontant(r.remunerationNette));
+      if (r.resultatNet > 0) corps += '<div class="mt-2">' + ligne('Résultat net', formatMontant(r.resultatNet)) + '</div>';
+      corps += '</div>';
+    }
+    corps += '</div>';
+  }
+
+  return `<div class="rounded-lg p-6 ${classe}"><div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-gray-900">${r.statut}</h3>${badge}</div>${corps}</div>`;
+};
+
+$('calculer').addEventListener('click', () => {
+  const resultats = simuler(lireFormulaire());
+  $('resultats').innerHTML =
+    '<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">' + resultats.map(carte).join('') + '</div>';
+  $('note').classList.remove('hidden');
+});
+</script>
+</body>
+</html>

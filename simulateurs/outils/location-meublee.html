@@ -1,0 +1,862 @@
+<title>Simulateur location meublée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+<style>
+/* Concept : poste de travail d'expert-comptable. Colonne de paramètres à gauche, résultats à droite.
+   Bleu du site fiscalite-entrepreneur.fr en accent ; trois séries distinctes : SCI IS (orange), LMNP (bleu), micro-BIC (vert). */
+:root{
+  --bg:#eef1f6; --surface:#ffffff; --surface2:#f5f7fb; --ink:#141b2d; --muted:#5a6579; --line:#d8dee9;
+  --accent:#1a56e8; --accent-ink:#ffffff; --accent-soft:#e7eefd;
+  --cA:#c2570c; --cB:#1a56e8; --cC:#0b8a6a;
+  --ok:#0b7a5e; --warn:#a14b06; --err:#bd2430; --info:#1a56e8;
+  --warn-bg:#fdf1e3; --err-bg:#fcebec; --info-bg:#e7eefd; --ok-bg:#e2f4ee;
+  --shadow:0 1px 2px rgba(20,27,45,.06),0 4px 14px rgba(20,27,45,.05);
+  --font:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1424; --surface:#161e33; --surface2:#1c2641; --ink:#e8ecf6; --muted:#9ba6bf; --line:#2b3654;
+    --accent:#6f95ff; --accent-ink:#0e1424; --accent-soft:#1f2d57;
+    --cA:#f28c45; --cB:#6f95ff; --cC:#3fcf9f;
+    --ok:#3fcf9f; --warn:#f0a35e; --err:#ff7a84; --info:#8aa9ff;
+    --warn-bg:#33261a; --err-bg:#3a1d22; --info-bg:#1f2d57; --ok-bg:#15342c;
+    --shadow:0 1px 2px rgba(0,0,0,.4); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1424; --surface:#161e33; --surface2:#1c2641; --ink:#e8ecf6; --muted:#9ba6bf; --line:#2b3654;
+  --accent:#6f95ff; --accent-ink:#0e1424; --accent-soft:#1f2d57;
+  --cA:#f28c45; --cB:#6f95ff; --cC:#3fcf9f;
+  --ok:#3fcf9f; --warn:#f0a35e; --err:#ff7a84; --info:#8aa9ff;
+  --warn-bg:#33261a; --err-bg:#3a1d22; --info-bg:#1f2d57; --ok-bg:#15342c;
+  --shadow:0 1px 2px rgba(0,0,0,.4); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--font);padding-inline:16px;padding-block:22px 40px;margin:0}
+.wrap{max-width:1380px;margin:0 auto}
+h1,h2,h3{margin:0;font-weight:600}
+.top{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-end;justify-content:space-between;margin-bottom:16px}
+.top h1{font:600 clamp(22px,3.2vw,31px)/1.15 var(--serif);letter-spacing:-.01em;text-wrap:balance;max-width:46ch}
+.top p{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.btn{font:500 13px/1 var(--font);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:9px 12px;cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,.seg button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+
+.regime{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:16px;display:grid;gap:10px}
+.regime .lbl{font:600 12px/1 var(--font);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:500 14px/1.2 var(--font);padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.rnote{font-size:13px;color:var(--muted);margin:0}
+.opt{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;cursor:pointer}
+.opt input{width:20px;height:20px;margin-top:2px;accent-color:var(--accent)}
+.opt b{font-weight:600}
+.opt small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.card{border-top:4px solid var(--line)}.cardA{border-top-color:var(--cA)}.cardB{border-top-color:var(--cB)}.cardC{border-top-color:var(--cC)}
+.regdesc{font-size:12.5px;color:var(--muted);margin:-4px 0 0}
+.draft{display:flex;gap:10px;align-items:flex-start;background:var(--warn-bg);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);border-radius:8px;padding:10px 12px;font-size:13.5px}
+.draft[hidden]{display:none}
+.draft b{font-weight:600}
+
+.layout{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1040px){.layout{grid-template-columns:minmax(310px,380px) minmax(0,1fr);align-items:start}
+  .panel{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.grp{border-bottom:1px solid var(--line)}
+.grp:last-child{border-bottom:0}
+.grp>summary{list-style:none;cursor:pointer;padding:13px 16px;font:600 14px/1.2 var(--font);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.grp>summary::-webkit-details-marker{display:none}
+.grp>summary::after{content:"+";font:500 18px/1 var(--mono);color:var(--muted)}
+.grp[open]>summary::after{content:"−"}
+.grp .body{padding:2px 16px 16px;display:grid;gap:12px}
+.fgrid{display:grid;gap:10px 12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.f{display:grid;gap:4px;min-width:0}
+.f .fl{font-size:12.5px;color:var(--muted);line-height:1.25}
+.fi{position:relative;display:flex;align-items:center}
+.fi input,.f select,.fi select{width:100%;min-width:0;height:36px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);color:var(--ink);font:500 14px var(--mono);padding:0 34px 0 10px}
+.f select{font-family:var(--font);padding-right:8px}
+.fi em{position:absolute;right:9px;font:400 12px var(--mono);color:var(--muted);font-style:normal;pointer-events:none}
+.chk{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.35}
+.chk input{margin-top:3px;width:16px;height:16px;accent-color:var(--accent)}
+.hint{font-size:12.5px;color:var(--muted);margin:0}
+.comp{width:100%;border-collapse:collapse;font-size:13.5px}
+.comp th{font:600 11.5px var(--font);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 6px 6px 0}
+.comp td{padding:3px 6px 3px 0;vertical-align:middle}
+.comp td input{width:100%;height:32px;border:1px solid var(--line);border-radius:7px;background:var(--surface2);color:var(--ink);font:500 13.5px var(--mono);padding:0 6px}
+.comp td.ok-flag{width:22px;text-align:center;font:600 13px var(--mono)}
+.flag-ok{color:var(--ok)} .flag-bad{color:var(--warn)}
+.comp tfoot td{padding-top:6px;font:500 13px var(--mono)}
+
+.main{display:grid;gap:18px;min-width:0}
+.cards{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow);display:grid;gap:10px;align-content:start;min-width:0}
+.card.best{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok),var(--shadow)}
+.card header{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h3{font:600 15px/1.2 var(--font)}
+.dot{width:11px;height:11px;border-radius:3px;flex:none}
+.dotA{background:var(--cA)}.dotB{background:var(--cB)}.dotC{background:var(--cC)}
+.badge{margin-left:auto;font:600 11.5px/1 var(--font);padding:5px 8px;border-radius:99px;background:var(--ok-bg);color:var(--ok)}
+.badge.na{background:var(--warn-bg);color:var(--warn)}
+.big{font:500 clamp(26px,3.2vw,34px)/1.05 var(--mono);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.sub{font-size:13px;color:var(--muted);margin-top:-6px}
+.card dl{margin:0;display:grid;gap:5px;border-top:1px solid var(--line);padding-top:10px}
+.card dl div{display:flex;justify-content:space-between;gap:12px;font-size:13.5px}
+.card dt{color:var(--muted)}
+.card dd{margin:0;white-space:nowrap;font:500 13.5px var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+
+.sect{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow);min-width:0}
+.sect h2{font:600 16px/1.2 var(--font);margin-bottom:4px}
+.sect .lead{margin:0 0 12px;color:var(--muted);font-size:13.5px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;margin-bottom:6px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+#chart{width:100%;min-height:250px;touch-action:pan-y}
+#chart svg{display:block;width:100%;height:auto;overflow:visible}
+.readout{display:flex;flex-wrap:wrap;gap:6px 18px;font:500 13px var(--mono);margin-top:8px;font-variant-numeric:tabular-nums}
+.readout b{font-family:var(--font);font-weight:600}
+.axis text{fill:var(--muted);font:11.5px var(--mono)}
+.grid line{stroke:var(--line)}
+.ln{fill:none;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.lnA{stroke:var(--cA)}.lnB{stroke:var(--cB)}.lnC{stroke:var(--cC)}
+.ptA{fill:var(--cA)}.ptB{fill:var(--cB)}.ptC{fill:var(--cC)}
+.mark{stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3;opacity:.55}
+.ref{stroke:var(--muted);stroke-width:1;stroke-dasharray:1 4;opacity:.8}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tabs button{font:500 13.5px/1.2 var(--font);padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);color:var(--ink);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table.t{border-collapse:collapse;width:100%;font:400 12.5px var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.t th{font:600 11.5px/1.25 var(--font);color:var(--muted);text-align:right;padding:8px 10px;background:var(--surface2);position:sticky;top:0;white-space:normal;min-width:84px}
+.t th:first-child,.t td:first-child{text-align:left;position:sticky;left:0;background:var(--surface2)}
+.t td{padding:6px 10px;text-align:right;border-top:1px solid var(--line)}
+.t td:first-child{background:var(--surface)}
+.t tfoot td{font-weight:600;background:var(--surface2)}
+.t .neg{color:var(--err)}
+.exit{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}
+.exit h3{font:600 14px/1.2 var(--font);display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.exit ol{list-style:none;margin:0;padding:0;display:grid;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.exit li{display:grid;gap:2px;padding:8px 10px;border-top:1px solid var(--line);font-size:13px}
+.exit li:first-child{border-top:0}
+.exit li .r{display:flex;justify-content:space-between;gap:10px}
+.exit li .r span:last-child{white-space:nowrap;font:500 13px var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.exit li small{color:var(--muted);font-size:11.5px;line-height:1.3}
+.exit li.tot{background:var(--surface2);font-weight:600}
+.warns{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.warns li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;font-size:13.5px;padding:9px 11px;border-radius:8px}
+.warns .tag{font:600 11px/1 var(--font);padding:4px 7px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;margin-top:2px}
+.warns .err{background:var(--err-bg);color:var(--err)} .warns .warn{background:var(--warn-bg);color:var(--warn)} .warns .info{background:var(--info-bg);color:var(--info)}
+.method{font-size:13.5px}
+.method summary{cursor:pointer;font:600 14px var(--font);padding:2px 0}
+.method ul{margin:10px 0 0;padding-left:18px;display:grid;gap:6px}
+.method li code,.method code{font:400 12.5px var(--mono);background:var(--surface2);padding:1px 5px;border-radius:4px}
+.foot{margin-top:6px;color:var(--muted);font-size:12.5px}
+@media (max-width:560px){ .btn{padding:9px 10px} .card{padding:14px} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Location meublée : SCI à l’IS, LMNP ou micro-BIC ?</h1>
+      <p>Coût fiscal annuel et coût de sortie des trois montages, selon la durée de détention. Paramètres légaux relevés au 12 octobre 2026.</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="copy" type="button">Copier le récapitulatif</button>
+      <button class="btn" id="reset" type="button">Valeurs par défaut</button>
+    </div>
+  </div>
+
+  <section class="regime" aria-labelledby="rl">
+    <span class="lbl" id="rl">Option législative</span>
+    <label class="opt"><input type="checkbox" id="plfChk"><span><b>Appliquer le texte déposé au Parlement (PLF 2027, article 7)</b><small>Amortissement annuel du LMNP plafonné et perte de l’amortissement différé, non reportable. Décochée : droit en vigueur.</small></span></label>
+    <p class="rnote" id="regimeNote"></p>
+    <div class="draft" id="draft" hidden><b>Projet non voté.</b><span id="draftTxt"></span></div>
+  </section>
+
+  <div class="layout">
+    <aside class="panel" id="panel" aria-label="Paramètres"></aside>
+    <main class="main">
+      <div class="cards" id="cards" aria-live="polite"></div>
+
+      <section class="sect" aria-labelledby="ch">
+        <h2 id="ch">Coût global selon la durée de détention</h2>
+        <p class="lead">Fiscalité annuelle cumulée, honoraires comptables et fiscalité de la cession, pour une vente à l’année indiquée en abscisse.</p>
+        <div class="legend" id="legend"></div>
+        <div id="chart" role="img" aria-label="Courbes du coût global par durée de détention pour les trois montages"></div>
+        <div class="readout" id="readout"></div>
+        <p class="hint" style="margin-top:8px">Pointillés fins : 22 ans (plus-value exonérée d’impôt sur le revenu) et 30 ans (exonérée de prélèvements sociaux), art. 150 VC CGI.</p>
+      </section>
+
+      <section class="sect" aria-labelledby="dt">
+        <h2 id="dt">Détail par année et calcul de la sortie</h2>
+        <div class="tabs" role="tablist" id="tabs"></div>
+        <div id="tabBody"></div>
+      </section>
+
+      <section class="sect" aria-labelledby="wr">
+        <h2 id="wr">Points d’attention</h2>
+        <ul class="warns" id="warns"></ul>
+      </section>
+
+      <section class="sect method">
+        <details>
+          <summary>Méthode, références et écarts avec le classeur Excel</summary>
+          <ul>
+            <li><b>SCI à l’IS.</b> Amortissement par composants sans plafond. Le déficit est reporté sans limite de durée (CGI art. 209 I) et s’impute sur le résultat suivant puis sur la plus-value de cession. IS à 15 % jusqu’à <code>42 500 €</code> puis 25 %. Les frais de notaire saisis sont déduits la 1re année.</li>
+            <li><b>Distribution annuelle.</b> La trésorerie excédentaire n’est distribuée (PFU = 12,8 % + prélèvements sociaux) que dans la limite du bénéfice distribuable, après report des pertes. Le classeur Excel appliquait le PFU sur la trésorerie même avec un résultat négatif.</li>
+            <li><b>Boni de liquidation.</b> Boni = actif net (prix − dette bancaire + trésorerie − IS de cession) − crédit vendeur − avances d’associés. Le crédit vendeur (prix + frais + travaux + mobilier − emprunt bancaire, Feuil1!E41) est une dette de la SCI, sans intérêt ni remboursement avant la cession (hypothèse de Feuil1) ; son remboursement n’est pas taxé. PFU optionnel.</li>
+            <li><b>LMNP réel, droit actuel.</b> L’amortissement ne peut pas créer de déficit (CGI art. 39 C) : <code>déduit = min(amortissement + report ; résultat avant amortissement)</code>. L’excédent est reporté sans limite de durée.</li>
+            <li><b>LMNP réel, PLF 2027 (projet).</b> Pour les exercices clos à compter de 2027, amortissement des locaux limité à <code>min(taux × base ; plafond)</code>. L’excédent n’est plus reportable. Le stock antérieur reste utilisable jusqu’en 2036, dans la limite de la moitié du bénéfice restant (source secondaire : Legifiscal, à vérifier dans le texte de l’article 7).</li>
+            <li><b>Micro-BIC.</b> Revenus perçus à compter de 2026 : seuil <code>83 600 €</code> et abattement de 50 % ; meublé de tourisme non classé : <code>15 000 €</code> et 30 % (BOFiP ACTU-2025-00127). Le classement ne modifie pas le plafond d’amortissement du PLF, qui distingue tourisme et autres meublés.</li>
+            <li><b>Plus-value des particuliers.</b> Réintégration des seuls amortissements effectivement déduits (CGI art. 150 VB III). Frais d’acquisition : le plus élevé du réel et de 7,5 %. Travaux : en LMNP réel, les travaux amortis ne majorent pas le prix (pas de double avantage), seul le forfait de 15 % après 5 ans est retenu ; en micro-BIC, le plus élevé du réel et de 15 %. Abattements art. 150 VC. Surtaxe : barème complet de l’art. 1609 nonies G (BOI-RFPI-TPVIE-20 §70).</li>
+            <li><b>Prélèvements sociaux 2026.</b> 18,6 % sur la location meublée BIC, les dividendes et les plus-values de titres ; 17,2 % sur les revenus fonciers et les plus-values immobilières (Previssima, PAP : sources secondaires). Tous ces taux sont modifiables.</li>
+            <li><b>Régime social des meublés de tourisme.</b> Au-delà de 23 000 € de recettes annuelles, affiliation aux cotisations SSI au lieu des prélèvements sociaux de 18,6 % (service-public F39451). Micro-BIC classé : micro-social à 6 % des recettes ; non classé : SSI (exclu du micro-social depuis 2026) ; LMNP réel : SSI. Barème SSI 2026 estimé, PASS 48 060 € : retraite de base 17,87 % jusqu’au PASS + 0,72 % (appliqué par prudence à tout le revenu), retraite complémentaire 8,1 % / 9,1 %, maladie progressive de 0 à 8,5 % (Cleiss), indemnités journalières 0,5 %, invalidité-décès 1,3 %, allocations familiales 0 à 3,1 %, CSG-CRDS 9,7 %, formation 0,25 % du PASS. Cotisation minimale paramétrable (non vérifiée). Non modélisés : déductibilité des cotisations SSI au réel, déficits reportés dans l’assiette sociale, plafond de la complémentaire.</li>
+            <li><b>Écarts avec le classeur.</b> Seuil et taux d’IS homogénéisés (42 500 € / 25 %) ; surtaxe au barème BOFiP ; prélèvements sociaux 2026 ; réintégration des amortissements déduits et non théoriques ; frais d’acquisition au plus élevé du réel et du forfait ; distribution plafonnée au bénéfice distribuable ; durées d’amortissement bornées.</li>
+            <li><b>Hors périmètre.</b> Quotient familial, décote, CEHR, déficit foncier, qualification LMP, cotisations sociales des LMP, TVA, droits de mutation, frais de cession, plafonnement des déficits supérieurs à 1 M€.</li>
+          </ul>
+        </details>
+        <p class="foot">Outil indicatif, ne constitue pas un conseil fiscal personnalisé. Le taux marginal est supposé constant sur la durée.</p>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>/* Moteur de calcul : SCI à l'IS, LMNP réel, micro-BIC (droit en vigueur et PLF 2027) */
+(function (root) {
+  'use strict';
+  var MAXN = 40;
+
+  /* Fourchettes de l'onglet « Valeur ind BOFIP » du fichier Composants (à recouper avec le BOFiP).
+     pct = part de la valeur du bâti hors terrain ; duree = durée d'amortissement en années ; null = borne ouverte */
+  var FOURCHETTES = {
+    'Bureaux': {
+      go: { pct: [40, 60], duree: [null, 40] }, fac: { pct: [10, 25], duree: [20, 40] },
+      igt: { pct: [15, 30], duree: [15, 30] }, agc: { pct: [10, 20], duree: [7, 15] } },
+    'Centres commerciaux': {
+      go: { pct: [40, 60], duree: [40, null] }, fac: { pct: [10, 25], duree: [20, 30] },
+      igt: { pct: [15, 30], duree: [10, 25] }, agc: { pct: [10, 20], duree: [5, 15] } },
+    "Locaux d'activité": {
+      go: { pct: [60, 90], duree: [25, 50] }, fac: { pct: [5, 10], duree: [20, 40] },
+      igt: { pct: [5, 15], duree: [15, 30] }, agc: { pct: [5, 15], duree: [7, 15] } },
+    'Logements': {
+      go: { pct: [40, 50], duree: [50, null] }, fac: { pct: [5, 20], duree: [20, 50] },
+      igt: { pct: [20, 30], duree: [15, 30] }, agc: { pct: [20, 25], duree: [5, 15] } }
+  };
+
+  function defaults() {
+    return {
+      /* bien et financement */
+      prix: 500000, terrainPct: 15, notaire: 0, travaux: 100000, travauxDuree: 20,
+      mobilier: 0, mobilierDuree: 7, nature: 'Logements',
+      comp: [
+        { k: 'go', nom: 'Gros œuvre', pct: 40, duree: 50 },
+        { k: 'fac', nom: 'Façades', pct: 20, duree: 25 },
+        { k: 'igt', nom: 'IGT', pct: 20, duree: 20 },
+        { k: 'agc', nom: 'Agencements', pct: 20, duree: 10 }
+      ],
+      pretMontant: 200000, pretTaux: 4, pretDuree: 20,
+      /* exploitation */
+      loyerMensuel: 2000, indexLoyer: 0, indexCharges: 0,
+      honoraires: 780, entretien: 300, taxeFonciere: 1500, assurance: 1500, fraisBancaires: 80,
+      type: 'longue',
+      /* régime social des meublés de tourisme au-delà de 23 000 € : 'microsocial' (6 %, classé, micro-BIC) ou 'ssi' */
+      regimeSocial: 'microsocial', ssiMinimum: 1200,
+      /* fiscalité */
+      tmi: 30, psBIC: 18.6, psPVI: 17.2, irPVI: 19, pfuIR: 12.8, psCapital: 18.6,
+      isTauxReduit: 15, isSeuil: 42500, isTaux: 25,
+      /* sortie */
+      horizon: 20, prixVente: 750000, actualisation: 0,
+      distribAnnuelle: true, distribBoni: true,
+      /* régime législatif */
+      regime: 'actuel', anneeDebut: 2027, stockReport: 0,
+      plfTauxLoc: 2.5, plfPlafondLoc: 7000, plfTauxTour: 1.5, plfPlafondTour: 5000, baseCap: 'bati'
+    };
+  }
+
+  function isCalc(b, p) {
+    if (!(b > 0)) return 0;
+    var s = p.isSeuil;
+    if (b <= s) return b * p.isTauxReduit / 100;
+    return s * p.isTauxReduit / 100 + (b - s) * p.isTaux / 100;
+  }
+
+  /* Taxe sur les plus-values immobilières élevées (CGI art. 1609 nonies G ; BOI-RFPI-TPVIE-20 §70) */
+  function surtaxe(pv) {
+    if (!(pv > 50000)) return 0;
+    if (pv <= 60000) return 0.02 * pv - (60000 - pv) / 20;
+    if (pv <= 100000) return 0.02 * pv;
+    if (pv <= 110000) return 0.03 * pv - (110000 - pv) / 10;
+    if (pv <= 150000) return 0.03 * pv;
+    if (pv <= 160000) return 0.04 * pv - (160000 - pv) * 15 / 100;
+    if (pv <= 200000) return 0.04 * pv;
+    if (pv <= 210000) return 0.05 * pv - (210000 - pv) * 20 / 100;
+    if (pv <= 250000) return 0.05 * pv;
+    if (pv <= 260000) return 0.06 * pv - (260000 - pv) * 25 / 100;
+    return 0.06 * pv;
+  }
+
+  /* Abattements pour durée de détention (CGI art. 150 VC) */
+  function abtIR(n) {
+    if (n <= 5) return 0;
+    if (n <= 21) return (n - 5) * 0.06;
+    return 1;
+  }
+  function abtPS(n) {
+    if (n <= 5) return 0;
+    if (n <= 21) return (n - 5) * 0.0165;
+    if (n === 22) return 16 * 0.0165 + 0.016;
+    if (n < 30) return 0.28 + (n - 22) * 0.09;
+    return 1;
+  }
+
+  function loan(P, ratePct, years) {
+    var n = Math.round(years * 12), r = ratePct / 1200;
+    var out = { int: [], cap: [], bal: [], pmt: 0 };
+    var bal = P;
+    var pmt = (P > 0 && n > 0) ? (r === 0 ? P / n : P * r / (1 - Math.pow(1 + r, -n))) : 0;
+    out.pmt = pmt;
+    for (var y = 1; y <= MAXN; y++) {
+      var i = 0, c = 0;
+      for (var m = 1; m <= 12; m++) {
+        var k = (y - 1) * 12 + m;
+        if (k > n || bal <= 1e-9) break;
+        var it = bal * r, cp = pmt - it;
+        i += it; c += cp; bal -= cp;
+      }
+      out.int.push(i); out.cap.push(c); out.bal.push(Math.max(0, bal));
+    }
+    return out;
+  }
+
+  /* Plus-value des particuliers avec réintégration des amortissements effectivement déduits (art. 150 VB) */
+  function pvParticulier(p, h, cumDed, amorti) {
+    var fraisAcq = Math.max(p.notaire, 0.075 * p.prix);
+    /* Travaux amortis en BIC : pas de majoration au réel (pas de double avantage) ; seul le forfait de 15 % après 5 ans, si des travaux ont été réalisés */
+    var forfait = h > 5 ? 0.15 * p.prix : 0;
+    var travMaj = amorti ? (p.travaux > 0 ? forfait : 0) : Math.max(p.travaux, forfait);
+    var prixCorr = p.prix + fraisAcq + travMaj - cumDed;
+    var pvb = Math.max(0, p.prixVente - prixCorr);
+    var aI = abtIR(h), aS = abtPS(h);
+    var pvIR = pvb * (1 - aI), pvPS = pvb * (1 - aS);
+    var ir = pvIR * p.irPVI / 100, ps = pvPS * p.psPVI / 100, sur = surtaxe(pvIR);
+    return { pvb: pvb, pvIR: pvIR, pvPS: pvPS, ir: ir, ps: ps, sur: sur, total: ir + ps + sur,
+             prixCorr: prixCorr, fraisAcq: fraisAcq, travMaj: travMaj, abtIR: aI, abtPS: aS, cumDed: cumDed };
+  }
+
+  function rangeOk(v, r) {
+    if (!r) return true;
+    if (r[0] != null && v < r[0] - 1e-9) return false;
+    if (r[1] != null && v > r[1] + 1e-9) return false;
+    return true;
+  }
+  function rangeTxt(r, unit) {
+    if (r[0] == null) return 'inférieur à ' + r[1] + unit;
+    if (r[1] == null) return 'supérieur ou égal à ' + r[0] + unit;
+    return r[0] + ' à ' + r[1] + unit;
+  }
+
+  /* ---------- Régime social des meublés de tourisme ----------
+     Au-delà de 23 000 € de recettes : affiliation aux cotisations SSI, à la place des prélèvements sociaux
+     (service-public.gouv.fr, F39451). Micro-BIC classé : micro-social 6 % des recettes (F36232) ou SSI ;
+     non classé : exclu du micro-social depuis le 01/01/2026 ; LMNP réel : SSI. */
+  var PASS = 48060;                 /* arrêté du 22 décembre 2025 (JORFTEXT000053143451) */
+  var SEUIL_AFFILIATION = 23000;
+  var MICROSOCIAL_CLASSE = 0.06;
+  /* barème maladie-maternité : [revenu en multiples du PASS, taux], interpolation linéaire (service-public.gouv.fr, F23890 ; Cleiss) */
+  var MALADIE = [[0.2, 0], [0.4, 0.02], [0.6, 0.045], [1.1, 0.07], [2.0, 0.082], [3.0, 0.085]];
+  function maladieRate(B) {
+    var x = B / PASS;
+    if (x <= MALADIE[0][0]) return 0;
+    for (var i = 1; i < MALADIE.length; i++) {
+      if (x <= MALADIE[i][0]) {
+        var a = MALADIE[i - 1], b = MALADIE[i];
+        return a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0]);
+      }
+    }
+    return MALADIE[MALADIE.length - 1][1];
+  }
+  /* Cotisations SSI estimées (artisans et commerçants, barème 2026) sur le revenu B */
+  function cotisSSI(B, p) {
+    B = B > 0 ? B : 0;
+    var sous = Math.min(B, PASS);
+    var retBase = 0.1787 * sous + 0.0072 * B;                                         /* 17,87 % ≤ PASS ; 0,72 % sur la totalité (hypothèse prudente) */
+    var retCompl = 0.081 * sous + 0.091 * Math.max(0, Math.min(B, 4 * PASS) - PASS);  /* 8,1 % puis 9,1 % jusqu'à 4 PASS */
+    var mal = maladieRate(B) * B;
+    var ij = 0.005 * Math.min(B, 5 * PASS);                                           /* indemnités journalières 0,50 % */
+    var inval = 0.013 * sous;                                                         /* invalidité-décès 1,3 % ≤ PASS */
+    var tAF = B <= 1.1 * PASS ? 0 : (B >= 1.4 * PASS ? 0.031 : 0.031 * (B - 1.1 * PASS) / (0.3 * PASS));
+    var horsCSG = retBase + retCompl + mal + ij + inval + tAF * B;
+    var csg = 0.097 * (B + horsCSG);                                                  /* CSG-CRDS 9,7 % sur revenu + cotisations */
+    var brut = horsCSG + csg + 0.0025 * PASS;                                         /* formation professionnelle, commerçant */
+    return Math.max(p.ssiMinimum || 0, brut);
+  }
+  /* kind : 'micro' ou 'reel' ; retourne { amount, label } */
+  function social(kind, recettes, base, p) {
+    var tourisme = p.type === 'classe' || p.type === 'nonclasse';
+    if (!(tourisme && recettes > SEUIL_AFFILIATION))
+      return { amount: base * p.psBIC / 100, label: 'PS ' + String(p.psBIC).replace('.', ',') + ' %' };
+    if (kind === 'micro' && p.type === 'classe')
+      return { amount: MICROSOCIAL_CLASSE * recettes, label: 'Micro-social 6 %' };
+    return { amount: cotisSSI(base, p), label: 'Cotisations SSI' };
+  }
+
+  function simulate(p) {
+    var N = MAXN;
+    var ln = loan(p.pretMontant, p.pretTaux, p.pretDuree);
+    var batiBase = p.prix * (1 - p.terrainPct / 100);
+    var comps = p.comp.map(function (c) { return { v: batiBase * c.pct / 100, d: Math.max(1, c.duree) }; });
+    var ppu = (p.pfuIR + p.psCapital) / 100;
+
+    /* données de base par année */
+    var base = [];
+    for (var t = 1; t <= N; t++) {
+      var iL = Math.pow(1 + p.indexLoyer / 100, t - 1), iC = Math.pow(1 + p.indexCharges / 100, t - 1);
+      var amortComp = 0;
+      comps.forEach(function (c) { if (t <= c.d) amortComp += c.v / c.d; });
+      var amortTrav = (t <= p.travauxDuree && p.travauxDuree > 0) ? p.travaux / p.travauxDuree : 0;
+      var amortMob = (t <= p.mobilierDuree && p.mobilierDuree > 0) ? p.mobilier / p.mobilierDuree : 0;
+      base.push({
+        t: t, Y: p.anneeDebut + t - 1,
+        loyer: p.loyerMensuel * 12 * iL,
+        chg: (p.entretien + p.taxeFonciere + p.assurance + p.fraisBancaires) * iC,
+        hon: p.honoraires * iC,
+        interets: ln.int[t - 1], capital: ln.cap[t - 1], debt: ln.bal[t - 1],
+        theoLoc: amortComp + amortTrav, theoMob: amortMob
+      });
+    }
+
+    /* ---------- Option A : SCI à l'IS ---------- */
+    var A = [], snapA = [];
+    (function () {
+      var deficit = 0, pool = 0, cash = 0, contrib = p.prix + p.notaire + p.travaux + p.mobilier - p.pretMontant, cumLoc = 0;
+      base.forEach(function (r) {
+        var noteT = r.t === 1 ? p.notaire : 0;
+        var am = r.theoLoc + r.theoMob;
+        cumLoc += r.theoLoc;
+        var res = r.loyer - r.chg - r.hon - r.interets - noteT - am;
+        var taxable;
+        if (res < 0) { deficit += -res; taxable = 0; }
+        else { var u = Math.min(deficit, res); deficit -= u; taxable = res - u; }
+        var is = isCalc(taxable, p);
+        var cashflow = res + am + noteT - is - r.capital; /* les frais de notaire sont financés par les apports initiaux (contrib) : ils ne sont pas payés une seconde fois par la trésorerie de l'année 1 */
+        var avail = cash + cashflow, inj = 0;
+        if (avail < 0) { inj = -avail; contrib += inj; avail = 0; }
+        var poolAfter = pool + res - is;
+        var dist = p.distribAnnuelle ? Math.max(0, Math.min(avail, poolAfter)) : 0;
+        pool = poolAfter - dist; cash = avail - dist;
+        var pfu = dist * ppu;
+        var tresoBrute = r.loyer - r.chg - r.interets - r.capital;
+        A.push({ t: r.t, Y: r.Y, loyer: r.loyer, res: res, taxable: taxable, is: is, dist: dist, pfu: pfu,
+                 deficit: deficit, cash: cash, amort: am, hon: r.hon, impots: is + pfu,
+                 cout: is + pfu + r.hon, treso: tresoBrute - r.hon - is - pfu, inj: inj });
+        snapA.push({ deficit: deficit, cash: cash, contrib: contrib, cumLoc: cumLoc, debt: r.debt });
+      });
+    })();
+
+    function exitA(h) {
+      var s = snapA[h - 1];
+      var vnc = p.prix + p.travaux - s.cumLoc;
+      var pv = p.prixVente - vnc;
+      var baseIS = Math.max(0, pv - s.deficit);
+      var isExit = isCalc(baseIS, p);
+      var netAssets = p.prixVente - s.debt + s.cash - isExit;
+      var boni = netAssets - s.contrib;
+      var pfuBoni = (p.distribBoni && boni > 0) ? boni * ppu : 0;
+      return { vnc: vnc, pv: pv, deficitImpute: Math.min(s.deficit, Math.max(0, pv)), baseIS: baseIS, isExit: isExit,
+               netAssets: netAssets, contrib: s.contrib, boni: boni, pfuBoni: pfuBoni, total: isExit + pfuBoni };
+    }
+
+    /* ---------- Option B : LMNP réel ---------- */
+    var B = [], snapB = [];
+    (function () {
+      var stock = p.stockReport, defC = 0, cumDed = 0, cumLost = 0;
+      base.forEach(function (r) {
+        var R = r.loyer - r.chg - r.hon - r.interets;
+        var theo = r.theoLoc + r.theoMob;
+        var plfActive = p.regime !== 'actuel' && r.Y >= 2027 && !(p.regime === 'plf_amende' && p.type === 'longue');
+        var ded = 0, lost = 0, cap = null, used = 0;
+        if (!plfActive) {
+          var avail = theo + stock;
+          ded = Math.min(avail, Math.max(R, 0));
+          stock = avail - ded;
+        } else {
+          var tour = p.type !== 'longue';
+          if (p.regime === 'plf_amende' && tour && p.anneeDebut >= 2027) cap = 0;
+          else {
+            var bc = p.baseCap === 'prix' ? p.prix : (p.baseCap === 'bati_travaux' ? batiBase + p.travaux : batiBase);
+            cap = Math.min((tour ? p.plfTauxTour : p.plfTauxLoc) / 100 * bc, tour ? p.plfPlafondTour : p.plfPlafondLoc);
+          }
+          var cur = Math.min(r.theoLoc, cap) + r.theoMob;
+          var dedCur = Math.min(cur, Math.max(R, 0));
+          if (r.Y <= 2036) used = Math.min(stock, 0.5 * Math.max(0, R - dedCur));
+          stock = (r.Y >= 2036) ? 0 : stock - used;
+          ded = dedCur + used;
+          lost = theo - dedCur;
+        }
+        var after = R - ded, taxable;
+        if (after < 0) { defC += -after; taxable = 0; }
+        else { var u = Math.min(defC, after); defC -= u; taxable = after - u; }
+        var soc = social('reel', r.loyer, taxable, p);
+        var ir = taxable * p.tmi / 100, ps = soc.amount;
+        cumDed += ded; cumLost += lost;
+        var tresoBrute = r.loyer - r.chg - r.interets - r.capital;
+        B.push({ t: r.t, Y: r.Y, loyer: r.loyer, R: R, theo: theo, ded: ded, lost: lost, cap: cap, stock: stock,
+                 taxable: taxable, ir: ir, ps: ps, socLabel: soc.label, hon: r.hon, plf: plfActive, impots: ir + ps,
+                 cout: ir + ps + r.hon, treso: tresoBrute - r.hon - ir - ps, defC: defC });
+        snapB.push({ cumDed: cumDed });
+      });
+    })();
+    function exitB(h) { return pvParticulier(p, h, snapB[h - 1].cumDed, true); }
+
+    /* ---------- Option C : micro-BIC ---------- */
+    var seuil = p.type === 'nonclasse' ? 15000 : 83600, abatt = p.type === 'nonclasse' ? 30 : 50;
+    var C = [], firstBad = null;
+    base.forEach(function (r) {
+      var ok = r.loyer <= seuil;
+      if (!ok && firstBad === null) firstBad = r.t;
+      var baseM = r.loyer * (1 - abatt / 100);
+      var soc = social('micro', r.loyer, baseM, p);
+      var ir = baseM * p.tmi / 100, ps = soc.amount;
+      var tresoBrute = r.loyer - r.chg - r.interets - r.capital;
+      C.push({ t: r.t, Y: r.Y, loyer: r.loyer, eligible: ok, base: baseM, abatt: r.loyer - baseM, ir: ir, ps: ps, socLabel: soc.label,
+               impots: ir + ps, cout: ir + ps, treso: tresoBrute - ir - ps });
+    });
+    function exitC(h) { return pvParticulier(p, h, 0); }
+
+    /* ---------- coûts globaux par durée de détention ---------- */
+    var rr = p.actualisation / 100;
+    var glob = { A: [], B: [], C: [] }, cumAnn = { A: 0, B: 0, C: 0 }, cumDisc = { A: 0, B: 0, C: 0 };
+    for (var h = 1; h <= N; h++) {
+      var f = Math.pow(1 + rr, -h);
+      ['A', 'B', 'C'].forEach(function (k) {
+        var row = (k === 'A' ? A : k === 'B' ? B : C)[h - 1];
+        cumAnn[k] += row.cout; cumDisc[k] += row.cout * Math.pow(1 + rr, -h);
+      });
+      var ea = exitA(h), eb = exitB(h), ec = exitC(h);
+      glob.A.push({ h: h, annual: cumAnn.A, exit: ea.total, total: cumDisc.A + ea.total * f, totalNom: cumAnn.A + ea.total });
+      glob.B.push({ h: h, annual: cumAnn.B, exit: eb.total, total: cumDisc.B + eb.total * f, totalNom: cumAnn.B + eb.total });
+      var okC = firstBad === null || h < firstBad;
+      glob.C.push({ h: h, annual: cumAnn.C, exit: ec.total, ok: okC,
+                    total: okC ? cumDisc.C + ec.total * f : null, totalNom: okC ? cumAnn.C + ec.total : null });
+    }
+
+    /* ---------- avertissements ---------- */
+    var warns = [];
+    var sumPct = p.comp.reduce(function (s, c) { return s + c.pct; }, 0);
+    if (Math.abs(sumPct - 100) > 0.001) warns.push({ lvl: 'err', txt: 'La décomposition totalise ' + sumPct + ' % au lieu de 100 % de la valeur du bâti.' });
+    var fr = FOURCHETTES[p.nature];
+    p.comp.forEach(function (c) {
+      var f = fr && fr[c.k];
+      if (!f) return;
+      if (!rangeOk(c.pct, f.pct)) warns.push({ lvl: 'warn', txt: c.nom + ' : ' + c.pct + ' % hors fourchette (' + rangeTxt(f.pct, ' %') + ').' });
+      if (!rangeOk(c.duree, f.duree)) warns.push({ lvl: 'warn', txt: c.nom + ' : ' + c.duree + ' ans hors fourchette (' + rangeTxt(f.duree, ' ans') + ').' });
+    });
+    var tourisme = p.type === 'classe' || p.type === 'nonclasse', firstAff = null;
+    base.forEach(function (r) { if (firstAff === null && r.loyer > SEUIL_AFFILIATION) firstAff = r.Y; });
+    if (tourisme && firstAff !== null) {
+      var microTxt = p.type === 'classe'
+        ? 'micro-social à 6 % des recettes'
+        : 'cotisations SSI sur le bénéfice (le non classé est exclu du micro-social depuis 2026)';
+      warns.push({ lvl: 'warn', txt: 'Meublé de tourisme : recettes supérieures à 23 000 € à partir de l’année ' + firstAff + '. Affiliation aux cotisations SSI à la place des prélèvements sociaux. Micro-BIC : ' + microTxt + ' ; LMNP réel : cotisations SSI. Barème SSI 2026 estimé, voir « Méthode ». La qualification LMP n’est pas modélisée.' });
+    } else if (!tourisme && base[0].loyer > 23000) warns.push({ lvl: 'info', txt: 'Recettes supérieures à 23 000 € : la qualification de loueur en meublé professionnel (LMP) est à examiner (BOI-BIC-CHAMP-40-10, §110). Elle n’est pas modélisée : le plafonnement du PLF ne viserait pas les LMP.' });
+    if (firstBad !== null) warns.push({ lvl: 'warn', txt: 'Micro-BIC non éligible à partir de l’année ' + firstBad + ' : recettes supérieures à ' + seuil.toLocaleString('fr-FR') + ' €.' });
+    if (p.regime !== 'actuel') warns.push({ lvl: 'info', txt: 'Mode PLF 2027 : projet non voté. La base du plafond de 2,5 % n’est pas confirmée par les sources consultées (hypothèse retenue : ' + (p.baseCap === 'prix' ? 'prix total' : p.baseCap === 'bati_travaux' ? 'bâti hors terrain + travaux' : 'bâti hors terrain') + ').' });
+    if (p.regime === 'plf_amende' && p.type === 'longue') {
+      warns.push({ lvl: 'info', txt: 'Hypothèse « amendé » : les baux à l’année sont exclus du plafonnement, les résultats sont donc identiques au droit en vigueur. Choisissez un meublé de tourisme (groupe Exploitation, type de location) pour mesurer l’effet.' });
+    } else if (p.regime !== 'actuel') {
+      var sumLost = B.reduce(function (s, x) { return s + x.lost; }, 0);
+      if (sumLost < 0.5) warns.push({ lvl: 'info', txt: 'Le plafonnement n’a aucun effet avec ces paramètres : l’amortissement théorique reste sous le plafond ou aucune année n’est concernée (année de 1re exploitation avant 2027).' });
+    }
+    if (p.pretMontant > p.prix + p.travaux + p.notaire) warns.push({ lvl: 'warn', txt: 'Le prêt dépasse le coût total de l’opération.' });
+    if (p.horizon > p.pretDuree && p.pretMontant > 0) { /* info utile mais non bloquante */ }
+
+    return { base: base, A: A, B: B, C: C, exitA: exitA, exitB: exitB, exitC: exitC, glob: glob, warns: warns,
+             loan: ln, batiBase: batiBase, micro: { seuil: seuil, abatt: abatt, firstBad: firstBad }, social: { firstAffilie: firstAff } };
+  }
+
+  var api = { MAXN: MAXN, FOURCHETTES: FOURCHETTES, defaults: defaults, simulate: simulate, surtaxe: surtaxe,
+              abtIR: abtIR, abtPS: abtPS, isCalc: isCalc, loan: loan, pvParticulier: pvParticulier,
+              rangeOk: rangeOk, rangeTxt: rangeTxt, cotisSSI: cotisSSI, maladieRate: maladieRate, social: social };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  root.SimuEngine = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+(function(){
+'use strict';
+var E=window.SimuEngine, D=E.defaults(), S=E.defaults(), R=null, TAB='A', HOV=null;
+function $(s,r){return (r||document).querySelector(s);}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+var NF0=new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0});
+function n0(v){ if(v==null||isNaN(v)) return '—'; var r=Math.round(v); return (r<0?'−':'')+NF0.format(Math.abs(r)); }
+function eur(v){ return (v==null||isNaN(v))?'—':n0(v)+' €'; }
+function pc(v,d){ return (Math.round(v*Math.pow(10,d||1))/Math.pow(10,d||1)).toLocaleString('fr-FR')+' %'; }
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function cls(v){return v<-0.5?' class="neg"':'';}
+
+/* ---------- construction du panneau de paramètres ---------- */
+var GROUPS=[
+ {t:'Bien et travaux',open:true,f:[['prix','Prix d’acquisition','€',1000],['terrainPct','Part du terrain','%',1],['notaire','Frais de notaire réels','€',100],['travaux','Travaux','€',1000],['travauxDuree','Durée d’amortissement des travaux','ans',1],['mobilier','Mobilier','€',500],['mobilierDuree','Durée d’amortissement du mobilier','ans',1]]},
+ {t:'Emprunt',f:[['pretMontant','Montant emprunté','€',1000],['pretTaux','Taux annuel','%',0.05],['pretDuree','Durée','ans',1]]},
+ {t:'Décomposition du bâti',custom:'comp',open:true},
+ {t:'Exploitation',open:true,custom:'expl',f:[['loyerMensuel','Loyer mensuel','€',50],['indexLoyer','Indexation des loyers','%/an',0.1],['indexCharges','Indexation des charges','%/an',0.1],['honoraires','Honoraires comptables','€/an',10],['entretien','Entretien','€/an',10],['taxeFonciere','Taxe foncière','€/an',10],['assurance','Assurance','€/an',10],['fraisBancaires','Frais bancaires','€/an',10]]},
+ {t:'Paramètres fiscaux',f:[['tmi','Taux marginal d’imposition','%',1],['ssiMinimum','Cotisation SSI minimale (estimation)','€',50],['psBIC','Prélèvements sociaux BIC meublé','%',0.1],['psPVI','Prélèvements sociaux plus-value immobilière','%',0.1],['irPVI','IR plus-value immobilière','%',0.1],['pfuIR','PFU : part impôt sur le revenu','%',0.1],['psCapital','Prélèvements sociaux dividendes et titres','%',0.1],['isTauxReduit','IS taux réduit','%',0.5],['isSeuil','IS seuil du taux réduit','€',500],['isTaux','IS taux normal','%',0.5]]},
+ {t:'Sortie et options',open:true,custom:'sortie'},
+ {t:'Paramètres du PLF 2027',custom:'plf',id:'plfGrp'}
+];
+function fieldHTML(d){
+  return '<label class="f"><span class="fl">'+d[1]+'</span><span class="fi"><input id="f_'+d[0]+'" data-k="'+d[0]+'" type="number" inputmode="decimal" step="'+d[3]+'" value="'+S[d[0]]+'"><em>'+d[2]+'</em></span></label>';
+}
+function buildPanel(){
+  var html='';
+  GROUPS.forEach(function(g,i){
+    var body='';
+    if(g.custom==='comp'){
+      body='<label class="f"><span class="fl">Nature de l’ensemble immobilier</span><select id="f_nature" data-k="nature">'+Object.keys(E.FOURCHETTES).map(function(n){return '<option'+(n===S.nature?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select></label>'+
+        '<table class="comp"><thead><tr><th>Composant</th><th>% valeur</th><th>Durée (ans)</th><th></th></tr></thead><tbody id="compBody"></tbody><tfoot><tr><td>Total</td><td id="compSum" colspan="3"></td></tr></tfoot></table>'+
+        '<p class="hint">Le terrain n’est pas amorti. Les fourchettes proviennent de l’onglet « Valeur ind BOFIP » de votre classeur ; un repère signale toute valeur hors fourchette.</p>';
+    } else if(g.custom==='sortie'){
+      body='<div class="f"><span class="fl">Durée de détention affichée : <b id="hVal"></b> ans</span><input id="f_horizon" data-k="horizon" type="range" min="1" max="40" step="1" value="'+S.horizon+'" style="width:100%;accent-color:var(--accent)"></div>'+
+        '<div class="fgrid">'+fieldHTML(['prixVente','Prix de vente','€',1000])+fieldHTML(['actualisation','Taux d’actualisation','%',0.5])+'</div>'+
+        '<label class="chk"><input type="checkbox" id="f_distribAnnuelle" data-k="distribAnnuelle"'+(S.distribAnnuelle?' checked':'')+'><span>SCI : distribuer chaque année la trésorerie distribuable (PFU)</span></label>'+
+        '<label class="chk"><input type="checkbox" id="f_distribBoni" data-k="distribBoni"'+(S.distribBoni?' checked':'')+'><span>SCI : distribuer le boni de liquidation aux associés (PFU). Sinon, il est réinvesti et non taxé.</span></label>';
+    } else if(g.custom==='plf'){
+      body='<div class="fgrid">'+fieldHTML(['plfTauxLoc','Taux, meublé hors tourisme','%',0.1])+fieldHTML(['plfPlafondLoc','Plafond annuel, hors tourisme','€',100])+fieldHTML(['plfTauxTour','Taux, meublé de tourisme','%',0.1])+fieldHTML(['plfPlafondTour','Plafond annuel, tourisme','€',100])+'</div>'+
+        '<label class="f"><span class="fl">Base d’application du taux (non confirmée)</span><select id="f_baseCap" data-k="baseCap"><option value="bati">Bâti hors terrain</option><option value="bati_travaux">Bâti hors terrain + travaux</option><option value="prix">Prix d’acquisition total</option></select></label>'+
+        '<div class="fgrid">'+fieldHTML(['anneeDebut','Année de 1re exploitation','',1])+fieldHTML(['stockReport','Amortissements en report à l’ouverture','€',500])+'</div>'+
+        '<p class="hint">Valeurs du texte déposé le 1er octobre 2026 (art. 7, projet de loi n° 3210). Les amendements de la commission des finances du 8 octobre ne sont pas définitifs.</p>';
+    } else {
+      body='<div class="fgrid">'+(g.f||[]).map(fieldHTML).join('')+'</div>';
+    }
+    if(g.custom==='expl'){
+      body='<label class="f"><span class="fl">Type de location (détermine plafond PLF et seuil micro-BIC)</span><select id="f_type" data-k="type"><option value="longue">Longue durée (hors tourisme)</option><option value="classe">Meublé de tourisme classé</option><option value="nonclasse">Meublé de tourisme non classé</option></select></label>'+'<p class="hint">Meublé de tourisme au-delà de 23 000 € de recettes : micro-BIC classé = micro-social 6 % ; LMNP réel = cotisations SSI sur le bénéfice ; non classé = SSI. Longue durée : sans effet.</p>'+body;
+    }
+    html+='<details class="grp"'+(g.open?' open':'')+(g.id?' id="'+g.id+'"':'')+'><summary>'+g.t+'</summary><div class="body">'+body+'</div></details>';
+  });
+  $('#panel').innerHTML=html;
+  $('#f_type').value=S.type; $('#f_baseCap').value=S.baseCap;
+  if(window.innerWidth<1040){ $$('.grp').forEach(function(d,i){ d.open = i<1; }); }
+  drawComp();
+}
+function drawComp(){
+  var fr=E.FOURCHETTES[S.nature], sum=0;
+  $('#compBody').innerHTML=S.comp.map(function(c,i){
+    var f=fr[c.k], ok=E.rangeOk(c.pct,f.pct)&&E.rangeOk(c.duree,f.duree);
+    sum+=c.pct;
+    var tip='Fourchette : '+E.rangeTxt(f.pct,' %')+' ; durée '+E.rangeTxt(f.duree,' ans');
+    return '<tr><td>'+c.nom+'</td><td><input data-c="'+i+'" data-f="pct" aria-label="'+c.nom+', pourcentage" type="number" inputmode="decimal" step="1" value="'+c.pct+'"></td><td><input data-c="'+i+'" data-f="duree" aria-label="'+c.nom+', durée" type="number" inputmode="decimal" step="1" value="'+c.duree+'"></td><td class="ok-flag '+(ok?'flag-ok':'flag-bad')+'" title="'+esc(tip)+'" id="flag'+i+'">'+(ok?'✓':'!')+'</td></tr>';
+  }).join('');
+  updateCompSum();
+}
+function updateCompSum(){
+  var fr=E.FOURCHETTES[S.nature], sum=0;
+  S.comp.forEach(function(c,i){
+    sum+=c.pct; var f=fr[c.k], ok=E.rangeOk(c.pct,f.pct)&&E.rangeOk(c.duree,f.duree), el=$('#flag'+i);
+    if(el){el.textContent=ok?'✓':'!'; el.className='ok-flag '+(ok?'flag-ok':'flag-bad'); el.title='Fourchette : '+E.rangeTxt(f.pct,' %')+' ; durée '+E.rangeTxt(f.duree,' ans');}
+  });
+  var el=$('#compSum'); if(el){ el.textContent=pc(sum,1)+(Math.abs(sum-100)<0.001?'':'  (à ramener à 100 %)'); el.style.color=Math.abs(sum-100)<0.001?'inherit':'var(--err)'; }
+}
+function syncInputs(){
+  $$('[data-k]').forEach(function(el){
+    var k=el.dataset.k;
+    if(el.type==='checkbox') el.checked=!!S[k]; else el.value=S[k];
+  });
+  drawComp();
+}
+
+/* ---------- régime ---------- */
+var REG=[['actuel','Droit en vigueur'],['plf','PLF 2027 · texte déposé']];
+function drawRegime(){
+  $('#plfChk').checked = S.regime==='plf';
+  var notes={
+    actuel:'Loi de finances pour 2026 (loi n° 2026-103 du 19 février 2026) : l’amortissement n’est pas plafonné pendant la location. Seule la réintégration dans la plus-value (art. 150 VB III) s’applique.',
+    plf:'Article 7 du projet de loi de finances pour 2027 : amortissement des locaux plafonné à 2,5 % et 7 000 € par an et par foyer fiscal (tourisme : 1,5 % et 5 000 €). L’excédent est perdu, il n’est plus reporté, à compter des exercices clos en 2027. Le stock antérieur reste utilisable jusqu’en 2036, dans la limite de 50 % du bénéfice restant.'
+  };
+  $('#regimeNote').textContent=notes[S.regime==='plf'?'plf':'actuel'];
+  var d=$('#draft'); d.hidden = S.regime!=='plf';
+  $('#draftTxt').textContent=' Ces règles ne sont pas en vigueur. Les résultats sont une hypothèse de travail à revoir après promulgation.';
+  var g=$('#plfGrp'); if(g){ g.style.display = S.regime==='plf'?'':'none'; }
+}
+
+/* ---------- résultats ---------- */
+var NAMES={A:'SCI à l’IS',B:'LMNP réel',C:'Micro-BIC'};
+var DESC={A:'Amortissement par composants, impôt sur les sociétés, flat tax sur le boni en option.',B:'Amortissement déduit du BIC, plus-value des particuliers avec réintégration.',C:'Abattement forfaitaire sur les loyers, sans amortissement ni honoraires.'};
+function cards(){
+  var h=S.horizon, g={A:R.glob.A[h-1],B:R.glob.B[h-1],C:R.glob.C[h-1]};
+  var best=null;
+  ['A','B','C'].forEach(function(k){ if(g[k].total!=null && (best===null||g[k].total<g[best].total)) best=k; });
+  var disc=S.actualisation>0;
+  var rows={A:R.A[0],B:R.B[0],C:R.C[0]};
+  var html=['A','B','C'].map(function(k){
+    var x=g[k], na=x.total==null, r=rows[k];
+    var dl=na?'<dl><div><dt>Motif</dt><dd>recettes &gt; '+n0(R.micro.seuil)+' €</dd></div></dl>':
+      '<dl><div><dt>Moyenne par année, sortie incluse</dt><dd>'+eur(x.total/h)+'</dd></div>'+
+      '<div><dt>Moyenne par année, hors sortie</dt><dd>'+eur(x.annual/h)+'</dd></div>'+
+      '<div><dt>Fiscalité et honoraires cumulés</dt><dd>'+eur(x.annual)+'</dd></div>'+
+      '<div><dt>Coût de sortie</dt><dd>'+eur(x.exit)+'</dd></div>'+
+      '<div><dt>Année 1 : impôts et prélèvements</dt><dd>'+eur(r.impots)+'</dd></div>'+
+      '<div><dt>Année 1 : trésorerie après impôts</dt><dd>'+eur(r.treso)+'</dd></div></dl>';
+    return '<article class="card card'+k+(best===k?' best':'')+'"><header><span class="dot dot'+k+'"></span><h3>'+NAMES[k]+'</h3>'+
+      (best===k?'<span class="badge">Le moins coûteux</span>':(na?'<span class="badge na">Non éligible</span>':''))+'</header>'+
+      '<p class="regdesc">'+DESC[k]+'</p><div class="big">'+(na?'—':eur(x.total))+'</div><div class="sub">'+(na?'régime inapplicable sur cette durée':'coût global sur '+h+' an'+(h>1?'s':'')+(disc?', actualisé':''))+'</div>'+dl+'</article>';
+  }).join('');
+  $('#cards').innerHTML=html;
+}
+
+function niceStep(max){ var raw=max/5, p=Math.pow(10,Math.floor(Math.log10(raw))), m=raw/p; return (m<=1?1:m<=2?2:m<=5?5:10)*p; }
+function chart(){
+  var el=$('#chart'), W=Math.max(300,el.clientWidth), H=W<520?250:320;
+  var m={l:W<520?52:62,r:12,t:12,b:44}, pw=W-m.l-m.r, ph=H-m.t-m.b, N=E.MAXN;
+  var mx=0; ['A','B','C'].forEach(function(k){R.glob[k].forEach(function(p){ if(p.total!=null&&p.total>mx) mx=p.total; });});
+  if(mx<=0) mx=1000;
+  var st=niceStep(mx*1.04), top=Math.ceil(mx*1.04/st)*st;
+  function X(h){return m.l+(h-1)/(N-1)*pw;} function Y(v){return m.t+(1-v/top)*ph;}
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" aria-hidden="true">';
+  s+='<g class="grid">'; for(var v=0;v<=top+1e-6;v+=st){ s+='<line x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+Y(v)+'" y2="'+Y(v)+'"/>'; } s+='</g><g class="axis">';
+  for(v=0;v<=top+1e-6;v+=st){ s+='<text x="'+(m.l-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+(v>=1000?NF0.format(v/1000)+' k€':'0')+'</text>'; }
+  var xt=W<520?[1,10,20,30,40]:[1,5,10,15,20,25,30,35,40];
+  xt.forEach(function(h){ s+='<text x="'+X(h)+'" y="'+(H-24)+'" text-anchor="middle">'+h+'</text>'; });
+  s+='<text x="'+(m.l+pw/2)+'" y="'+(H-6)+'" text-anchor="middle" style="font-size:11.5px">Durée de détention (années)</text></g>';
+  [22,30].forEach(function(h){ s+='<line class="ref" x1="'+X(h)+'" x2="'+X(h)+'" y1="'+m.t+'" y2="'+(m.t+ph)+'"/>'; });
+  ['A','B','C'].forEach(function(k){
+    var d='', pen=false;
+    R.glob[k].forEach(function(p){ if(p.total==null){pen=false;return;} d+=(pen?'L':'M')+X(p.h).toFixed(1)+' '+Y(p.total).toFixed(1)+' '; pen=true; });
+    if(d) s+='<path class="ln ln'+k+'" d="'+d+'"/>';
+  });
+  var hh=HOV||S.horizon;
+  s+='<line class="mark" x1="'+X(hh)+'" x2="'+X(hh)+'" y1="'+m.t+'" y2="'+(m.t+ph)+'"/>';
+  ['A','B','C'].forEach(function(k){ var p=R.glob[k][hh-1]; if(p.total!=null) s+='<circle class="pt'+k+'" cx="'+X(hh)+'" cy="'+Y(p.total)+'" r="4.5" stroke="var(--surface)" stroke-width="2"/>'; });
+  s+='<rect id="hit" x="'+m.l+'" y="0" width="'+pw+'" height="'+H+'" fill="transparent" style="cursor:crosshair"/></svg>';
+  el.innerHTML=s;
+  var hit=$('#hit');
+  function move(e){ var r=el.getBoundingClientRect(), px=(e.clientX-r.left)*(W/r.width); var h=Math.round(1+(px-m.l)/pw*(N-1)); h=Math.max(1,Math.min(N,h)); if(h!==HOV){HOV=h; readout(); chartOnly();} }
+  hit.addEventListener('pointermove',move); hit.addEventListener('pointerdown',move);
+  hit.addEventListener('pointerleave',function(){ HOV=null; readout(); chartOnly(); });
+  readout();
+}
+var chartTimer=0; function chartOnly(){ cancelAnimationFrame(chartTimer); chartTimer=requestAnimationFrame(chart); }
+function readout(){
+  var h=HOV||S.horizon;
+  $('#readout').innerHTML='<span><b>Détention '+h+' an'+(h>1?'s':'')+'</b></span>'+['A','B','C'].map(function(k){ var p=R.glob[k][h-1]; return '<span style="color:var(--c'+k+')"><b>'+NAMES[k]+'</b> '+(p.total==null?'non éligible':eur(p.total))+'</span>'; }).join('');
+}
+function legend(){ $('#legend').innerHTML=['A','B','C'].map(function(k){return '<span><i class="dot dot'+k+'"></i>'+NAMES[k]+'</span>';}).join(''); }
+
+/* tableaux */
+function tbl(cols,rows,sum){
+  var th='<tr>'+cols.map(function(c){return '<th>'+c.h+'</th>';}).join('')+'</tr>';
+  var body=rows.map(function(r){return '<tr>'+cols.map(function(c){ var v=c.f(r); return '<td'+(typeof v==='number'?cls(v):'')+'>'+(typeof v==='number'?n0(v):v)+'</td>'; }).join('')+'</tr>';}).join('');
+  var foot='<tr>'+cols.map(function(c,i){ if(i===0) return '<td>Total</td>'; if(!c.sum) return '<td></td>'; var t=0; rows.forEach(function(r){t+=c.f(r);}); return '<td>'+n0(t)+'</td>'; }).join('')+'</tr>';
+  return '<div class="tw"><table class="t"><thead>'+th+'</thead><tbody>'+body+'</tbody><tfoot>'+foot+'</tfoot></table></div>';
+}
+function yr(r){return r.t+' · '+r.Y;}
+function tabA(){
+  var rows=R.A.slice(0,S.horizon);
+  return tbl([
+    {h:'Année',f:yr},{h:'Résultat comptable',f:function(r){return r.res;},sum:1},{h:'Base IS après déficits',f:function(r){return r.taxable;},sum:1},
+    {h:'IS',f:function(r){return r.is;},sum:1},{h:'Distribution',f:function(r){return r.dist;},sum:1},{h:'PFU',f:function(r){return r.pfu;},sum:1},
+    {h:'Déficit reportable',f:function(r){return r.deficit;}},{h:'Honoraires',f:function(r){return r.hon;},sum:1},{h:'Coût annuel',f:function(r){return r.cout;},sum:1}
+  ],rows)+'<p class="hint" style="margin-top:8px">Résultat comptable = loyers − charges − honoraires − intérêts − amortissements (composants, travaux, mobilier). Coût annuel = IS + PFU + honoraires.</p>';
+}
+function tabB(){
+  var rows=R.B.slice(0,S.horizon);
+  return tbl([
+    {h:'Année',f:yr},{h:'Résultat avant amortissement',f:function(r){return r.R;},sum:1},{h:'Amortissement théorique',f:function(r){return r.theo;},sum:1},
+    {h:'Plafond des locaux',f:function(r){return r.cap==null?'—':r.cap;}},{h:'Amortissement déduit',f:function(r){return r.ded;},sum:1},
+    {h:'Perdu',f:function(r){return r.lost;},sum:1},{h:'Report restant',f:function(r){return r.stock;}},{h:'Base imposable',f:function(r){return r.taxable;},sum:1},
+    {h:'IR',f:function(r){return r.ir;},sum:1},{h:'Régime social',f:function(r){return r.socLabel;}},{h:'Prélèv. sociaux / cotis.',f:function(r){return r.ps;},sum:1},{h:'Honoraires',f:function(r){return r.hon;},sum:1},{h:'Coût annuel',f:function(r){return r.cout;},sum:1}
+  ],rows)+'<p class="hint" style="margin-top:8px">Amortissement déduit = min(amortissement + report ; résultat avant amortissement), art. 39 C CGI. En mode PLF, le plafond s’applique aux locaux et l’excédent est perdu.</p>';
+}
+function tabC(){
+  var rows=R.C.slice(0,S.horizon);
+  return tbl([
+    {h:'Année',f:yr},{h:'Recettes',f:function(r){return r.loyer;},sum:1},{h:'Abattement forfaitaire',f:function(r){return r.abatt;},sum:1},{h:'Base imposable',f:function(r){return r.base;},sum:1},
+    {h:'IR',f:function(r){return r.ir;},sum:1},{h:'Régime social',f:function(r){return r.socLabel;}},{h:'Prélèv. sociaux / cotis.',f:function(r){return r.ps;},sum:1},{h:'Coût annuel',f:function(r){return r.cout;},sum:1},{h:'Éligible',f:function(r){return r.eligible?'oui':'non';}}
+  ],rows)+'<p class="hint" style="margin-top:8px">Micro-BIC : aucune charge déductible, aucun honoraire comptable obligatoire. Seuil '+n0(R.micro.seuil)+' €, abattement '+R.micro.abatt+' %.</p>';
+}
+function li(lbl,val,ref,tot){ return '<li'+(tot?' class="tot"':'')+'><div class="r"><span>'+lbl+'</span><span>'+val+'</span></div>'+(ref?'<small>'+ref+'</small>':'')+'</li>'; }
+function tabExit(){
+  var h=S.horizon, a=R.exitA(h), b=R.exitB(h), c=R.exitC(h), ppu=S.pfuIR+S.psCapital;
+  function pv(x,title,k,withAm){
+    return '<div><h3><span class="dot dot'+k+'"></span>'+title+'</h3><ol>'+
+      li('Prix de cession',eur(S.prixVente))+
+      li('Frais d’acquisition retenus',eur(x.fraisAcq),'max(frais réels ; 7,5 % du prix)')+
+      li('Travaux retenus',eur(x.travMaj),withAm?'forfait de 15 % du prix si détention &gt; 5 ans (travaux amortis, pas de réel)':'max(travaux réels ; 15 % du prix si détention &gt; 5 ans)')+
+      li(withAm?'Amortissements déduits réintégrés':'Amortissements déduits',withAm?'− '+eur(x.cumDed):eur(0),withAm?'art. 150 VB III CGI : seuls les amortissements effectivement déduits':'micro-BIC : aucun amortissement déduit')+
+      li('Plus-value brute',eur(x.pvb),'prix − (prix d’acquisition + frais + travaux − amortissements)')+
+      li('Abattement IR / PS',pc(x.abtIR*100,1)+' / '+pc(x.abtPS*100,2),'art. 150 VC CGI, '+h+' an'+(h>1?'s':'')+' de détention')+
+      li('Impôt sur le revenu',eur(x.ir),pc(S.irPVI,1)+' × '+eur(x.pvIR))+
+      li('Prélèvements sociaux',eur(x.ps),pc(S.psPVI,1)+' × '+eur(x.pvPS))+
+      li('Taxe sur les plus-values élevées',eur(x.sur),'art. 1609 nonies G CGI, barème BOFiP complet')+
+      li('Coût de sortie',eur(x.total),'',true)+'</ol></div>';
+  }
+  var A='<div><h3><span class="dot dotA"></span>SCI à l’IS</h3><ol>'+
+    li('Prix de cession',eur(S.prixVente))+
+    li('Valeur nette comptable',eur(a.vnc),'prix + travaux − amortissements cumulés des locaux')+
+    li('Plus-value de la société',eur(a.pv))+
+    li('Déficits reportables imputés','− '+eur(a.deficitImpute),'art. 209 I CGI')+
+    li('Base de l’IS',eur(a.baseIS))+
+    li('IS de cession',eur(a.isExit),pc(S.isTauxReduit,1)+' jusqu’à '+eur(S.isSeuil)+', puis '+pc(S.isTaux,1))+
+    li('Actif net à répartir',eur(a.netAssets),'prix − dette restante + trésorerie − IS')+
+    li('Crédit vendeur et avances d’associés',eur(a.contrib),'prix + frais + travaux + mobilier − emprunt bancaire (Feuil1!E41), remboursé à la cession')+
+    li('Boni de liquidation',eur(a.boni),'actif net − crédit vendeur et avances')+
+    li('PFU sur le boni',eur(a.pfuBoni),S.distribBoni?pc(ppu,1)+' × boni':'option désactivée : boni réinvesti')+
+    li('Coût de sortie',eur(a.total),'',true)+'</ol></div>';
+  return '<div class="exit">'+A+pv(b,'LMNP réel','B',true)+pv(c,'Micro-BIC','C',false)+'</div>'+
+    '<p class="hint" style="margin-top:10px">Sortie à '+h+' an'+(h>1?'s':'')+', prix de vente de '+eur(S.prixVente)+'. La durée se règle dans « Sortie et options ».</p>';
+}
+var TABS=[['A','SCI à l’IS',tabA],['B','LMNP réel',tabB],['C','Micro-BIC',tabC],['X','Calcul de la sortie',tabExit]];
+function drawTabs(){
+  $('#tabs').innerHTML=TABS.map(function(t){return '<button type="button" role="tab" data-tab="'+t[0]+'" aria-selected="'+(TAB===t[0])+'">'+t[1]+'</button>';}).join('');
+  var f=TABS.filter(function(t){return t[0]===TAB;})[0];
+  $('#tabBody').innerHTML=f[2]();
+}
+function warns(){
+  var w=R.warns.slice();
+  if(!w.length) w.push({lvl:'info',txt:'Aucun point bloquant sur les paramètres saisis.'});
+  var L={err:'Erreur',warn:'Attention',info:'Info'};
+  $('#warns').innerHTML=w.map(function(x){return '<li class="'+x.lvl+'" style="background:var(--surface2)"><span class="tag '+x.lvl+'">'+L[x.lvl]+'</span><span>'+esc(x.txt)+'</span></li>';}).join('');
+}
+
+function update(){
+  S.horizon=Math.max(1,Math.min(E.MAXN,Math.round(S.horizon)||1));
+  R=E.simulate(S);
+  $('#hVal').textContent=S.horizon;
+  drawRegime(); cards(); legend(); chart(); drawTabs(); warns();
+}
+
+/* ---------- événements ---------- */
+document.addEventListener('input',function(e){
+  var el=e.target;
+  if(el.dataset.c!==undefined){ var c=S.comp[+el.dataset.c]; var v=parseFloat(el.value); c[el.dataset.f]=isNaN(v)?0:v; updateCompSum(); update(); return; }
+  var k=el.dataset.k; if(!k) return;
+  if(el.type==='checkbox') S[k]=el.checked;
+  else if(el.tagName==='SELECT') S[k]=el.value;
+  else { var v2=parseFloat(el.value); S[k]=isNaN(v2)?0:v2; }
+  if(k==='nature') updateCompSum();
+  update();
+});
+document.addEventListener('change',function(e){ if(e.target.id==='plfChk'){ S.regime=e.target.checked?'plf':'actuel'; update(); } });
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.tab){ TAB=b.dataset.tab; drawTabs(); }
+  else if(b.id==='reset'){ S=E.defaults(); syncInputs(); update(); }
+  else if(b.id==='copy'){ copySummary(b); }
+});
+function copySummary(btn){
+  var h=S.horizon, g={A:R.glob.A[h-1],B:R.glob.B[h-1],C:R.glob.C[h-1]};
+  var t='Location meublée, simulation sur '+h+' ans ('+REG.filter(function(r){return r[0]===S.regime;})[0][1]+')\n'+
+    ['A','B','C'].map(function(k){return NAMES[k]+' : '+(g[k].total==null?'non éligible':eur(g[k].total)+' (moyenne '+eur(g[k].total/h)+' par an ; fiscalité et honoraires '+eur(g[k].annual)+' ; sortie '+eur(g[k].exit)+')');}).join('\n')+
+    '\nPrix '+eur(S.prix)+', loyer '+eur(S.loyerMensuel)+' par mois, TMI '+S.tmi+' %, prix de vente '+eur(S.prixVente)+'.\nSimulation indicative.';
+  function done(m){ var o=btn.textContent; btn.textContent=m; setTimeout(function(){btn.textContent=o;},1600); }
+  try{ navigator.clipboard.writeText(t).then(function(){done('Copié');},function(){fallback();}); }catch(err){ fallback(); }
+  function fallback(){ var ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); done('Copié');}catch(e2){done('Copie impossible');} ta.remove(); }
+}
+var rzT; window.addEventListener('resize',function(){ clearTimeout(rzT); rzT=setTimeout(chart,120); });
+
+buildPanel(); update();
+})();
+</script>

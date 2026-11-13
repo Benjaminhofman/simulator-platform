@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulateur succession : conjoint survivant et enfants</title>
+<meta name="description" content="Calculez la répartition et les droits de succession selon l'option du conjoint survivant (usufruit, pleine propriété, donation entre époux), le nombre d'enfants et l'âge du conjoint. Barèmes 2026.">
+<link rel="canonical" href="https://fiscalite-entrepreneur.fr/simulateurs/outils/succession.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="Simulateurs fiscaux — Benjamin Hofman">
+<meta property="og:url" content="https://fiscalite-entrepreneur.fr/simulateurs/outils/succession.html">
+<meta property="og:title" content="Simulateur succession : conjoint survivant et enfants">
+<meta property="og:description" content="Usufruit, pleine propriété, donation au dernier vivant ou testament : estimez la part de chacun, la base taxable et les droits de succession selon votre situation familiale.">
+<meta property="og:image" content="https://simul-succession.onrender.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Simulateur succession : conjoint survivant et enfants">
+<meta name="twitter:description" content="Estimez la part de chacun, la base taxable et les droits de succession selon l'option du conjoint survivant.">
+<meta name="twitter:image" content="https://simul-succession.onrender.com/og-image.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: formulaire à gauche (sticky), résultats à droite ; une colonne sous 820px. Esprit acte notarié : encre bleue, papier chamois. */
+html{color-scheme:light}
+:root{
+  --bg:#f6f4ee; --paper:#ffffff; --fg:#1d2433; --muted:#5f6778; --line:#d9d4c7;
+  --accent:#1a56e8; --accent-soft:#e8eefc; --conjoint:#1a56e8; --enfant:#c7792a; --enfant-soft:#fbefe2;
+  --ok:#1e7f4f; --warn:#9a5b00;
+  --display:"DM Serif Display",Georgia,serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181f;--paper:#1e222b;--fg:#ebe9e2;--muted:#a3a9b7;--line:#353b48;--accent:#7ea0ff;--accent-soft:#232c45;--conjoint:#7ea0ff;--enfant:#e9a05a;--enfant-soft:#3a2d1e;--ok:#5fc48c;--warn:#e0a94d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15181f;--paper:#1e222b;--fg:#ebe9e2;--muted:#a3a9b7;--line:#353b48;--accent:#7ea0ff;--accent-soft:#232c45;--conjoint:#7ea0ff;--enfant:#e9a05a;--enfant-soft:#3a2d1e;--ok:#5fc48c;--warn:#e0a94d;color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 48px;padding-inline:20px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;border-bottom:2px solid var(--fg);padding-bottom:14px;margin-bottom:24px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,4vw,40px);line-height:1.1;margin:0;text-wrap:balance}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.grid{display:grid;grid-template-columns:340px minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:20px}
+form.panel{position:sticky;top:env(safe-area-inset-top,0px)}
+@media (max-width:820px){form.panel{position:static}}
+h2{font-family:var(--display);font-weight:400;font-size:20px;margin:0 0 14px}
+h3{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:600}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+label{font-weight:500;font-size:14px}
+.hint{font-size:12.5px;color:var(--muted)}
+input[type=number],select{font:inherit;font-variant-numeric:tabular-nums;padding:9px 10px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--fg);width:100%}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.seg label{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1px solid var(--line);border-radius:4px;cursor:pointer;font-weight:500;font-size:13.5px;background:var(--bg)}
+.seg label:has(input:checked){border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.seg input{accent-color:var(--accent);margin:0}
+.radios{display:flex;flex-direction:column;gap:6px}
+.radios label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:4px;cursor:pointer;background:var(--bg);font-weight:400;line-height:1.35}
+.radios label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.radios label.off{opacity:.45;cursor:not-allowed}
+.radios input{accent-color:var(--accent);margin-top:3px}
+.radios b{display:block;font-weight:600}
+.radios small{color:var(--muted);font-size:12.5px}
+
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+@media (max-width:560px){.kpis{grid-template-columns:1fr}}
+.kpi{border-top:3px solid var(--line);padding-top:8px}
+.kpi.c{border-color:var(--conjoint)} .kpi.e{border-color:var(--enfant)} .kpi.d{border-color:var(--fg)}
+.kpi .v{font-family:var(--display);font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12.5px;color:var(--muted);margin-top:4px}
+
+.bar{display:flex;height:34px;border-radius:4px;overflow:hidden;margin:6px 0 10px;font-size:12.5px;font-weight:600;color:#fff}
+.bar div{display:flex;align-items:center;justify-content:center;min-width:0;white-space:nowrap;overflow:hidden;padding:0 4px}
+.bar .c{background:var(--conjoint)} .bar .cu{background:var(--conjoint);opacity:.55}
+.bar .e{background:var(--enfant)} .bar .eu{background:var(--enfant);opacity:.65}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.5px;color:var(--muted);margin-bottom:18px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:-1px;margin-right:6px}
+
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600}
+tr.total td{font-weight:600;border-top:2px solid var(--fg);border-bottom:none}
+.tscroll{overflow-x:auto;margin-bottom:22px}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.steps code{font-family:var(--mono);font-size:12.5px;background:var(--accent-soft);padding:1px 5px;border-radius:3px}
+.note{border-left:3px solid var(--enfant);background:var(--enfant-soft);padding:10px 14px;border-radius:0 4px 4px 0;font-size:13.5px;margin-top:18px}
+.note.blue{border-color:var(--accent);background:var(--accent-soft)}
+.cmp td.best{color:var(--ok);font-weight:600}
+.cmp tr.sel td{background:var(--accent-soft)}
+.tag{display:inline-block;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:var(--accent);color:#fff;margin-left:6px;vertical-align:1px}
+footer{margin-top:28px;font-size:12.5px;color:var(--muted);line-height:1.55}
+footer p{margin:4px 0}
+@media (prefers-reduced-motion:no-preference){.bar div{transition:flex .35s ease}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <div class="eyebrow">Simulateur fiscal 2026</div>
+    <h1>Succession : conjoint survivant et enfants</h1>
+  </div>
+  <div class="hint">Droits de succession selon l'option du conjoint (art. 757 et 1094-1 C. civ., art. 669, 777, 779 CGI)</div>
+</header>
+
+<div class="grid">
+<form class="panel" id="f" autocomplete="off">
+  <h2>Situation</h2>
+  <div class="field">
+    <label for="actif">Actif net successoral du défunt (€)</label>
+    <input type="number" id="actif" value="400000" min="0" step="1000">
+    <span class="hint">Après liquidation du régime matrimonial : biens propres + part du défunt dans la communauté, dettes déduites.</span>
+  </div>
+  <div class="field">
+    <label for="nb">Nombre d'enfants</label>
+    <input type="number" id="nb" value="2" min="1" max="12" step="1">
+  </div>
+  <div class="field">
+    <label>Les enfants sont-ils tous communs aux deux époux ?</label>
+    <div class="seg">
+      <label><input type="radio" name="communs" value="1" checked> Oui</label>
+      <label><input type="radio" name="communs" value="0"> Non</label>
+    </div>
+    <span class="hint">Sans donation entre époux ni testament, la présence d'au moins un enfant non commun limite les droits légaux du conjoint à 1/4 en pleine propriété (art. 757 C. civ.).</span>
+  </div>
+  <div class="field">
+    <label>Donation au dernier vivant ou testament en faveur du conjoint ?</label>
+    <div class="seg">
+      <label><input type="radio" name="ddv" value="0" checked> Non</label>
+      <label><input type="radio" name="ddv" value="1"> Oui</label>
+    </div>
+    <span class="hint">Ouvre les options de l'art. 1094-1 C. civ., y compris la totalité en usufruit en présence d'enfants d'une autre union.</span>
+  </div>
+  <div class="field">
+    <label for="age">Âge du conjoint survivant (usufruitier)</label>
+    <input type="number" id="age" value="65" min="18" max="110" step="1">
+    <span class="hint">Détermine la valeur fiscale de l'usufruit (barème art. 669 CGI).</span>
+  </div>
+  <div class="field">
+    <label>Option retenue par le conjoint</label>
+    <div class="radios" id="opts">
+      <label><input type="radio" name="opt" value="US" checked><span><b>Totalité en usufruit</b><small>Dévolution légale si tous les enfants sont communs ; sinon, par donation entre époux ou testament.</small></span></label>
+      <label><input type="radio" name="opt" value="PP"><span><b>1/4 en pleine propriété</b><small>Dévolution légale. Les enfants se partagent les 3/4.</small></span></label>
+      <label><input type="radio" name="opt" value="MIX"><span><b>1/4 en pleine propriété + 3/4 en usufruit</b><small>Nécessite une donation entre époux ou un testament.</small></span></label>
+      <label><input type="radio" name="opt" value="QD"><span><b>Quotité disponible en pleine propriété</b><small>Nécessite une donation entre époux ou un testament.</small></span></label>
+    </div>
+  </div>
+</form>
+
+<section>
+  <div class="panel">
+    <h2 id="titre">Répartition au premier décès</h2>
+    <div class="kpis">
+      <div class="kpi c"><div class="v" id="kc">—</div><div class="l">Part du conjoint (valeur fiscale), exonérée</div></div>
+      <div class="kpi e"><div class="v" id="ke">—</div><div class="l" id="kel">Part de chaque enfant (valeur fiscale)</div></div>
+      <div class="kpi d"><div class="v" id="kd">—</div><div class="l">Droits de succession totaux</div></div>
+    </div>
+
+    <h3>Répartition de l'actif</h3>
+    <div class="bar" id="bar"></div>
+    <div class="legend" id="legend"></div>
+
+    <h3>Détail par héritier</h3>
+    <div class="tscroll"><table id="detail"><thead><tr><th>Héritier</th><th>Nature des droits</th><th>Part (€)</th><th>Abattement</th><th>Base taxable</th><th>Droits dus</th></tr></thead><tbody></tbody></table></div>
+
+    <h3>Méthode de calcul</h3>
+    <ol class="steps" id="steps"></ol>
+    <div id="notes"></div>
+  </div>
+
+  <div class="panel" style="margin-top:20px">
+    <h2 id="cmpTitre">Comparaison des options</h2>
+    <div class="tscroll"><table class="cmp" id="cmp"><thead><tr><th>Option du conjoint</th><th>Conjoint</th><th>Chaque enfant</th><th>Droits totaux</th></tr></thead><tbody></tbody></table></div>
+    <div class="hint">Seules les options ouvertes dans la situation saisie sont comparées. Les options « 1/4 PP + 3/4 usufruit » et « quotité disponible » supposent une donation au dernier vivant ou un testament. La plus faible imposition n'est pas toujours le meilleur choix : l'usufruit protège le conjoint, la pleine propriété lui donne la libre disposition des biens.</div>
+  </div>
+</section>
+</div>
+
+<footer>
+  <p><strong>Barème de l'usufruit (art. 669 CGI)</strong> : moins de 21 ans 90 % · 21 à 30 ans 80 % · 31 à 40 ans 70 % · 41 à 50 ans 60 % · 51 à 60 ans 50 % · 61 à 70 ans 40 % · 71 à 80 ans 30 % · 81 à 90 ans 20 % · 91 ans et plus 10 %.</p>
+  <p><strong>Barème en ligne directe (art. 777 CGI)</strong>, après abattement de 100 000 € par enfant (art. 779) : 5 % jusqu'à 8 072 € · 10 % jusqu'à 12 109 € · 15 % jusqu'à 15 932 € · 20 % jusqu'à 552 324 € · 30 % jusqu'à 902 838 € · 40 % jusqu'à 1 805 677 € · 45 % au-delà.</p>
+  <p>Hypothèses : enfants majeurs non handicapés, aucune donation rapportable dans les 15 ans, pas d'assurance-vie ni de biens exonérés (Dutreil, bois et forêts…). Outil à titre indicatif, ne constitue pas un conseil personnalisé. Faites valider la liquidation par le notaire chargé de la succession.</p>
+</footer>
+</div>
+
+<script>
+const BAREME=[[8072,.05],[12109,.10],[15932,.15],[552324,.20],[902838,.30],[1805677,.40],[Infinity,.45]];
+const ABATT=100000;
+function tauxUS(age){ if(age<21)return .9; if(age<31)return .8; if(age<41)return .7; if(age<51)return .6; if(age<61)return .5; if(age<71)return .4; if(age<81)return .3; if(age<91)return .2; return .1; }
+function droits(base){ let d=0,prev=0; for(const [lim,t] of BAREME){ if(base<=prev)break; d+=(Math.min(base,lim)-prev)*t; prev=lim; } return Math.round(d); }
+function quotite(n){ return n===1?1/2:n===2?1/3:1/4; }
+const eur=v=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(v);
+const pct=v=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:1}).format(v*100)+' %';
+
+const LIB={US:'Totalité en usufruit',PP:'1/4 en pleine propriété',MIX:'1/4 en PP + 3/4 en usufruit',QD:'Quotité disponible en PP'};
+
+function calc(opt,A,n,age){
+  const u=tauxUS(age), np=1-u, qd=quotite(n);
+  let conjoint=0, cNature='', enfPart=0, eNature='', frac={cPP:0,cUS:0,ePP:0,eNP:0};
+  if(opt==='US'){ conjoint=A*u; cNature='Usufruit de la totalité ('+pct(u)+')'; enfPart=A*np/n; eNature='Nue-propriété ('+pct(np)+') de 1/'+n; frac={cPP:0,cUS:1,ePP:0,eNP:1}; }
+  else if(opt==='PP'){ conjoint=A/4; cNature='1/4 en pleine propriété'; enfPart=A*3/4/n; eNature='Pleine propriété de 3/4 ÷ '+n; frac={cPP:.25,cUS:0,ePP:.75,eNP:0}; }
+  else if(opt==='MIX'){ conjoint=A/4+A*3/4*u; cNature='1/4 en PP + usufruit ('+pct(u)+') des 3/4'; enfPart=A*3/4*np/n; eNature='Nue-propriété ('+pct(np)+') de 3/4 ÷ '+n; frac={cPP:.25,cUS:.75,ePP:0,eNP:.75}; }
+  else { conjoint=A*qd; cNature='Quotité disponible ('+(n===1?'1/2':n===2?'1/3':'1/4')+') en PP'; enfPart=A*(1-qd)/n; eNature='Pleine propriété de la réserve ÷ '+n; frac={cPP:qd,cUS:0,ePP:1-qd,eNP:0}; }
+  const base=Math.max(0,enfPart-ABATT), dEnf=droits(base);
+  return {conjoint,cNature,enfPart,eNature,base,dEnf,total:dEnf*n,u,np,frac};
+}
+
+function render(){
+  const A=Math.max(0,+document.getElementById('actif').value||0);
+  const n=Math.min(12,Math.max(1,Math.round(+document.getElementById('nb').value||1)));
+  const age=Math.min(110,Math.max(18,Math.round(+document.getElementById('age').value||65)));
+  const communs=document.querySelector('input[name=communs]:checked').value==='1';
+  const ddv=document.querySelector('input[name=ddv]:checked').value==='1';
+  // Options ouvertes : art. 757 (légal) ou art. 1094-1 (donation entre époux / testament)
+  const ouvert={US:ddv||communs, PP:true, MIX:ddv, QD:ddv};
+  document.querySelectorAll('#opts label').forEach(l=>{const i=l.querySelector('input');const ok=ouvert[i.value];l.classList.toggle('off',!ok);i.disabled=!ok;});
+  if(document.querySelector('input[name=opt]:checked').disabled) document.querySelector('input[name=opt][value=PP]').checked=true;
+  const opt=document.querySelector('input[name=opt]:checked').value;
+  const optionLegale=!ddv&&communs;
+  const r=calc(opt,A,n,age);
+
+  document.getElementById('titre').textContent='Répartition au premier décès — '+LIB[opt];
+  document.getElementById('kc').textContent=eur(r.conjoint);
+  document.getElementById('ke').textContent=eur(r.enfPart);
+  document.getElementById('kel').textContent=(n>1?'Part de chaque enfant':'Part de l’enfant')+' (valeur fiscale)';
+  document.getElementById('kd').textContent=eur(r.total);
+
+  // Barre
+  const f=r.frac, segs=[];
+  if(f.cPP)segs.push(['c',f.cPP,'Conjoint PP']);
+  if(f.cUS)segs.push(['cu',f.cUS*r.u,'Conjoint usufruit']);
+  if(f.eNP)segs.push(['eu',f.eNP*r.np,'Enfants nue-propriété']);
+  if(f.ePP)segs.push(['e',f.ePP,'Enfants PP']);
+  document.getElementById('bar').innerHTML=segs.map(s=>`<div class="${s[0]}" style="flex:${s[1]}" title="${s[2]} ${pct(s[1])}">${pct(s[1])}</div>`).join('');
+  document.getElementById('legend').innerHTML=segs.map(s=>`<span><i class="${s[0]}" style="background:var(--${s[0][0]==='c'?'conjoint':'enfant'});opacity:${s[0].length>1?.6:1}"></i>${s[2]}</span>`).join('');
+
+  // Détail
+  let rows=`<tr><td>Conjoint survivant</td><td style="text-align:left">${r.cNature}</td><td>${eur(r.conjoint)}</td><td>exonéré</td><td>—</td><td>0 €</td></tr>`;
+  for(let i=1;i<=n;i++) rows+=`<tr><td>Enfant ${n>1?i:''}</td><td style="text-align:left">${r.eNature}</td><td>${eur(r.enfPart)}</td><td>${eur(Math.min(ABATT,r.enfPart))}</td><td>${eur(r.base)}</td><td>${eur(r.dEnf)}</td></tr>`;
+  rows+=`<tr class="total"><td colspan="2">Total</td><td>${eur(r.conjoint+r.enfPart*n)}</td><td></td><td></td><td>${eur(r.total)}</td></tr>`;
+  document.querySelector('#detail tbody').innerHTML=rows;
+
+  // Étapes
+  const st=[];
+  st.push(`Actif net successoral retenu : <code>${eur(A)}</code>.`);
+  if(f.cUS) st.push(`Conjoint âgé de ${age} ans : usufruit valorisé à <code>${pct(r.u)}</code>, nue-propriété à <code>${pct(r.np)}</code> (art. 669 CGI).`);
+  if(opt==='QD') st.push(`${n} enfant${n>1?'s':''} : réserve héréditaire de ${n===1?'1/2':n===2?'2/3':'3/4'}, quotité disponible de ${n===1?'1/2':n===2?'1/3':'1/4'} (art. 913 C. civ.).`);
+  st.push(`Part fiscale du conjoint : <code>${eur(r.conjoint)}</code>, exonérée de droits (art. 796-0 bis CGI).`);
+  st.push(`Part fiscale de chaque enfant : <code>${eur(r.enfPart)}</code> ; abattement de <code>${eur(ABATT)}</code> (art. 779 CGI) ; base taxable <code>${eur(r.base)}</code>.`);
+  if(r.base>0){
+    const quick=r.base>15932&&r.base<=552324?` Formule rapide : ${eur(r.base)} × 20 % − 1 806 € = <code>${eur(r.dEnf)}</code>.`:'';
+    st.push(`Droits par enfant selon le barème progressif de l'art. 777 CGI : <code>${eur(r.dEnf)}</code>.${quick}`);
+  } else st.push(`Base taxable nulle : aucun droit à payer pour ${n>1?'les enfants':'l’enfant'}.`);
+  st.push(`Droits totaux de la succession : ${n} × ${eur(r.dEnf)} = <code>${eur(r.total)}</code>.`);
+  document.getElementById('steps').innerHTML=st.map(s=>`<li>${s}</li>`).join('');
+
+  // Notes
+  let notes='';
+  if(f.cUS){
+    notes+=`<div class="note blue"><strong>Au décès du conjoint usufruitier</strong> : l'usufruit s'éteint (art. 617 C. civ.) et ${n>1?'les enfants deviennent':'l’enfant devient'} plein${n>1?'s':''} propriétaire${n>1?'s':''} des biens démembrés sans nouveaux droits (art. 1133 CGI), soit <strong>${eur(A*(f.cUS))}</strong> de valeur en pleine propriété au titre de cette succession, même si les biens se sont valorisés. Les biens personnels du conjoint restent taxés dans sa propre succession, avec un nouvel abattement de 100 000 € par enfant.</div>`;
+    notes+=`<div class="note"><strong>Quasi-usufruit</strong> : sur les liquidités, le conjoint peut disposer des fonds mais doit restituer, à l'extinction de l'usufruit, une somme équivalente (art. 587 C. civ.). La créance de restitution issue d'un usufruit relevant des art. 757 ou 1094-1 C. civ. n'est pas visée par la non-déductibilité de l'art. 774 bis CGI. Sa formalisation par acte et sa justification restent fortement recommandées.</div>`;
+  }
+  if(optionLegale) notes+=`<div class="note blue"><strong>Exercice de l'option légale</strong> (art. 757 C. civ.) : tout héritier peut inviter par écrit le conjoint à choisir entre usufruit et pleine propriété. À défaut de réponse écrite dans les trois mois, le conjoint est réputé avoir opté pour l'usufruit (art. 758-3 et 758-4 C. civ.).</div>`;
+  if(!communs&&!ddv) notes+=`<div class="note"><strong>Enfant d'une autre union</strong> : sans donation entre époux ni testament, le conjoint n'a droit qu'au 1/4 en pleine propriété. Une donation au dernier vivant lui ouvrirait les options de l'art. 1094-1, dont la totalité en usufruit. Cet enfant n'héritera pas du conjoint survivant au second décès, sauf testament (droits de 60 % entre non-parents).</div>`;
+  if(!communs&&ddv) notes+=`<div class="note"><strong>Enfant d'une autre union</strong> : la donation entre époux permet au conjoint de retenir l'une des options de l'art. 1094-1, y compris l'usufruit total, malgré la présence d'un enfant non commun. Cet enfant n'héritera pas du conjoint survivant au second décès, sauf testament (droits de 60 % entre non-parents).</div>`;
+  if(ddv) notes+=`<div class="note"><strong>Donation au dernier vivant</strong> : les options retenues ici relèvent de l'art. 1094-1 C. civ. et supposent une donation entre époux ou un testament valable au jour du décès.</div>`;
+  document.getElementById('notes').innerHTML=notes;
+
+  // Comparaison : seules les options ouvertes
+  const opts=['US','PP','MIX','QD'].filter(o=>ouvert[o]);
+  document.getElementById('cmpTitre').textContent=opts.length===1?'Option ouverte au conjoint':'Comparaison des '+['','','deux','trois','quatre'][opts.length]+' options';
+  const res=opts.map(o=>[o,calc(o,A,n,age)]);
+  const best=Math.min(...res.map(x=>x[1].total));
+  document.querySelector('#cmp tbody').innerHTML=res.map(([o,x])=>`<tr class="${o===opt?'sel':''}"><td>${LIB[o]}${o===opt?'<span class="tag">choisie</span>':''}</td><td>${eur(x.conjoint)}</td><td>${eur(x.enfPart)}</td><td class="${x.total===best?'best':''}">${eur(x.total)}</td></tr>`).join('');
+}
+document.getElementById('f').addEventListener('input',render);
+document.getElementById('f').addEventListener('submit',e=>e.preventDefault());
+render();
+</script>
+</body>
+</html>

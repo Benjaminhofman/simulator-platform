@@ -1,0 +1,790 @@
+<title>Rémunération ou dividendes, SAS ou SARL</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Mise en page : une colonne de saisie courte, puis le résultat en grand ; le détail d'audit est replié. */
+:root{
+  --bg:#f3f6f6; --surface:#ffffff; --ink:#12292b; --muted:#56696b; --line:#d3dddd;
+  --accent:#0d5c5f; --accent-soft:#dcebea; --warn:#9a5b00; --warn-soft:#fbeed6;
+  --bad:#a3262b; --bad-soft:#f8dedf; --good:#1c6b3c; --good-soft:#dcefe2;
+  --c1:#0d5c5f; --c2:#b0762a; --c3:#7b5ea7; --c4:#8a9a9b; --c5:#c2cccc; --c6:#2f8f5b;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1819; --surface:#162425; --ink:#e4eeee; --muted:#9db0b1; --line:#2c4042;
+  --accent:#5fc3c0; --accent-soft:#1c3a3b; --warn:#e8b25a; --warn-soft:#3a2e15;
+  --bad:#f08a8d; --bad-soft:#3d1e20; --good:#74cf98; --good-soft:#183424;
+  --c1:#5fc3c0; --c2:#e0a857; --c3:#b29be0; --c4:#7f9495; --c5:#43595a; --c6:#74cf98; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0e1819; --surface:#162425; --ink:#e4eeee; --muted:#9db0b1; --line:#2c4042;
+  --accent:#5fc3c0; --accent-soft:#1c3a3b; --warn:#e8b25a; --warn-soft:#3a2e15;
+  --bad:#f08a8d; --bad-soft:#3d1e20; --good:#74cf98; --good-soft:#183424;
+  --c1:#5fc3c0; --c2:#e0a857; --c3:#b29be0; --c4:#7f9495; --c5:#43595a; --c6:#74cf98; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:24px 56px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1{font-size:1.75rem;line-height:1.2;margin:0;font-weight:600;text-wrap:balance}
+h2{font-size:1.1rem;margin:0;font-weight:600}
+h3{font-size:.95rem;margin:0;font-weight:600}
+p{margin:0}
+.lead{color:var(--muted);max-width:65ch}
+.tag{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label,.lbl{font-size:.85rem;font-weight:500}
+.field small{color:var(--muted);font-size:.78rem}
+input[type=text],select{font:inherit;font-family:var(--mono);padding:9px 10px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);width:100%}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choices button{font:inherit;padding:9px 14px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:4px;cursor:pointer}
+.choices button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
+.btn{font:inherit;padding:8px 12px;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:4px;cursor:pointer}
+.note{font-size:.85rem;padding:9px 12px;border-radius:4px;background:var(--accent-soft)}
+.note.warn{background:var(--warn-soft);color:var(--warn)} .note.bad{background:var(--bad-soft);color:var(--bad)} .note.good{background:var(--good-soft);color:var(--good)}
+details{border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font-weight:600}
+details>*:not(summary){margin-top:12px}
+.hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;align-items:end}
+.fig{display:flex;flex-direction:column;gap:2px;min-width:0}
+.fig b{font-family:var(--mono);font-weight:500;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.fig.big b{font-size:2.2rem;color:var(--accent)}
+.fig span{font-size:.8rem;color:var(--muted)}
+.bar{display:flex;height:30px;border-radius:4px;overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:6px 16px;font-size:.85rem}
+.legend div{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.legend span{display:flex;gap:8px;align-items:center}
+.sw{width:11px;height:11px;border-radius:2px;flex:none}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--muted);font-size:.78rem}
+tr.hl td{background:var(--accent-soft);font-weight:600}
+.chip{display:inline-block;font-size:.72rem;padding:2px 7px;border-radius:10px;font-weight:600;white-space:nowrap}
+.chip.v{background:var(--good-soft);color:var(--good)} .chip.u{background:var(--warn-soft);color:var(--warn)} .chip.x{background:var(--bad-soft);color:var(--bad)}
+svg text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+.pt input{width:9.5em;padding:5px 6px}
+a{color:var(--accent)}
+ul{margin:0;padding-left:20px} li{margin:2px 0}
+.info{font:inherit;font-size:.78rem;width:22px;height:22px;border-radius:50%;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;margin-left:6px;padding:0;line-height:1}
+#pop{position:fixed;z-index:20;width:min(360px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--accent);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+#pop .legend{grid-template-columns:1fr}
+#pop[hidden]{display:none!important}
+.result{border-color:var(--accent);border-width:2px;gap:16px}
+.split{display:flex;flex-direction:column;gap:6px}
+.split .line{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.split .line b{font-family:var(--mono);font-weight:500;font-size:1.5rem;font-variant-numeric:tabular-nums}
+.split .line span,.split .total span{color:var(--muted);font-size:.9rem}
+.split .total{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;border-top:1px solid var(--line);padding-top:10px;margin-top:4px}
+.split .total b{font-family:var(--mono);font-weight:500;font-size:2.6rem;line-height:1.1;color:var(--accent);font-variant-numeric:tabular-nums}
+.delta{font-weight:600} .zone{font-weight:500}
+.checks{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 16px}
+.checks li{display:flex;gap:8px;align-items:baseline;margin:0}
+.mark{flex:none;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600;background:var(--good-soft);color:var(--good)}
+.mark.w{background:var(--warn-soft);color:var(--warn)} .mark.n{background:var(--accent-soft);color:var(--accent)}
+.quiet{font-size:.88rem;color:var(--muted)} .quiet details{border-top:0;padding-top:0}
+details details{margin-left:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+.sub{border:1px solid var(--line);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.sub.win{border-color:var(--good);border-width:2px}
+.tabs button{font-weight:600}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+@media print{ .noprint{display:none!important} body{background:#fff} }
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <span class="tag" id="brand"></span>
+    <h1>SAS ou SARL : salaire ou dividendes, quel arbitrage optimal ?</h1>
+    <p class="lead">Estimez en deux minutes la répartition qui vous laisse le plus après cotisations sociales, impôt sur les sociétés et impôt sur le revenu, et ce qu'elle change pour votre retraite.</p>
+    <p class="note" id="yearNote"></p>
+  </header>
+
+  <section class="panel" aria-labelledby="s1">
+    <h2 id="s1">Simulation rapide</h2>
+    <div class="field"><span class="lbl">Votre société (à l'impôt sur les sociétés)</span><div class="choices" id="formeC"></div></div>
+    <div class="field" id="statutF"><span class="lbl">Votre situation</span><div class="choices" id="statutC"></div>
+      <small>L'associé unique gérant d'une EURL est gérant majoritaire. Vous l'êtes aussi si vous détenez plus de 50 % des parts, en comptant celles de votre conjoint ou partenaire de Pacs, de vos enfants mineurs, des autres gérants et des sociétés que vous contrôlez.</small></div>
+    <div class="grid">
+      <div class="field"><label for="p">Bénéfice avant votre rémunération et avant IS (€)</label><input type="text" inputmode="decimal" id="p" value="100 000">
+        <small>Le résultat prévisionnel de l'année avant de vous payer.</small></div>
+      <div class="field"><label for="situation">Situation fiscale</label><select id="situation"><option value="1">Célibataire, divorcé ou veuf</option><option value="2">Marié ou pacsé</option></select></div>
+      <div class="field"><label for="parts">Nombre de parts fiscales</label><input type="text" inputmode="decimal" id="parts" value="1"></div>
+    </div>
+    <div class="field"><span class="lbl">Votre objectif</span><div class="choices" id="objC"></div></div>
+    <p class="note" id="regime" aria-live="polite"></p>
+
+    <details class="noprint"><summary>Affiner ma simulation</summary>
+      <p class="lead">Facultatif. Les valeurs par défaut sont indiquées dans chaque champ.</p>
+      <div class="grid">
+        <div class="field" id="actF"><label for="activite">Votre activité</label>
+          <select id="activite"><option value="merchant">Commerçant</option><option value="artisan">Artisan</option><option value="liberal">Profession libérale non réglementée</option></select></div>
+        <div class="field"><label for="capital">Capital social (€)</label><input type="text" inputmode="decimal" id="capital" value="10 000"></div>
+        <div class="field"><label for="pct">Part du capital que vous détenez (%)</label><input type="text" inputmode="decimal" id="pct" value="100">
+          <small>Avec votre conjoint ou partenaire de Pacs et vos enfants mineurs.</small></div>
+        <div class="field" id="ccaF"><label for="cca">Compte courant d'associé (€)</label><input type="text" inputmode="decimal" id="cca" value="0">
+          <small>Sert à calculer la part de dividendes soumise à cotisations.</small></div>
+        <div class="field"><label for="autres">Autres revenus imposables du foyer (€)</label><input type="text" inputmode="decimal" id="autres" value="0">
+          <small>Revenu net imposable hors cette société.</small></div>
+        <div class="field"><label for="curR">Votre rémunération actuelle (€)</label><input type="text" inputmode="decimal" id="curR" value="">
+          <small id="curRH"></small></div>
+        <div class="field"><label for="curD">Vos dividendes actuels (€)</label><input type="text" inputmode="decimal" id="curD" value="">
+          <small>Pour comparer la recommandation à votre situation.</small></div>
+        <div class="field"><label for="divOpt">Imposition des dividendes</label><select id="divOpt"><option value="auto">La plus favorable</option><option value="pfu">Prélèvement forfaitaire unique</option><option value="bar">Barème progressif</option></select></div>
+        <div class="field"><label for="isRed">Taux réduit d'IS à 15 %</label><select id="isRed"><option value="1">La société y a droit</option><option value="0">La société n'y a pas droit</option></select></div>
+      </div>
+      <h3>Retraite</h3>
+      <div class="grid">
+        <div class="field"><label for="rachat">Coût de rachat d'un trimestre (€)</label><input type="text" inputmode="decimal" id="rachat" value="5 500">
+          <small>Compté pour chaque trimestre non validé. 0 pour l'ignorer.</small></div>
+        <div class="field"><label for="valRet">Droits de retraite dans le classement</label><select id="valRet"><option value="1">Comptés à leur valeur nette</option><option value="0">Affichés pour information seulement</option></select>
+          <small>Pension acquise dans l'année, versée de l'âge légal jusqu'à l'espérance de vie moyenne.</small></div>
+        <div class="field"><label for="best25">Cette année comptera-t-elle parmi vos 25 meilleures ?</label><select id="best25"><option value="1">Oui</option><option value="0">Non, elles sont déjà acquises</option></select>
+          <small>Si non, le salaire de l'année n'augmente plus la pension de base.</small></div>
+      </div>
+
+      <details><summary>Hypothèses techniques</summary>
+        <p class="lead">Pour l'expert-comptable.</p>
+        <div class="grid">
+          <div class="field"><label for="primes">Primes d'émission (€)</label><input type="text" inputmode="decimal" id="primes" value="0"></div>
+          <div class="field"><label for="rl">Réserve légale déjà constituée (€)</label><input type="text" inputmode="decimal" id="rl" value="0"></div>
+          <div class="field"><label for="pertes">Pertes antérieures à apurer (€)</label><input type="text" inputmode="decimal" id="pertes" value="0"></div>
+          <div class="field"><label for="reserves">Réserves et report à nouveau distribuables (€)</label><input type="text" inputmode="decimal" id="reserves" value="">
+            <small>Laissez vide si vous ne le savez pas.</small></div>
+          <div class="field"><label for="inclRes">Distribuer aussi les réserves</label><select id="inclRes"><option value="0">Non, seulement le bénéfice de l'année</option><option value="1">Oui</option></select></div>
+          <div class="field"><label for="deficits">Déficits fiscaux reportables (€)</label><input type="text" inputmode="decimal" id="deficits" value="0"></div>
+          <div class="field"><label for="reint">Réintégrations moins déductions fiscales (€)</label><input type="text" inputmode="decimal" id="reint" value="0"></div>
+          <div class="field" id="minF"><label for="applyMin">Cotisations minimales</label><select id="applyMin"><option value="1">Appliquées (année complète)</option><option value="0">Non appliquées</option></select></div>
+          <div class="field"><label for="irPension">Impôt sur le revenu moyen sur la pension (%)</label><input type="text" inputmode="decimal" id="irPension" value="10">
+            <small>Les prélèvements sociaux sur les pensions s'y ajoutent.</small></div>
+          <div class="field"><label for="actu">Taux d'actualisation annuel (%)</label><input type="text" inputmode="decimal" id="actu" value="0"></div>
+          <div class="field"><label for="age">Âge du dirigeant</label><input type="text" inputmode="decimal" id="age" value="45">
+            <small>Utilisé seulement si le taux d'actualisation n'est pas nul.</small></div>
+          <div class="field"><label for="tol">Baisse de revenu acceptée pour la retraite (%)</label><input type="text" inputmode="decimal" id="tol" value="5"></div>
+          <div class="field"><label for="special">Situation particulière</label><select id="special"><option value="0">Aucune</option><option value="1">ACRE, début d'activité, outre-mer, conjoint collaborateur, Cipav ou autre caisse, exercice différent de 12 mois, non-résident</option></select></div>
+          <div class="field" id="majF"><label for="majInc">Caractère majoritaire</label><select id="majInc"><option value="0">Certain</option><option value="1">Incertain (indivision, nue-propriété, holding, collège de gérance)</option></select></div>
+        </div>
+      </details>
+    </details>
+  </section>
+
+  <nav class="choices tabs noprint" id="tabC" aria-label="Vues du simulateur"></nav>
+  <div id="pop" role="tooltip" hidden></div>
+  <div id="out" aria-live="polite" style="display:flex;flex-direction:column;gap:22px"></div>
+
+  <section class="quiet noprint" aria-label="Hypothèses et sources">
+    <details><summary><span id="srcSum"></span> Voir les hypothèses et sources</summary>
+      <p>Chaque paramètre réglementaire est listé avec sa source. Un paramètre non vérifié rend le calcul approximatif.</p>
+      <div class="tw"><table class="pt" id="ptable"></table></div>
+      <details id="expertD"><summary>Mode expert : corriger ou valider les paramètres</summary>
+        <p>Les champs du tableau deviennent modifiables. Vos validations restent dans ce navigateur.</p>
+        <div class="choices"><button class="btn" id="valAll" type="button">Valider toutes les valeurs proposées</button><button class="btn" id="resetP" type="button">Revenir aux valeurs d'origine</button><button class="btn" id="runT" type="button">Lancer les contrôles du moteur</button></div>
+        <div id="tests"></div>
+      </details>
+    </details>
+  </section>
+
+  <footer style="display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:.85rem">
+    <p>Cette simulation est indicative et dépend des informations renseignées. Elle ne constitue pas un conseil fiscal, juridique ou social personnalisé. Faites valider votre stratégie par votre expert-comptable.</p>
+    <p>Calculs réalisés localement dans votre navigateur. Aucune donnée n'est transmise.</p>
+    <p id="contact"></p>
+  </footer>
+</div>
+
+<script>
+"use strict";
+/* ============ 1. PARAMÈTRES RÉGLEMENTAIRES ============
+   statut : v = vérifié sur la source officielle le 05/10/2026 ; u = fourni par le cabinet, non confirmé ;
+   x = valeur proposée, non vérifiée (bloque le calcul tant qu'elle n'est pas validée). */
+var LF = "https://www.legifrance.gouv.fr/codes/article_lc/", BF = "https://bofip.impots.gouv.fr/bofip/";
+var YEAR = 2026, VERIFIED_AT = "2026-10-05";
+function P(k, l, v, s, n, u) { return { key: k, label: l, value: v, status: s, sourceName: n, sourceUrl: u || "", year: YEAR, verifiedAt: s === "v" ? VERIFIED_AT : "" }; }
+var PARAM_LIST = [
+  P("gen.pass", "Plafond annuel de la sécurité sociale (€)", 48060, "v", "Arrêté du 22 décembre 2025", "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000053143451"),
+  P("gen.smicJan", "SMIC horaire au 1er janvier (€)", 12.02, "u", "Déduit de l'assiette minimale de 5 409 € indiquée par le cabinet"),
+  P("is.normal", "IS, taux normal", 0.25, "v", "CGI art. 219", LF + "LEGIARTI000053542939"),
+  P("is.reduit", "IS, taux réduit", 0.15, "v", "BOI-IS-LIQ-20-20", BF + "2065-PGP.html/identifiant=BOI-IS-LIQ-20-20-20230621"),
+  P("is.plafondReduit", "IS, bénéfice au taux réduit (€)", 42500, "v", "BOI-IS-LIQ-20-20", BF + "2065-PGP.html/identifiant=BOI-IS-LIQ-20-20-20230621"),
+  P("soc.reserveTaux", "Réserve légale, dotation minimale", 0.05, "v", "Code de commerce art. L. 232-10", LF + "LEGIARTI000051322888"),
+  P("soc.reservePlafond", "Réserve légale, plafond (part du capital)", 0.10, "v", "Code de commerce art. L. 232-10", LF + "LEGIARTI000051322888"),
+  P("ir.bareme", "Barème IR, revenus 2025 : [seuil €, taux]", [[11600, 0], [29579, 0.11], [84577, 0.30], [181917, 0.41], [null, 0.45]], "v", "BOI-IR-LIQ-20-10", BF + "2491-PGP.html/identifiant=BOI-IR-LIQ-20-10-20260407"),
+  P("ir.plafondQF", "Plafond du quotient familial par demi-part (€)", 1807, "v", "BOI-IR-LIQ-20-20-20", BF + "2494-PGP.html/identifiant=BOI-IR-LIQ-20-20-20-20260407"),
+  P("ir.decoteSeul", "Décote, plafond personne seule (€)", 897, "v", "BOI-IR-LIQ-20-20-30", BF + "2495-PGP.html/identifiant=BOI-IR-LIQ-20-20-30-20260407"),
+  P("ir.decoteCouple", "Décote, plafond couple (€)", 1483, "v", "BOI-IR-LIQ-20-20-30", BF + "2495-PGP.html/identifiant=BOI-IR-LIQ-20-20-30-20260407"),
+  P("ir.decoteTaux", "Décote, coefficient", 0.4525, "v", "BOI-IR-LIQ-20-20-30", BF + "2495-PGP.html/identifiant=BOI-IR-LIQ-20-20-30-20260407"),
+  P("ir.abat10", "Déduction forfaitaire pour frais", 0.10, "v", "BOI-BAREME-000035", BF + "10855-PGP.html/identifiant=BOI-BAREME-000035-20260217"),
+  P("ir.abat10Min", "Déduction pour frais, minimum (€)", 509, "v", "BOI-BAREME-000035", BF + "10855-PGP.html/identifiant=BOI-BAREME-000035-20260217"),
+  P("ir.abat10Max", "Déduction pour frais, plafond (€)", 14555, "v", "BOI-BAREME-000035", BF + "10855-PGP.html/identifiant=BOI-BAREME-000035-20260217"),
+  P("ir.csgDed", "CSG déductible (points)", 0.068, "v", "CGI art. 154 quinquies", LF + "LEGIARTI000054336634"),
+  P("div.pfuIR", "PFU, part impôt sur le revenu", 0.128, "v", "BOI-IR-PAS-20-20-10", BF + "11247-PGP.html/identifiant=BOI-IR-PAS-20-20-10-20260407"),
+  P("div.abat40", "Abattement sur dividendes au barème", 0.40, "v", "BOI-RPPM-RCM-20-15", BF + "11224-PGP.html/identifiant=BOI-RPPM-RCM-20-15-20210621"),
+  P("div.csgPat", "CSG sur revenus du patrimoine", 0.106, "v", "CSS art. L. 136-8", LF + "LEGIARTI000054336623"),
+  P("div.crds", "CRDS", 0.005, "v", "Ordonnance n° 96-50 art. 19", LF + "LEGIARTI000041466982"),
+  P("div.solidarite", "Prélèvement de solidarité", 0.075, "v", "CGI art. 235 ter", LF + "LEGIARTI000037949145"),
+  P("csg.activite", "CSG sur revenus d'activité", 0.092, "v", "CSS art. L. 136-8", LF + "LEGIARTI000054336623"),
+  P("tns.abat", "TNS, abattement d'assiette", 0.26, "v", "CSS art. L. 136-3", LF + "LEGIARTI000051284498"),
+  P("tns.abatMin", "TNS, abattement plancher (part du PASS)", 0.0176, "v", "CSS art. D. 136-5", LF + "LEGIARTI000049899286"),
+  P("tns.abatMax", "TNS, abattement plafond (part du PASS)", 1.30, "v", "CSS art. D. 136-5", LF + "LEGIARTI000049899286"),
+  P("tns.divSeuil", "TNS, seuil de dividendes (part du montant de référence)", 0.10, "v", "CSS art. L. 136-3", LF + "LEGIARTI000051284498"),
+  P("tns.maladie", "TNS, maladie : [part du PASS, taux]", [[0.2, 0], [0.4, 0.015], [0.6, 0.04], [1.1, 0.065], [2, 0.077], [3, 0.085]], "v", "CSS art. D. 621-2", LF + "LEGIARTI000049904592"),
+  P("tns.maladieAuDela", "TNS, maladie au-delà de 3 PASS", 0.065, "v", "CSS art. D. 621-1", LF + "LEGIARTI000049904610"),
+  P("tns.ij", "TNS, indemnités journalières", 0.005, "v", "CSS art. D. 621-3", LF + "LEGIARTI000049904537"),
+  P("tns.ijMin", "TNS, IJ assiette minimale (part du PASS)", 0.40, "v", "CSS art. D. 621-3", LF + "LEGIARTI000049904537"),
+  P("tns.ijMax", "TNS, IJ assiette maximale (PASS)", 5, "v", "CSS art. D. 621-3", LF + "LEGIARTI000049904537"),
+  P("tns.afSeuil", "TNS, allocations familiales : taux nul jusqu'à (PASS)", 1.10, "v", "CSS art. D. 613-1", LF + "LEGIARTI000041966324"),
+  P("tns.afPlein", "TNS, allocations familiales : taux plein dès (PASS)", 1.40, "v", "CSS art. D. 613-1", LF + "LEGIARTI000041966324"),
+  P("tns.af", "TNS, allocations familiales, taux plein", 0.031, "v", "CSS art. D. 613-1", LF + "LEGIARTI000041966324"),
+  P("tns.retPlaf", "TNS, retraite de base plafonnée", 0.1715, "v", "CSS art. D. 633-3", LF + "LEGIARTI000049904636"),
+  P("tns.retTot", "TNS, retraite de base sur la totalité", 0.0072, "v", "CSS art. D. 633-3", LF + "LEGIARTI000049904636"),
+  P("tns.retMinHeures", "TNS, assiette minimale retraite (heures de SMIC)", 450, "v", "CSS art. D. 633-2", LF + "LEGIARTI000048838330"),
+  P("tns.rci1", "TNS, retraite complémentaire jusqu'à 1 PASS", 0.081, "v", "CSS art. D. 635-7", LF + "LEGIARTI000049904623"),
+  P("tns.rci2", "TNS, retraite complémentaire de 1 à 4 PASS", 0.091, "v", "CSS art. D. 635-7", LF + "LEGIARTI000049904623"),
+  P("tns.rciMax", "TNS, retraite complémentaire, plafond (PASS)", 4, "v", "CSS art. D. 635-7", LF + "LEGIARTI000049904623"),
+  P("tns.inval", "TNS, invalidité-décès", 0.013, "v", "CSS art. D. 632-2", LF + "LEGIARTI000036471466"),
+  P("tns.invalMin", "TNS, invalidité-décès assiette minimale (part du PASS)", 0.115, "v", "CSS art. D. 632-1", LF + "LEGIARTI000041966755"),
+  P("tns.cfpCommercant", "TNS, formation, commerçant et libéral (part du PASS)", 0.0025, "v", "Code du travail art. L. 6331-48", LF + "LEGIARTI000044056633"),
+  P("tns.cfpArtisan", "TNS, formation, artisan (part du PASS)", 0.0029, "v", "Code du travail art. L. 6331-48", LF + "LEGIARTI000044056633"),
+  P("ret.trimHeures", "Retraite, heures de SMIC par trimestre", 150, "u", "Règle indiquée par le cabinet"),
+  P("ret.tauxPlein", "Retraite de base, taux plein", 0.50, "x", "Valeur proposée de mémoire"),
+  P("ret.dureeTrim", "Retraite de base, trimestres requis pour le taux plein", 172, "x", "Valeur proposée de mémoire"),
+  P("ret.ageLegal", "Âge légal de départ à la retraite (assurés nés à partir de 1969)", 64, "v", "CSS art. L. 161-17-2", LF + "LEGIARTI000053280889"),
+  P("ret.esperance", "Espérance de vie moyenne en France (ans, femmes et hommes)", 83, "x", "Valeur proposée de mémoire (Insee)"),
+  P("ret.csgPension", "CSG sur les pensions de retraite, taux normal", 0.083, "v", "CSS art. L. 136-8", LF + "LEGIARTI000054336623"),
+  P("ret.casa", "Contribution additionnelle de solidarité pour l'autonomie sur les pensions", 0.003, "x", "Valeur proposée de mémoire"),
+  P("ret.rciAchat", "RCI, valeur d'acquisition du point (€)", 21.726, "u", "Indiquée par le cabinet (simulateur Urssaf)"),
+  P("ret.rciService", "RCI, valeur de service du point (€)", 1.347, "u", "Indiquée par le cabinet (simulateur Urssaf)"),
+  P("ret.aaAchat", "Agirc-Arrco, valeur d'achat du point (€)", 20.1877, "u", "Indiquée par le cabinet"),
+  P("ret.aaService", "Agirc-Arrco, valeur de service du point (€)", 1.4386, "u", "Indiquée par le cabinet"),
+  P("ret.aaCalc1", "Agirc-Arrco, taux de calcul des points tranche 1", 0.062, "x", "Valeur proposée de mémoire"),
+  P("ret.aaCalc2", "Agirc-Arrco, taux de calcul des points tranche 2", 0.17, "x", "Valeur proposée de mémoire"),
+  P("as.t2Max", "Assimilé salarié, plafond de la tranche 2 (PASS)", 8, "x", "Valeur proposée de mémoire"),
+  P("as.csgAssiette", "Assimilé salarié, assiette CSG (part du brut)", 0.9825, "x", "Valeur proposée de mémoire"),
+  P("as.pat.maladie", "Patronal, maladie (totalité)", 0.13, "v", "CSS art. D. 242-3", LF + "LEGIARTI000036679615"),
+  P("as.pat.vieilPlaf", "Patronal, vieillesse plafonnée (tranche 1)", 0.0855, "v", "CSS art. D. 242-4", LF + "LEGIARTI000053302465"),
+  P("as.pat.vieilTot", "Patronal, vieillesse déplafonnée (totalité)", 0.0211, "v", "CSS art. D. 242-4", LF + "LEGIARTI000053302465"),
+  P("as.pat.af", "Patronal, allocations familiales (totalité)", 0.0525, "v", "CSS art. D. 241-3-1", LF + "LEGIARTI000052196883"),
+  P("as.pat.atmp", "Patronal, accidents du travail (totalité, taux propre à l'entreprise)", 0.01, "x", "À remplacer par le taux notifié"),
+  P("as.pat.csa", "Patronal, solidarité autonomie (totalité)", 0.003, "v", "CSS art. L. 137-40", LF + "LEGIARTI000042675240"),
+  P("as.pat.fnal", "Patronal, FNAL (tranche 1)", 0.001, "x", "Valeur proposée de mémoire"),
+  P("as.pat.formation", "Patronal, formation et apprentissage (totalité)", 0.0123, "x", "Valeur proposée de mémoire"),
+  P("as.pat.aa1", "Patronal, Agirc-Arrco et CEG tranche 1", 0.0601, "x", "Valeur proposée de mémoire"),
+  P("as.pat.aa2", "Patronal, Agirc-Arrco et CEG tranche 2", 0.1457, "x", "Valeur proposée de mémoire"),
+  P("as.pat.cet", "Patronal, CET (si brut supérieur au PASS)", 0.0021, "x", "Valeur proposée de mémoire"),
+  P("as.sal.vieilPlaf", "Salarial, vieillesse plafonnée (tranche 1)", 0.069, "v", "CSS art. D. 242-4", LF + "LEGIARTI000053302465"),
+  P("as.sal.vieilTot", "Salarial, vieillesse déplafonnée (totalité)", 0.004, "v", "CSS art. D. 242-4", LF + "LEGIARTI000053302465"),
+  P("as.sal.aa1", "Salarial, Agirc-Arrco et CEG tranche 1", 0.0401, "x", "Valeur proposée de mémoire"),
+  P("as.sal.aa2", "Salarial, Agirc-Arrco et CEG tranche 2", 0.0972, "x", "Valeur proposée de mémoire"),
+  P("as.sal.cet", "Salarial, CET (si brut supérieur au PASS)", 0.0014, "x", "Valeur proposée de mémoire")
+];
+/* ============ 2. CONFIGURATION ============ */
+var CONFIG = { cabinet: "Votre cabinet d'expertise comptable", email: "", coarseStep: 500, fineStep: 50, zoneAbs: 200, zoneRel: 0.005, tolerance: 0.01 };
+var PARAMS = {}, OVERRIDES = {};
+PARAM_LIST.forEach(function (p) { PARAMS[p.key] = p; });
+function effective(k) { var p = PARAMS[k], o = OVERRIDES[k]; if (!p) throw new Error("Paramètre inconnu : " + k); return o ? { value: o.value, status: "u", validated: true } : { value: p.value, status: p.status }; }
+function getParameter(k) { return effective(k).value; }
+var g = getParameter;
+function blockingParams(tns) {
+  var pre = ["gen.", "is.", "soc.", "ir.", "div.", "csg."].concat(tns ? ["tns."] : ["as."]);
+  return PARAM_LIST.filter(function (p) { return effective(p.key).status === "x" && pre.some(function (x) { return p.key.indexOf(x) === 0; }); });
+}
+function userProvided(tns) {
+  var pre = ["gen.", "is.", "soc.", "ir.", "div.", "csg."].concat(tns ? ["tns."] : ["as."]);
+  return PARAM_LIST.filter(function (p) { return effective(p.key).status === "u" && pre.some(function (x) { return p.key.indexOf(x) === 0; }); });
+}
+/* ============ 4. OUTILS ============ */
+function clamp(x, a, b) { return Math.min(Math.max(x, a), b); }
+function roundRegulatory(x) { return Math.round(x); }           // euro le plus proche (CGI art. 219, bénéfice imposable)
+function roundCurrencyDisplay(x) { return Math.round(x); }
+/* ============ 5. MOTEUR TNS ============ */
+function calculateTnsSocialBase(ref) {
+  if (ref <= 0) return { referenceIncome: 0, deduction: 0, socialBase: 0 };
+  var pass = g("gen.pass"), d = clamp(ref * g("tns.abat"), pass * g("tns.abatMin"), pass * g("tns.abatMax"));
+  return { referenceIncome: ref, deduction: d, socialBase: Math.max(0, ref - d) };
+}
+function getTnsHealthRate(base) {
+  var pass = g("gen.pass"), pts = g("tns.maladie"), prevF = 0, prevR = 0;
+  for (var i = 0; i < pts.length; i++) {
+    var f = pts[i][0], r = pts[i][1];
+    if (base <= f * pass) return i === 0 ? r : prevR + (r - prevR) * (base - prevF * pass) / ((f - prevF) * pass);
+    prevF = f; prevR = r;
+  }
+  return prevR;
+}
+function calculateTnsHealth(base) {
+  var pass = g("gen.pass"), pts = g("tns.maladie"), top = pts[pts.length - 1];
+  if (base <= top[0] * pass) return base * getTnsHealthRate(base);
+  return top[0] * pass * top[1] + (base - top[0] * pass) * g("tns.maladieAuDela");
+}
+function getTnsFamilyRate(base) {
+  var pass = g("gen.pass"), lo = g("tns.afSeuil") * pass, hi = g("tns.afPlein") * pass, t = g("tns.af");
+  return base <= lo ? 0 : base >= hi ? t : t * (base - lo) / (hi - lo);
+}
+function tnsRetirementBase(base, applyMin) { return applyMin ? Math.max(base, g("tns.retMinHeures") * g("gen.smicJan")) : base; }
+function calculateTnsContributions(ref, activity, applyMin) {
+  var pass = g("gen.pass"), sb = calculateTnsSocialBase(ref), b = sb.socialBase;
+  var ijBase = Math.min(applyMin ? Math.max(b, g("tns.ijMin") * pass) : b, g("tns.ijMax") * pass);
+  var rb = tnsRetirementBase(b, applyMin);
+  var invBase = Math.min(applyMin ? Math.max(b, g("tns.invalMin") * pass) : b, pass);
+  var t1 = Math.min(b, pass), t2 = Math.min(Math.max(b - pass, 0), (g("tns.rciMax") - 1) * pass);
+  var c = {
+    health: calculateTnsHealth(b), dailyAllowances: ijBase * g("tns.ij"), family: b * getTnsFamilyRate(b),
+    basicRetirement: Math.min(rb, pass) * g("tns.retPlaf") + rb * g("tns.retTot"),
+    supplementaryRetirement: t1 * g("tns.rci1") + t2 * g("tns.rci2"),
+    disabilityDeath: invBase * g("tns.inval"), csgCrds: b * (g("csg.activite") + g("div.crds")),
+    professionalTraining: pass * (activity === "artisan" ? g("tns.cfpArtisan") : g("tns.cfpCommercant"))
+  };
+  c.total = c.health + c.dailyAllowances + c.family + c.basicRetirement + c.supplementaryRetirement + c.disabilityDeath + c.csgCrds + c.professionalTraining;
+  return { base: sb, retirementBase: rb, contributions: c, nonDeductible: b * (g("csg.activite") - g("ir.csgDed") + g("div.crds")) };
+}
+function calculateTnsDividendThreshold(capitalHeld, premiumsHeld, currentAccount) {
+  var ref = capitalHeld + premiumsHeld + currentAccount; return { referenceBase: ref, threshold: ref * g("tns.divSeuil") };
+}
+/* ============ 6. MOTEUR ASSIMILÉ SALARIÉ ============ */
+function calculateEmployeeDirectorContributions(brut) {
+  var pass = g("gen.pass"), t1 = Math.min(brut, pass), t2 = Math.min(Math.max(brut - pass, 0), (g("as.t2Max") - 1) * pass);
+  var over = brut > pass ? t1 + t2 : 0, csgBase = brut * g("as.csgAssiette");
+  var pat = brut * (g("as.pat.maladie") + g("as.pat.vieilTot") + g("as.pat.af") + g("as.pat.atmp") + g("as.pat.csa") + g("as.pat.formation"))
+    + t1 * (g("as.pat.vieilPlaf") + g("as.pat.fnal") + g("as.pat.aa1")) + t2 * g("as.pat.aa2") + over * g("as.pat.cet");
+  var csg = csgBase * (g("csg.activite") + g("div.crds"));
+  var sal = brut * g("as.sal.vieilTot") + t1 * (g("as.sal.vieilPlaf") + g("as.sal.aa1")) + t2 * g("as.sal.aa2") + over * g("as.sal.cet") + csg;
+  return { employer: pat, employee: sal, csgCrds: csg, t1: t1, t2: t2, nonDeductible: csgBase * (g("csg.activite") - g("ir.csgDed") + g("div.crds")) };
+}
+/* ============ 7. IS ============ */
+function calculateCorporateTax(fiscal, reducedOk) {
+  var rf = Math.max(0, roundRegulatory(fiscal)), low = reducedOk ? Math.min(rf, g("is.plafondReduit")) : 0;
+  return { taxable: rf, reducedPart: low, reduced: low * g("is.reduit"), normal: (rf - low) * g("is.normal"), total: low * g("is.reduit") + (rf - low) * g("is.normal") };
+}
+/* ============ 8. BÉNÉFICE DISTRIBUABLE ============ */
+function calculateDistributableProfit(net, capital, legalReserve, priorLosses, reserves, includeReserves) {
+  var after = net - priorLosses;
+  var dot = after > 0 ? Math.min(after * g("soc.reserveTaux"), Math.max(0, capital * g("soc.reservePlafond") - legalReserve)) : 0;
+  var year = Math.max(0, after - dot);
+  return { legalReserveAllocation: dot, fromYear: year, total: year + (includeReserves ? reserves : 0) };
+}
+/* ============ 10. IR ============ */
+function taxPerPart(q) {
+  var b = g("ir.bareme"), lo = 0, t = 0;
+  for (var i = 0; i < b.length; i++) { var hi = b[i][0] === null ? Infinity : b[i][0]; if (q > lo) t += (Math.min(q, hi) - lo) * b[i][1]; lo = hi; }
+  return t;
+}
+function calculateIncomeTax(income, parts, couple) {
+  var rni = Math.max(0, income), ref = couple ? 2 : 1, n = Math.max(parts, ref);
+  var t1 = n * taxPerPart(rni / n), t2 = ref * taxPerPart(rni / ref) - (n - ref) * 2 * g("ir.plafondQF");
+  var tax = Math.max(t1, t2), dec = Math.max(0, (couple ? g("ir.decoteCouple") : g("ir.decoteSeul")) - g("ir.decoteTaux") * tax);
+  return Math.max(0, tax - dec);
+}
+function professionalDeduction(x) { return x <= 0 ? 0 : Math.min(x, clamp(x * g("ir.abat10"), g("ir.abat10Min"), g("ir.abat10Max"))); }
+/* ============ 11. RETRAITE ============ */
+function calculateRetirementQuarters(income) { return Math.max(0, Math.min(4, Math.floor(income / (g("ret.trimHeures") * g("gen.smicJan")) + 1e-9))); }
+/* ============ 13. SIMULATION D'UN SCÉNARIO ============ */
+function socialLevies() { return g("div.csgPat") + g("div.crds") + g("div.solidarite"); }
+function simulateScenario(inp, rem, dividendForced) {
+  var tns = inp.tns, out = { valid: true, warnings: [], remuneration: rem, tns: tns, calculationTrace: [] };
+  var cost, netRem, taxableRem, cotisRem, emp = null, tR = null;
+  if (tns) {
+    tR = calculateTnsContributions(rem, inp.activity, inp.applyMin);
+    cost = rem; cotisRem = tR.contributions.total; netRem = rem - cotisRem;
+  } else {
+    emp = calculateEmployeeDirectorContributions(rem);
+    cost = rem + emp.employer; cotisRem = emp.employer + emp.employee; netRem = rem - emp.employee;
+  }
+  var pbt = inp.profit - cost;
+  if (pbt < -CONFIG.tolerance) { out.valid = false; out.error = "La rémunération dépasse le bénéfice disponible."; return out; }
+  pbt = Math.max(0, pbt);
+  var is0 = calculateCorporateTax(inp.profit + inp.fiscalAdj - inp.deficits, inp.reducedOk).total;
+  var is = calculateCorporateTax(pbt + inp.fiscalAdj - inp.deficits, inp.reducedOk);
+  var net = pbt - is.total;
+  var dist = calculateDistributableProfit(net, inp.capital, inp.legalReserve, inp.priorLosses, inp.reserves, inp.includeReserves);
+  var share = inp.share, dTot = dividendForced == null ? dist.total : dividendForced / share;
+  if (dTot > dist.total + CONFIG.tolerance) { out.valid = false; out.error = "Les dividendes envisagés dépassent le montant juridiquement distribuable."; out.distributable = dist.total; return out; }
+  var d = dTot * share, soc = 0, cotisDiv = 0, nonDed, tAll = tR;
+  if (tns) {
+    var th = calculateTnsDividendThreshold(inp.capital * share, inp.premiums * share, inp.currentAccount);
+    soc = Math.max(0, d - th.threshold); out.threshold = th.threshold;
+    if (soc > 0) tAll = calculateTnsContributions(rem + soc, inp.activity, inp.applyMin);
+    cotisDiv = tAll.contributions.total - tR.contributions.total;
+    nonDed = tAll.nonDeductible;
+    taxableRem = Math.max(0, rem - (tAll.contributions.total - nonDed));
+  } else { nonDed = emp.nonDeductible; taxableRem = netRem + nonDed; }
+  var ps = (d - soc) * socialLevies();
+  var salNet = taxableRem - professionalDeduction(taxableRem);
+  var ir0 = calculateIncomeTax(inp.otherIncome, inp.parts, inp.couple);
+  var irRem = calculateIncomeTax(inp.otherIncome + salNet, inp.parts, inp.couple);
+  var irPfu = irRem - ir0 + d * g("div.pfuIR");
+  var irBar = calculateIncomeTax(inp.otherIncome + salNet + d * (1 - g("div.abat40")) - (d - soc) * g("ir.csgDed"), inp.parts, inp.couple) - ir0;
+  var useBar = inp.divOption === "bar" || (inp.divOption === "auto" && irBar < irPfu);
+  var irAdd = useBar ? irBar : irPfu;
+  var retIncome = tns ? tAll.retirementBase : rem, quarters = calculateRetirementQuarters(retIncome);
+  var points = null, retCot;
+  if (tns) { retCot = tAll.contributions.basicRetirement + tAll.contributions.supplementaryRetirement; points = tAll.contributions.supplementaryRetirement / g("ret.rciAchat"); }
+  else {
+    retCot = emp.t1 * (g("as.pat.vieilPlaf") + g("as.sal.vieilPlaf") + g("as.pat.aa1") + g("as.sal.aa1")) + rem * (g("as.pat.vieilTot") + g("as.sal.vieilTot")) + emp.t2 * (g("as.pat.aa2") + g("as.sal.aa2"));
+    points = (emp.t1 * g("ret.aaCalc1") + emp.t2 * g("ret.aaCalc2")) / g("ret.aaAchat");
+  }
+  var retained = net - dTot, others = dTot - d;
+  out.companyCost = cost; out.netRemuneration = netRem; out.contributionsOnRemuneration = cotisRem; out.contributionsOnDividends = cotisDiv;
+  out.corporateTax = is; out.corporateTaxSaving = is0 - is.total; out.netResult = net; out.distributable = dist;
+  out.dividendsTotal = dTot; out.dividends = d; out.dividendsOthers = others; out.socializedDividends = soc; out.socialLevies = ps;
+  out.incomeTax = irAdd; out.incomeTaxPfu = irPfu; out.incomeTaxBareme = irBar; out.dividendRegime = useBar ? "barème" : "PFU";
+  out.retainedInCompany = retained; out.quarters = quarters; out.points = points; out.retirementContributions = retCot;
+  out.pension = points == null ? null : points * (tns ? g("ret.rciService") : g("ret.aaService"));
+  out.netAvailable = netRem + d - ps - cotisDiv - irAdd;
+  // Droits acquis sur l'année : pension de base = taux plein x revenu plafonné au PASS x trimestres / durée requise
+  out.basePension = inp.bestYearsDone ? 0 : Math.min(Math.max(0, retIncome), g("gen.pass")) * g("ret.tauxPlein") * quarters / g("ret.dureeTrim");
+  out.pensionTotal = out.basePension + (out.pension || 0);
+  out.retirementValue = out.pensionTotal * (inp.retirementFactor || 0);
+  out.quarterBuyback = (4 - quarters) * (inp.quarterCost || 0);
+  out.netComparable = out.netAvailable - out.quarterBuyback + out.retirementValue;
+  out.totalTaxesAndContributions = cotisRem + cotisDiv + is.total + ps + irAdd;
+  out.netEfficiencyRate = inp.profit > 0 ? out.netAvailable / inp.profit : 0;
+  out.detail = tns ? tAll : emp;
+  // Contrôle de l'identité comptable de l'enveloppe
+  var check = cost + is.total + dTot + retained;
+  if (Math.abs(check - inp.profit) > 1) { out.valid = false; out.error = "Incohérence détectée dans le calcul. Aucun résultat n'est présenté."; }
+  var bad = runSanityChecks(out, inp); if (bad) { out.valid = false; out.error = bad; }
+  return out;
+}
+/* ============ 16. CONTRÔLES DE VRAISEMBLANCE ============ */
+function runSanityChecks(s, inp) {
+  if (s.netAvailable > inp.profit + (inp.includeReserves ? inp.reserves : 0) + 1) return "Résultat aberrant : le net dépasse le bénéfice disponible.";
+  if (s.contributionsOnRemuneration < -0.01 || s.contributionsOnDividends < -0.01) return "Résultat aberrant : cotisations négatives.";
+  if (s.corporateTax.total < 0 || s.dividendsTotal < -0.01) return "Résultat aberrant : IS ou dividendes négatifs.";
+  if (s.quarters > 4) return "Résultat aberrant : plus de 4 trimestres.";
+  return null;
+}
+/* ============ 14. OPTIMISATION ============ */
+function maxRemuneration(inp) {
+  if (inp.tns) return Math.max(0, inp.profit);
+  var lo = 0, hi = inp.profit;
+  for (var i = 0; i < 60; i++) { var m = (lo + hi) / 2; if (m + calculateEmployeeDirectorContributions(m).employer <= inp.profit) lo = m; else hi = m; }
+  return lo;
+}
+function optimise(inp) {
+  var rMax = maxRemuneration(inp), step = Math.max(CONFIG.coarseStep, rMax / 1500), curve = [], best = null, r, s;
+  function tryR(x, keep) { var sim = simulateScenario(inp, x); if (!sim.valid) return null; if (keep) curve.push(sim); if (!best || sim.netComparable > best.netComparable + 1e-6) best = sim; return sim; }
+  for (r = 0; r < rMax; r += step) tryR(r, true);
+  tryR(rMax, true);
+  if (!best) return { valid: false, error: simulateScenario(inp, 0).error || "Calcul impossible." };
+  var c = best.remuneration;
+  for (r = Math.max(0, c - step); r <= Math.min(rMax, c + step); r += CONFIG.fineStep) tryR(r, false);
+  var tolZ = Math.max(CONFIG.zoneAbs, CONFIG.zoneRel * Math.abs(best.netComparable));
+  var zone = curve.filter(function (x) { return x.netComparable >= best.netComparable - tolZ; });
+  var q4 = null;
+  for (r = 0; r <= rMax && !q4; r += CONFIG.fineStep) { s = simulateScenario(inp, r); if (s.valid && s.quarters >= 4) q4 = s; }
+  var balanced = null, retire = null;
+  if (q4) {
+    balanced = best.quarters >= 4 ? best : (zone.filter(function (x) { return x.quarters >= 4; })[0] || curve.filter(function (x) { return x.quarters >= 4; }).sort(function (a, b) { return b.netComparable - a.netComparable; })[0] || q4);
+    var floor = best.netComparable - inp.retirementTolerance * Math.abs(best.netComparable);
+    retire = curve.filter(function (x) { return x.quarters >= 4 && x.netComparable >= floor; }).pop() || q4;
+  }
+  return { valid: true, rMax: rMax, curve: curve, best: best, zone: [zone[0].remuneration, zone[zone.length - 1].remuneration], zoneTol: tolZ,
+    maxRem: curve[curve.length - 1], maxDiv: curve[0], fourQuarters: q4, balanced: balanced, retire: retire };
+}
+/* ============ 17. TESTS (invariants et exemples sourcés) ============ */
+function runTests() {
+  var T = [], pass = g("gen.pass");
+  function ok(n, c) { T.push({ name: n, ok: !!c }); }
+  function near(a, b, t) { return Math.abs(a - b) <= (t || 0.01); }
+  ok("IS : 42 500 € au taux réduit = 6 375 €", near(calculateCorporateTax(42500, true).total, 6375));
+  ok("IS : 42 501 € = 6 375,25 €", near(calculateCorporateTax(42501, true).total, 6375.25));
+  ok("IS : 100 000 € = 20 750 €", near(calculateCorporateTax(100000, true).total, 20750));
+  ok("IS sans taux réduit : 100 000 € = 25 000 €", near(calculateCorporateTax(100000, false).total, 25000));
+  ok("IR : exemple BOFiP, couple 5 parts, 130 000 € = 14 366 €", near(calculateIncomeTax(130000, 5, true), 14366, 1));
+  ok("IR : exemple BOFiP, couple 5,5 parts hors réduction complémentaire = 12 559 €", near(calculateIncomeTax(130000, 5.5, true), 25207.98 - 7 * 1807, 1));
+  ok("IR : nul sous la première tranche", calculateIncomeTax(11600, 1, false) === 0);
+  ok("Réserve légale : 5 % plafonné à 10 % du capital", near(calculateDistributableProfit(100000, 10000, 0, 0, 0, false).legalReserveAllocation, 1000));
+  ok("Réserve légale : plus de dotation une fois le plafond atteint", calculateDistributableProfit(100000, 10000, 1000, 0, 0, false).legalReserveAllocation === 0);
+  ok("Abattement TNS : plancher 1,76 % du PASS", near(calculateTnsSocialBase(1000).deduction, 845.856, 0.001));
+  ok("Abattement TNS : 26 % en régime courant", near(calculateTnsSocialBase(50000).deduction, 13000));
+  ok("Abattement TNS : plafond 130 % du PASS", near(calculateTnsSocialBase(400000).deduction, 62478));
+  [0.2, 0.4, 0.6, 1.1, 2, 3].forEach(function (f, i) { var r = [0, 0.015, 0.04, 0.065, 0.077, 0.085][i];
+    ok("Maladie TNS : taux de " + (r * 100) + " % à " + f + " PASS", near(getTnsHealthRate(f * pass), r, 1e-9)); });
+  ok("Maladie TNS : continuité autour de 40 % du PASS", Math.abs(getTnsHealthRate(0.4 * pass + 1) - getTnsHealthRate(0.4 * pass - 1)) < 1e-4);
+  ok("Maladie TNS : 6,5 % sur la part au-delà de 3 PASS", near(calculateTnsHealth(3 * pass + 1000) - calculateTnsHealth(3 * pass), 65));
+  ok("Allocations familiales TNS : 0 % à 110 % du PASS, 3,1 % à 140 %", getTnsFamilyRate(1.1 * pass) === 0 && near(getTnsFamilyRate(1.4 * pass), 0.031, 1e-9));
+  var big = calculateTnsContributions(1000000, "merchant", true).contributions;
+  ok("RCI : plafond à 4 PASS = 17 013,24 €", near(big.supplementaryRetirement, pass * 0.081 + 3 * pass * 0.091));
+  ok("Retraite de base : 17,15 % jamais au-delà de 1 PASS", near(big.basicRetirement, pass * 0.1715 + (1000000 - 62478) * 0.0072));
+  ok("IJ : assiette minimale puis plafond 5 PASS", near(calculateTnsContributions(0, "merchant", true).contributions.dailyAllowances, 96.12) && near(big.dailyAllowances, 1201.5));
+  ok("Formation : 0,25 % du PASS (commerçant), 0,29 % (artisan)", near(calculateTnsContributions(0, "merchant", true).contributions.professionalTraining, 120.15) && near(calculateTnsContributions(0, "artisan", true).contributions.professionalTraining, 139.374, 0.001));
+  ok("Seuil de dividendes TNS : 10 % du capital, des primes et du compte courant", near(calculateTnsDividendThreshold(10000, 2000, 8000).threshold, 2000));
+  ok("Prélèvements sociaux sur dividendes = 18,6 %", near(socialLevies(), 0.186, 1e-9));
+  ok("Trimestres : seuil - 1 €, seuil, 4 au maximum", calculateRetirementQuarters(150 * g("gen.smicJan") - 1) === 0 && calculateRetirementQuarters(150 * g("gen.smicJan")) === 1 && calculateRetirementQuarters(1e6) === 4);
+  var z = { tns: true, activity: "merchant", applyMin: true, profit: 100000, capital: 10000, premiums: 0, currentAccount: 0, share: 1, legalReserve: 0, priorLosses: 0, reserves: 0, includeReserves: false, fiscalAdj: 0, deficits: 0, reducedOk: true, otherIncome: 0, parts: 1, couple: false, divOption: "auto" };
+  ok("TNS sans rémunération ni dividende : 3 trimestres avec l'assiette minimale", simulateScenario(z, 0, 0).quarters === 3);
+  z.applyMin = false; ok("TNS sans rémunération, cotisations minimales non appliquées : 0 trimestre", simulateScenario(z, 0, 0).quarters === 0);
+  z.tns = false; ok("Assimilé salarié sans salaire : 0 trimestre", simulateScenario(z, 0, 0).quarters === 0);
+  [true, false].forEach(function (tns) {
+    var inp = { tns: tns, activity: "merchant", applyMin: true, profit: 100000, capital: 10000, premiums: 0, currentAccount: 0, share: 1, legalReserve: 0, priorLosses: 0, reserves: 0, includeReserves: false, fiscalAdj: 0, deficits: 0, reducedOk: true, otherIncome: 0, parts: 1, couple: false, divOption: "auto", retirementTolerance: 0.05 };
+    var o = optimise(inp), lab = tns ? "TNS" : "Assimilé salarié", fine = o.valid;
+    ok(lab + " : optimisation réalisable", fine); if (!fine) return;
+    ok(lab + " : identité comptable sur toute la courbe", o.curve.every(function (s) { return near(s.companyCost + s.corporateTax.total + s.dividendsTotal + s.retainedInCompany, 100000, 0.5); }));
+    ok(lab + " : net inférieur au bénéfice, dividendes dans le distribuable", o.curve.every(function (s) { return s.netAvailable <= 100000 && s.dividendsTotal <= s.distributable.total + 0.01 && s.quarters <= 4; }));
+    ok(lab + " : l'IS baisse quand la rémunération augmente", o.curve.every(function (s, i) { return i === 0 || s.corporateTax.total <= o.curve[i - 1].corporateTax.total + 0.01; }));
+    ok(lab + " : fraction socialisée + non socialisée = dividendes", o.curve.every(function (s) { return s.socializedDividends >= 0 && s.socializedDividends <= s.dividends + 0.01; }));
+    ok(lab + " : dividendes refusés au-delà du distribuable", simulateScenario(inp, 0, 1e7).valid === false);
+  });
+  return T;
+}
+if (typeof module !== "undefined") module.exports = { runTests: runTests, simulateScenario: simulateScenario, optimise: optimise, OVERRIDES: OVERRIDES, PARAM_LIST: PARAM_LIST, calculateTnsContributions: calculateTnsContributions, calculateEmployeeDirectorContributions: calculateEmployeeDirectorContributions };
+
+/* ============ 18. INTERFACE ============ */
+if (typeof document !== "undefined") (function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var state = { forme: "SARL", statut: "maj", obj: "net", tab: "sim" }, mem = {}, pinned = false;
+  function closePop() { pinned = false; $("pop").hidden = true; }
+  document.addEventListener("pointerdown", function (e) { if (!e.target.closest || (!e.target.closest("#pop") && !e.target.closest(".info"))) closePop(); }, true);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closePop(); });
+  document.addEventListener("scroll", function () { if (!pinned) closePop(); }, true);
+  var eur = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
+  function E(x) { return eur.format(roundCurrencyDisplay(x)) + " €"; }
+  function pc(x) { return (x * 100).toLocaleString("fr-FR", { maximumFractionDigits: 3 }) + " %"; }
+  function num(id) { var v = String($(id).value).replace(/[\s  €]/g, "").replace(",", "."); var n = parseFloat(v); return isFinite(n) && n >= 0 ? n : 0; }
+  function load(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return mem[k] || null; } }
+  function save(k, v) { mem[k] = v; try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
+  var stored = load("rem-div-params"); if (stored) Object.keys(stored).forEach(function (k) { if (PARAMS[k]) OVERRIDES[k] = stored[k]; });
+  function choices(el, items, key) {
+    $(el).innerHTML = items.map(function (i) { return '<button type="button" data-v="' + i[0] + '" aria-pressed="' + (state[key] === i[0]) + '">' + i[1] + "</button>"; }).join("");
+    Array.prototype.forEach.call($(el).children, function (b) { b.onclick = function () { state[key] = b.getAttribute("data-v"); build(); }; });
+  }
+  function isTns() { return state.forme === "SARL" && state.statut === "maj"; }
+  function build() {
+    choices("formeC", [["SARL", "SARL ou EURL"], ["SAS", "SAS ou SASU"]], "forme");
+    choices("statutC", [["maj", "Gérant majoritaire"], ["min", "Gérant minoritaire ou égalitaire"]], "statut");
+    choices("tabC", [["sim", "Ma simulation"], ["cmp", "Comparer deux statuts"], ["proj", "Projections selon le bénéfice"]], "tab");
+    choices("objC", [["net", "Maximiser mon revenu disponible"], ["eq", "Trouver un bon équilibre"], ["ret", "Préserver ma retraite"], ["moi", "Comparer à ma situation actuelle"]], "obj");
+    var tns = isTns();
+    $("statutF").hidden = state.forme !== "SARL"; $("majF").hidden = state.forme !== "SARL";
+    $("actF").hidden = !tns; $("ccaF").hidden = !tns; $("minF").hidden = !tns;
+    $("regime").textContent = "Votre régime social : " + (tns ? "travailleur non salarié (Sécurité sociale des indépendants)" : "assimilé salarié (régime général, sans assurance chômage)") + ".";
+    $("curRH").textContent = tns ? "Montant total attribué, cotisations sociales comprises." : "Salaire brut annuel.";
+    render();
+  }
+  function inputs() {
+    var tns = isTns(), res = String($("reserves").value).trim();
+    return { tns: tns, activity: $("activite").value, applyMin: $("applyMin").value === "1", profit: num("p"), capital: num("capital"), premiums: num("primes"),
+      currentAccount: num("cca"), share: clamp(num("pct"), 0, 100) / 100, legalReserve: num("rl"), priorLosses: num("pertes"), reserves: num("reserves"), reservesKnown: res !== "",
+      includeReserves: $("inclRes").value === "1", fiscalAdj: num("reint"), deficits: num("deficits"), reducedOk: $("isRed").value === "1",
+      otherIncome: num("autres"), parts: Math.max(1, num("parts")), couple: $("situation").value === "2", divOption: $("divOpt").value,
+      retirementTolerance: clamp(num("tol"), 0, 100) / 100, quarterCost: num("rachat"), retirementYears: Math.max(0, g("ret.esperance") - g("ret.ageLegal")), pensionLevy: Math.min(1, g("ret.csgPension") + g("div.crds") + g("ret.casa") + num("irPension") / 100), retirementFactor: retFactor(), bestYearsDone: $("best25").value === "0" };
+  }
+  function breakdown(x) {
+    var seg = [["Cotisations sociales", x.contributionsOnRemuneration + x.contributionsOnDividends, "--c2"], ["Impôt sur les sociétés", x.corporateTax.total, "--c3"], ["Fiscalité personnelle", x.incomeTax + x.socialLevies, "--c4"], ["Reste dans la société", Math.max(0, x.retainedInCompany), "--c5"]];
+    if (x.dividendsOthers > 0.5) seg.push(["Dividendes des autres associés", x.dividendsOthers, "--c1"]);
+    seg.push(["Net disponible pour vous", Math.max(0, x.netAvailable), "--c6"]);
+    var tot = seg.reduce(function (a, q) { return a + Math.max(0, q[1]); }, 0) || 1;
+    return '<div class="bar" role="img" aria-label="Répartition du bénéfice">' + seg.map(function (q) { return '<i style="width:' + (Math.max(0, q[1]) / tot * 100).toFixed(2) + "%;background:var(" + q[2] + ')"></i>'; }).join("") + '</div><div class="legend">' + seg.map(function (q) { return '<div><span><i class="sw" style="background:var(' + q[2] + ')"></i>' + q[0] + '</span><span class="num">' + E(q[1]) + " (" + Math.round(Math.max(0, q[1]) / tot * 100) + "\u00a0%)</span></div>"; }).join("") + "</div>";
+  }
+  function retFactor() {
+    if ($("valRet").value !== "1") return 0;
+    var n = Math.max(0, Math.round(g("ret.esperance") - g("ret.ageLegal"))), r = num("actu") / 100, wait = Math.max(0, g("ret.ageLegal") - num("age")), f = 0;
+    for (var t = 1; t <= n; t++) f += r > 0 ? Math.pow(1 + r, -(wait + t)) : 1;
+    return f * (1 - Math.min(1, g("ret.csgPension") + g("div.crds") + g("ret.casa") + num("irPension") / 100));
+  }
+  function detailRows(pick, inp) {
+    var tns = inp.tns;
+    var d = pick.detail, lines = "";
+    if (tns) { var c = d.contributions;
+      lines = row("Enveloppe de rémunération", E(pick.remuneration)) + row("Dividendes soumis à cotisations", E(pick.socializedDividends)) + row("Abattement de 26 % (borné)", "− " + E(d.base.deduction)) + row("Assiette sociale", E(d.base.socialBase), "hl")
+        + row("Maladie-maternité (" + pc(getTnsHealthRate(d.base.socialBase)) + ")", E(c.health)) + row("Indemnités journalières", E(c.dailyAllowances)) + row("Allocations familiales (" + pc(getTnsFamilyRate(d.base.socialBase)) + ")", E(c.family)) + row("Retraite de base", E(c.basicRetirement)) + row("Retraite complémentaire", E(c.supplementaryRetirement)) + row("Invalidité-décès", E(c.disabilityDeath)) + row("CSG et CRDS", E(c.csgCrds)) + row("Formation professionnelle", E(c.professionalTraining)) + row("Total des cotisations", E(c.total), "hl") + row("dont sur les dividendes", E(pick.contributionsOnDividends));
+    } else lines = row("Salaire brut", E(pick.remuneration)) + row("Cotisations patronales", E(d.employer)) + row("Coût pour la société", E(pick.companyCost), "hl") + row("Cotisations salariales (dont CSG et CRDS " + E(d.csgCrds) + ")", E(d.employee)) + row("Salaire net", E(pick.netRemuneration), "hl");
+    lines += row("Résultat avant IS", E(inp.profit - pick.companyCost)) + row("IS au taux réduit sur " + E(pick.corporateTax.reducedPart), E(pick.corporateTax.reduced)) + row("IS au taux normal", E(pick.corporateTax.normal)) + row("Résultat net", E(pick.netResult)) + row("Dotation à la réserve légale", E(pick.distributable.legalReserveAllocation)) + row("Bénéfice distribuable", E(pick.distributable.total), "hl")
+      + row("Dividendes versés (tous associés)", E(pick.dividendsTotal)) + row("Prélèvements sociaux sur dividendes (18,6 %)", E(pick.socialLevies)) + row("Impôt sur le revenu supplémentaire, option retenue : " + pick.dividendRegime, E(pick.incomeTax)) + row("avec le prélèvement forfaitaire", E(pick.incomeTaxPfu)) + row("avec le barème progressif", E(pick.incomeTaxBareme)) + row("Net disponible", E(pick.netAvailable), "hl") + row("Rachat des trimestres manquants (" + (4 - pick.quarters) + ")", "− " + E(pick.quarterBuyback)) + row("Valeur des droits de retraite acquis", "+ " + E(pick.retirementValue)) + row("Net comparable", E(pick.netComparable), "hl");
+    return lines;
+  }
+
+  /* ---------- Comparaison de deux statuts et projections ---------- */
+  function pairNames() {
+    var f = state.forme, maj = state.statut === "maj";
+    if (f === "SAS") return [["SAS ou SASU", "président, assimilé salarié"], ["SARL ou EURL", "gérant majoritaire, travailleur non salarié"]];
+    return maj ? [["SARL ou EURL", "gérant majoritaire, travailleur non salarié"], ["SAS ou SASU", "président, assimilé salarié (même calcul pour une SARL à gérance minoritaire)"]]
+      : [["SARL minoritaire", "gérant minoritaire ou égalitaire, assimilé salarié"], ["SARL majoritaire", "gérant majoritaire, travailleur non salarié"]];
+  }
+  function other(inp) { var b = {}; Object.keys(inp).forEach(function (k) { b[k] = inp[k]; }); b.tns = !inp.tns; return b; }
+  function sgn(x) { return (x >= 0 ? "+ " : "− ") + E(Math.abs(x)); }
+  function approxNote() { return blockingParams(false).length ? '<p class="note warn">Calculs approximatifs pour le régime assimilé salarié : certains taux de cotisations ne sont pas confirmés. L\'écart entre statuts donne un ordre de grandeur.</p>' : ""; }
+  function remLabel(tns) { return tns ? "Rémunération (cotisations comprises)" : "Salaire brut"; }
+  function compareHtml(inp) {
+    var nm = pairNames(), A = inp, B = other(inp), oA = optimise(A), oB = optimise(B);
+    if (!oA.valid || !oB.valid) return '<p class="note bad">' + (oA.error || oB.error) + "</p>";
+    var a = oA.best, b = oB.best, d = b.netComparable - a.netComparable, w = d >= 0 ? 1 : 0, h = "";
+    function card(x, o, inp2, n, win) {
+      return '<div class="sub' + (win ? " win" : "") + '"><span class="tag">' + (win ? "Le plus avantageux" : "Comparé") + "</span><h3>" + n[0] + '</h3><p class="lead">' + n[1] + '</p><div class="hero">'
+        + '<div class="fig"><span>' + remLabel(inp2.tns) + "</span><b>" + E(x.remuneration) + "</b><span>net versé " + E(x.netRemuneration) + "</span></div>"
+        + '<div class="fig"><span>Dividendes</span><b>' + E(x.dividends) + "</b><span>" + x.dividendRegime + "</span></div>"
+        + '<div class="fig big"><span>Net perçu</span><b>' + E(x.netAvailable) + "</b><span>net comparable " + E(x.netComparable) + "</span></div></div>"
+        + breakdown(x) + '<p class="lead">' + x.quarters + " trimestre(s) validé(s), " + E(x.pensionTotal) + " de pension acquise par an de retraite. Zone recommandée : " + E(o.zone[0]) + " à " + E(o.zone[1]) + ".</p>"
+        + '<details><summary>Détail du calcul</summary><div class="tw"><table>' + detailRows(x, inp2) + "</table></div></details></div>";
+    }
+    h += '<section class="panel"><h2>' + nm[0][0] + " face à " + nm[1][0] + ' : chacun à sa répartition recommandée</h2><p class="lead">Mêmes données de départ (' + E(inp.profit) + " de bénéfice avant rémunération, même foyer, même capital). Chaque statut est placé à la répartition rémunération et dividendes qui lui est la plus favorable.</p>" + approxNote()
+      + '<div class="cols">' + card(a, oA, A, nm[0], !w) + card(b, oB, B, nm[1], !!w) + "</div></section>";
+    // Analyse
+    var posts = [["Cotisations sociales", function (x) { return x.contributionsOnRemuneration + x.contributionsOnDividends; }, -1], ["Impôt sur les sociétés", function (x) { return x.corporateTax.total; }, -1], ["Impôt sur le revenu et prélèvements sociaux", function (x) { return x.incomeTax + x.socialLevies; }, -1], ["Reste dans la société", function (x) { return x.retainedInCompany; }, 0], ["Net perçu", function (x) { return x.netAvailable; }, 1], ["Rachat des trimestres manquants", function (x) { return x.quarterBuyback; }, -1], ["Valeur des droits de retraite acquis", function (x) { return x.retirementValue; }, 1], ["Net comparable", function (x) { return x.netComparable; }, 1]];
+    var big = posts.slice(0, 3).map(function (p) { return [p[0], p[1](b) - p[1](a)]; }).sort(function (u, v) { return Math.abs(v[1]) - Math.abs(u[1]); });
+    var W = nm[w][0], L = nm[1 - w][0], dn = b.netAvailable - a.netAvailable, tol = Math.max(CONFIG.zoneAbs, 0.02 * Math.abs(a.netComparable));
+    var txt = Math.abs(d) <= tol ? "Les deux statuts sont pratiquement équivalents : " + E(Math.abs(d)) + " d'écart de net comparable, soit moins de 2 %. Le choix peut se faire sur d'autres critères (protection sociale, formalisme, projet de cession)."
+      : "Avec " + E(inp.profit) + " de bénéfice, " + W + " laisse " + E(Math.abs(d)) + " de plus par an que " + L + " en net comparable.";
+    txt += " En net réellement perçu, l'écart est de " + E(Math.abs(dn)) + " en faveur de " + (dn >= 0 ? nm[1][0] : nm[0][0]) + ".";
+    txt += " Le poste qui pèse le plus dans cet écart : " + big[0][0].toLowerCase() + " (" + E(Math.abs(big[0][1])) + " de " + (big[0][1] > 0 ? "plus" : "moins") + " en " + nm[1][0] + "), puis " + big[1][0].toLowerCase() + " (" + E(Math.abs(big[1][1])) + " de " + (big[1][1] > 0 ? "plus" : "moins") + ").";
+    if (a.quarters !== b.quarters) txt += " Attention : " + nm[0][0] + " valide " + a.quarters + " trimestre(s) et " + nm[1][0] + " " + b.quarters + ".";
+    h += '<section class="panel"><h2>Analyse de l\'écart</h2><p>' + txt + '</p><div class="tw"><table><tr><th>Poste</th><th>' + nm[0][0] + "</th><th>" + nm[1][0] + "</th><th>Écart</th></tr>"
+      + posts.map(function (p) { var va = p[1](a), vb = p[1](b), e = vb - va, good = p[2] === 0 ? "" : (e * p[2] > 0.5 ? "pos" : e * p[2] < -0.5 ? "neg" : ""); return "<tr" + (p[0].indexOf("Net") === 0 ? ' class="hl"' : "") + "><td>" + p[0] + '</td><td class="num">' + E(va) + '</td><td class="num">' + E(vb) + '</td><td class="num ' + good + '">' + sgn(e) + "</td></tr>"; }).join("")
+      + '</table></div><p class="lead">Écart = ' + nm[1][0] + " moins " + nm[0][0] + ". En vert, ce qui joue en faveur de " + nm[1][0] + " ; en rouge, en sa défaveur. Les cotisations n'ouvrent pas les mêmes droits dans les deux régimes : la comparaison ne tient pas compte des écarts de couverture maladie, prévoyance et indemnités journalières.</p></section>";
+    // Arbitrages
+    var arb = [["Tout en rémunération", "maxRem"], ["Tout en dividendes", "maxDiv"], ["Répartition recommandée", "best"], ["4 trimestres puis dividendes", "fourQuarters"]];
+    h += '<section class="panel"><h2>Qui gagne selon l\'arbitrage choisi</h2><p class="lead">Le même arbitrage appliqué aux deux statuts : l\'avantage peut changer de camp.</p><div class="tw"><table><tr><th>Arbitrage</th><th>' + nm[0][0] + ", net perçu</th><th>" + nm[1][0] + ", net perçu</th><th>" + nm[0][0] + ", net comparable</th><th>" + nm[1][0] + ", net comparable</th><th>Avantage en net comparable</th></tr>"
+      + arb.map(function (r) { var x = oA[r[1]], y = oB[r[1]]; if (!x || !y) return "<tr><td>" + r[0] + '</td><td colspan="5">Non réalisable pour l\'un des deux statuts avec ce bénéfice.</td></tr>'; var e = y.netComparable - x.netComparable;
+        return "<tr" + (r[1] === "best" ? ' class="hl"' : "") + "><td>" + r[0] + '</td><td class="num">' + E(x.netAvailable) + '</td><td class="num">' + E(y.netAvailable) + '</td><td class="num">' + E(x.netComparable) + '</td><td class="num">' + E(y.netComparable) + '</td><td class="num">' + (e >= 0 ? nm[1][0] : nm[0][0]) + " : " + E(Math.abs(e)) + "</td></tr>"; }).join("") + "</table></div></section>";
+    return h;
+  }
+  function lineChart(xs, series, xLabel) {
+    var W = 720, H = 280, mL = 74, mR = 16, mT = 14, mB = 36, all = [].concat.apply([], series.map(function (q) { return q.values; })), y0 = Math.min.apply(null, all), y1 = Math.max.apply(null, all), x0 = xs[0], x1 = xs[xs.length - 1];
+    if (y1 - y0 < 1) y1 = y0 + 1;
+    var X = function (v) { return mL + (W - mL - mR) * (v - x0) / (x1 - x0 || 1); }, Y = function (v) { return mT + (H - mT - mB) * (1 - (v - y0) / (y1 - y0)); };
+    var g2 = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + xLabel + '" style="width:100%;height:auto">';
+    [0, 0.5, 1].forEach(function (t) { var v = y0 + (y1 - y0) * t, xv = x0 + (x1 - x0) * t; g2 += '<line x1="' + mL + '" x2="' + (W - mR) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" stroke="var(--line)" fill="none"/><text x="' + (mL - 6) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + eur.format(Math.round(v)) + '</text><text x="' + X(xv) + '" y="' + (H - 12) + '" text-anchor="' + (t === 0 ? "start" : t === 1 ? "end" : "middle") + '">' + eur.format(Math.round(xv)) + " €</text>"; });
+    series.forEach(function (q) { g2 += '<polyline fill="none" stroke="var(' + q.color + ')" stroke-width="2.5"' + (q.dash ? ' stroke-dasharray="7 5"' : "") + ' points="' + xs.map(function (v, i) { return X(v).toFixed(1) + "," + Y(q.values[i]).toFixed(1); }).join(" ") + '"/>';
+      xs.forEach(function (v, i) { g2 += '<circle cx="' + X(v).toFixed(1) + '" cy="' + Y(q.values[i]).toFixed(1) + '" r="3" fill="var(' + q.color + ')"/>'; }); });
+    return g2 + '</svg><div class="legend">' + series.map(function (q) { return '<div><span><i class="sw" style="background:var(' + q.color + ')"></i>' + q.name + (q.dash ? " (trait pointillé)" : " (trait plein)") + "</span></div>"; }).join("") + "</div>";
+  }
+  function projectionHtml(inp) {
+    var nm = pairNames(), grid = [30000, 40000, 50000, 60000, 80000, 100000, 120000, 150000, 200000, 250000, 300000];
+    if (grid.indexOf(Math.round(inp.profit)) < 0) grid.push(Math.round(inp.profit));
+    grid.sort(function (u, v) { return u - v; });
+    var rows = grid.map(function (p) { var A = {}, k; for (k in inp) A[k] = inp[k]; A.profit = p; var oA = optimise(A), oB = optimise(other(A)); return { p: p, a: oA.valid ? oA.best : null, b: oB.valid ? oB.best : null }; }).filter(function (r) { return r.a && r.b; });
+    if (!rows.length) return '<p class="note bad">Projection impossible avec ces données.</p>';
+    var wins = rows.map(function (r) { return r.b.netComparable - r.a.netComparable; }), txt = "", start = 0;
+    for (var i = 1; i <= rows.length; i++) if (i === rows.length || (wins[i] >= 0) !== (wins[start] >= 0)) { txt += "<li>De " + E(rows[start].p) + " à " + E(rows[i - 1].p) + " de bénéfice : avantage " + (wins[start] >= 0 ? nm[1][0] : nm[0][0]) + ", de " + E(Math.min.apply(null, wins.slice(start, i).map(Math.abs))) + " à " + E(Math.max.apply(null, wins.slice(start, i).map(Math.abs))) + " par an.</li>"; start = i; }
+    var h = '<section class="panel"><h2>Projection : ' + nm[0][0] + " face à " + nm[1][0] + ' selon le bénéfice</h2><p class="lead">Pour chaque niveau de bénéfice avant rémunération, chaque statut est placé à sa meilleure répartition. Le foyer, le capital et les réglages avancés sont ceux saisis plus haut.</p>' + approxNote()
+      + "<h3>Net comparable à la meilleure répartition</h3>" + lineChart(rows.map(function (r) { return r.p; }), [{ name: nm[0][0], color: "--c1", values: rows.map(function (r) { return r.a.netComparable; }) }, { name: nm[1][0], color: "--c2", dash: true, values: rows.map(function (r) { return r.b.netComparable; }) }], "Net comparable selon le bénéfice")
+      + "<h3>Lecture</h3><ul>" + txt + "</ul></section>";
+    h += '<section class="panel"><h2>Détail par niveau de bénéfice</h2><div class="tw"><table><tr><th>Bénéfice</th><th>' + nm[0][0] + " : rémunération</th><th>dividendes</th><th>net perçu</th><th>net comparable</th><th>" + nm[1][0] + " : rémunération</th><th>dividendes</th><th>net perçu</th><th>net comparable</th><th>Avantage</th></tr>"
+      + rows.map(function (r, i) { return "<tr" + (r.p === Math.round(inp.profit) ? ' class="hl"' : "") + '><td class="num">' + E(r.p) + '</td><td class="num">' + E(r.a.remuneration) + '</td><td class="num">' + E(r.a.dividends) + '</td><td class="num">' + E(r.a.netAvailable) + '</td><td class="num">' + E(r.a.netComparable) + '</td><td class="num">' + E(r.b.remuneration) + '</td><td class="num">' + E(r.b.dividends) + '</td><td class="num">' + E(r.b.netAvailable) + '</td><td class="num">' + E(r.b.netComparable) + '</td><td class="num">' + (wins[i] >= 0 ? nm[1][0] : nm[0][0]) + " : " + E(Math.abs(wins[i])) + "</td></tr>"; }).join("")
+      + '</table></div><p class="lead">La ligne surlignée correspond au bénéfice saisi. Rémunération : enveloppe cotisations comprises pour le travailleur non salarié, salaire brut pour l\'assimilé salarié. Net comparable : net perçu, moins le rachat des trimestres manquants, plus la valeur des droits de retraite si elle est activée.</p></section>';
+    return h;
+  }
+  function row(l, v, cls) { return "<tr" + (cls ? ' class="' + cls + '"' : "") + "><td>" + l + '</td><td class="num">' + v + "</td></tr>"; }
+  function render() {
+    var inp = inputs(), tns = inp.tns, o = $("out"), h = "";
+    $("yearNote").textContent = "Barèmes utilisés : cotisations sociales et IS " + YEAR + " ; impôt sur le revenu : barème des revenus 2025, le dernier voté.";
+    var block = blockingParams(tns);
+    if ($("special").value === "1") { o.innerHTML = '<p class="note bad">Situation spécifique non prise en charge par ce simulateur. Faites valider le calcul par votre expert-comptable.</p>'; return; }
+    if (inp.profit <= 0 || inp.share <= 0) { o.innerHTML = '<p class="note warn">Simulation à compléter : indiquez le bénéfice avant rémunération et votre part du capital.</p>'; return; }
+    if (state.tab !== "sim") { $("pop").hidden = true; o.innerHTML = state.tab === "cmp" ? compareHtml(inp) : projectionHtml(inp); return; }
+    var opt = optimise(inp);
+    if (!opt.valid) { o.innerHTML = '<p class="note bad">' + opt.error + "</p>"; return; }
+    var mine = null, mineErr = "";
+    if (String($("curR").value).trim() !== "" || String($("curD").value).trim() !== "") { mine = simulateScenario(inp, num("curR"), num("curD")); if (!mine.valid) { mineErr = mine.error; mine = null; } }
+    var pick = state.obj === "eq" ? (opt.balanced || opt.best) : state.obj === "ret" ? (opt.retire || opt.best) : state.obj === "moi" && mine ? mine : opt.best;
+    var title = { net: "Répartition recommandée selon vos paramètres", eq: "Répartition équilibrée selon vos paramètres", ret: "Répartition qui préserve votre retraite", moi: mine ? "Votre situation actuelle" : "Répartition recommandée selon vos paramètres" }[state.obj];
+    // Fiabilité
+    var why = [];
+    if (block.length) why.push("Calculs approximatifs : " + block.length + " taux du régime " + (tns ? "des indépendants" : "général (Agirc-Arrco, accidents du travail, formation, FNAL, assiette de la CSG)") + " n'ont pas été confirmés sur une source officielle.");
+    if (userProvided(tns).length) why.push("Certains paramètres ont été fournis ou validés par le cabinet sans confirmation sur une source officielle.");
+    if (!inp.reservesKnown) why.push("Les réserves antérieures ne sont pas renseignées : le montant maximal de dividendes pourrait être différent.");
+    if ($("majInc").value === "1" && state.forme === "SARL") why.push("Le caractère majoritaire de la gérance est à confirmer avec votre expert-comptable.");
+    if (tns && pick.socializedDividends > 0) why.push("Le traitement de la part de dividendes soumise à cotisations reste à valider par votre expert-comptable.");
+    var lvl = block.length ? "Calculs approximatifs" : why.length ? "À confirmer" : "Élevée";
+    // Carte principale
+    var z = opt.zone, rw = tns ? "rémunération" : "salaire brut", dRem = pick.netAvailable - opt.maxRem.netAvailable, levy = pick.totalTaxesAndContributions;
+    h += '<section class="panel result"><span class="tag">' + title + " · " + (lvl === "Élevée" ? "fiabilité élevée" : lvl === "Calculs approximatifs" ? "calculs approximatifs" : "fiabilité à confirmer") + '</span><div class="split">'
+      + '<div class="line"><b>' + E(pick.remuneration) + "</b><span>de " + rw + (tns ? ", cotisations comprises (" : " (") + E(pick.netRemuneration) + " nets pour vous)</span></div>"
+      + '<div class="line"><b>+ ' + E(pick.dividends) + "</b><span>de dividendes" + (pick.dividends > 0 ? ", imposés au " + pick.dividendRegime : "") + "</span></div>"
+      + '<div class="total"><b>' + E(pick.netAvailable) + "</b><span>nets disponibles par an, après cotisations, IS et impôt sur le revenu</span></div></div>"
+      + (pick === opt.maxRem ? '<p class="delta">Cette répartition correspond au tout-rémunération.</p>' : '<p class="delta ' + (dRem >= 0 ? "pos" : "neg") + '">' + sgn(dRem) + " de net perçu par rapport au tout-rémunération</p>")
+      + '<p class="zone">Zone optimale : ' + E(z[0]) + " à " + E(z[1]) + " de " + rw + "</p>"
+      + '<ul class="checks"><li><span class="mark' + (pick.quarters < 4 ? " w" : "") + '">' + (pick.quarters < 4 ? "!" : "✓") + "</span><span>" + pick.quarters + " trimestre" + (pick.quarters > 1 ? "s" : "") + " de retraite validé" + (pick.quarters > 1 ? "s" : "") + " sur 4</span></li>"
+      + '<li><span class="mark' + (pick.pensionTotal > 0 ? "" : " w") + '">' + (pick.pensionTotal > 0 ? "✓" : "!") + "</span><span>" + (pick.pensionTotal > 0 ? E(pick.pensionTotal) + " de pension acquise par an de retraite" : "Aucun droit à pension acquis cette année") + "</span></li>"
+      + '<li><span class="mark n">€</span><span>Prélèvements totaux : ' + E(levy) + ", soit " + Math.round(levy / inp.profit * 100) + " % du bénéfice</span></li>"
+      + '<li><span class="mark n">€</span><span>' + E(pick.retainedInCompany) + " restent dans la société</span></li></ul>";
+    if (mine && pick !== mine) { var gain = pick.netComparable - mine.netComparable; h += '<p class="note ' + (gain >= 0 ? "good" : "warn") + '">Écart estimé par rapport à votre stratégie actuelle : <b class="num">' + (gain >= 0 ? "+ " : "− ") + E(Math.abs(gain)) + "</b> par an.</p>"; }
+    if (mineErr) h += '<p class="note bad">Stratégie actuelle : ' + mineErr + "</p>";
+    // Phrases de recommandation
+    var txt = "";
+    if (z[1] - z[0] > CONFIG.coarseStep) txt += "Entre " + E(z[0]) + " et " + E(z[1]) + " de " + (tns ? "rémunération" : "salaire brut") + ", l'écart de revenu comparable reste inférieur à " + E(opt.zoneTol) + ". Zone recommandée : " + E(z[0]) + " à " + E(z[1]) + ". ";
+    else txt += "Le revenu comparable le plus élevé est obtenu autour de " + E(opt.best.remuneration) + " de " + (tns ? "rémunération" : "salaire brut") + ", complétés par " + E(opt.best.dividends) + " de dividendes. ";
+    if (opt.fourQuarters) { var cost4 = opt.best.netComparable - opt.fourQuarters.netComparable;
+      txt += opt.best.quarters >= 4 ? "Cette répartition valide déjà 4 trimestres de retraite." : "Vous pouvez valider 4 trimestres avec " + E(opt.fourQuarters.remuneration) + " de " + (tns ? "rémunération" : "salaire brut") + ". Cela réduit votre revenu disponible de " + E(cost4) + " par rapport à l'optimum financier."; }
+    else txt += "Le bénéfice ne permet pas de valider 4 trimestres de retraite.";
+    h += "<p>" + txt + "</p>";
+    if (block.length) h += '<p class="note warn">Calculs approximatifs : certains taux de cotisations ne sont pas confirmés. Le résultat donne un ordre de grandeur, à faire valider par votre expert-comptable.</p>';
+    if (inp.retirementFactor > 0 || inp.quarterCost > 0) h += '<p class="note">Les stratégies sont classées sur un revenu comparable de ' + E(pick.netComparable) + " : net perçu" + (pick.quarterBuyback > 0 ? ", moins " + E(pick.quarterBuyback) + " de rachat de trimestres" : "") + (pick.retirementValue > 0 ? ", plus " + E(pick.retirementValue) + " de droits de retraite acquis, nets de prélèvements" : "") + ".</p>";
+    if (pick.quarters < 4) h += '<p class="note warn">Avec cette répartition : ' + pick.quarters + " trimestre(s) validé(s) au titre de cette activité." + (pick.quarterBuyback > 0 ? " Pour comparer à droits égaux, le rachat de " + (4 - pick.quarters) + " trimestre(s) est compté pour " + E(pick.quarterBuyback) + " : revenu comparable de " + E(pick.netComparable) + "." : "") + "</p>";
+    if (tns && pick.socializedDividends > 0) h += '<p class="note warn">' + E(pick.socializedDividends) + " de dividendes dépassent le seuil de " + E(pick.threshold) + " et entrent dans vos cotisations sociales.</p>";
+    h += "</section>";
+    // Entonnoir
+    h += '<section class="panel"><h2>Où part l\'argent</h2><p class="lead">Sur ' + E(inp.profit) + " générés par la société, avec la répartition retenue. Pour les autres stratégies, utilisez le bouton i du tableau de comparaison.</p>" + breakdown(pick)
+      + '<p class="lead">Économie d\'IS due à la rémunération : ' + E(pick.corporateTaxSaving) + " (IS sans rémunération moins IS avec rémunération).</p></section>";
+    // Scénarios
+    var sc = [["Rémunération maximale", opt.maxRem], ["Dividendes au maximum", opt.maxDiv], ["Répartition recommandée", opt.best]];
+    if (opt.fourQuarters) sc.push(["4 trimestres puis dividendes", opt.fourQuarters]);
+    if (mine) sc.push(["Ma stratégie actuelle", mine]);
+    h += '<section class="panel"><h2>Comparaison des stratégies</h2><div class="tw"><table><tr><th>Stratégie</th><th>' + (tns ? "Rémunération" : "Salaire brut") + "</th><th>Dividendes</th><th>Net pour vous</th><th>Retraite</th><th>Rachat de trimestres</th><th>Pension acquise, par an de retraite</th><th>Net comparable</th><th>Reste en société</th></tr>"
+      + sc.map(function (s, k) { var x = s[1]; return "<tr" + (x === pick ? ' class="hl"' : "") + "><td>" + s[0] + '<button type="button" class="info noprint" data-k="' + k + '" aria-label="Où part l\'argent : ' + s[0] + '">i</button></td><td class="num">' + E(x.remuneration) + '</td><td class="num">' + E(x.dividends) + '</td><td class="num">' + E(x.netAvailable) + "</td><td>" + x.quarters + ' trim.</td><td class="num">' + (x.quarterBuyback > 0 ? "− " + E(x.quarterBuyback) : "0\u00a0€") + '</td><td class="num">' + E(x.pensionTotal) + (x.retirementValue > 0 ? "<br>valorisée " + E(x.retirementValue) : "") + '</td><td class="num">' + E(x.netComparable) + '</td><td class="num">' + E(x.retainedInCompany) + "</td></tr>"; }).join("") + "</table></div>";
+    // Courbe
+    var W = 720, H = 260, mL = 70, mR = 16, mT = 14, mB = 34, cv = opt.curve, ys = cv.map(function (s) { return s.netComparable; }), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+    if (y1 - y0 < 1) y1 = y0 + 1;
+    var X = function (r) { return mL + (W - mL - mR) * (opt.rMax ? r / opt.rMax : 0); }, Y = function (v) { return mT + (H - mT - mB) * (1 - (v - y0) / (y1 - y0)); };
+    var svg = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Revenu disponible selon la rémunération" style="width:100%;height:auto">'
+      + '<rect x="' + X(z[0]) + '" y="' + mT + '" width="' + Math.max(2, X(z[1]) - X(z[0])) + '" height="' + (H - mT - mB) + '" fill="var(--accent-soft)"/>';
+    [0, 0.5, 1].forEach(function (t) { var v = y0 + (y1 - y0) * t; svg += '<line x1="' + mL + '" x2="' + (W - mR) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" stroke="var(--line)" fill="none"/><text x="' + (mL - 6) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + eur.format(Math.round(v)) + "</text>";
+      svg += '<text x="' + X(opt.rMax * t) + '" y="' + (H - 12) + '" text-anchor="' + (t === 0 ? "start" : t === 1 ? "end" : "middle") + '">' + eur.format(Math.round(opt.rMax * t)) + " €</text>"; });
+    svg += '<polyline fill="none" stroke="var(--accent)" stroke-width="2" points="' + cv.map(function (s) { return X(s.remuneration).toFixed(1) + "," + Y(s.netComparable).toFixed(1); }).join(" ") + '"/>';
+    svg += '<circle cx="' + X(opt.best.remuneration) + '" cy="' + Y(opt.best.netComparable) + '" r="5" fill="var(--c6)"/>';
+    if (opt.fourQuarters) svg += '<circle cx="' + X(opt.fourQuarters.remuneration) + '" cy="' + Y(opt.fourQuarters.netComparable) + '" r="5" fill="var(--c2)"/>';
+    h += "<h3>Revenu comparable (net, moins rachat des trimestres manquants, plus valeur des droits de retraite) selon la " + (tns ? "rémunération" : "rémunération brute") + "</h3>" + svg + '</svg><div class="legend"><div><span><i class="sw" style="background:var(--c6)"></i>Répartition recommandée</span></div><div><span><i class="sw" style="background:var(--c2)"></i>Premier niveau validant 4 trimestres</span></div><div><span><i class="sw" style="background:var(--accent-soft)"></i>Zone recommandée</span></div></div></section>';
+    // Retraite
+    h += '<section class="panel"><h2>Retraite : avec cette répartition</h2><div class="hero"><div class="fig"><span>Trimestres validés</span><b>' + pick.quarters + ' sur 4</b></div><div class="fig"><span>Cotisations de retraite</span><b>' + E(pick.retirementContributions) + '</b></div><div class="fig"><span>Points de retraite complémentaire</span><b>' + (pick.points == null ? "non estimé" : pick.points.toLocaleString("fr-FR", { maximumFractionDigits: 1 })) + '</b></div><div class="fig"><span>Pension annuelle acquise</span><b>' + E(pick.pensionTotal) + "</b><span>base " + (inp.bestYearsDone ? "non augmentée" : E(pick.basePension)) + ", complémentaire " + E(pick.pension || 0) + '</span></div><div class="fig"><span>Valeur retenue de ces droits</span><b>' + E(pick.retirementValue) + "</b><span>" + (inp.retirementFactor > 0 ? inp.retirementYears + " ans de retraite, nette de " + pc(inp.pensionLevy) + " de prélèvements" : "non comptée dans le classement") + "</span></div></div>"
+      + '<p class="lead">Estimation pédagogique des droits acquis sur une année. Pour un assimilé salarié, aucun trimestre n\'est validé sans salaire : les dividendes seuls ne créent pas les mêmes droits qu\'une rémunération.' + (tns ? " Pour un gérant majoritaire, deux exceptions : les cotisations minimales, calculées sur 450 fois le SMIC horaire, valident 3 trimestres même sans rémunération lorsqu'il est affilié toute l'année ; et la part de dividendes soumise à cotisations sociales entre dans l'assiette de retraite." : "") + "</p></section>";
+    // Hypothèses, fiabilité, détail
+    h += '<section class="panel"><h2>Fiabilité de la simulation : ' + lvl + "</h2>" + (why.length ? "<ul>" + why.map(function (w) { return "<li>" + w + "</li>"; }).join("") + "</ul>" : "<p>Les principales données fiscales, sociales et financières nécessaires sont renseignées et vérifiées.</p>")
+      + "<h3>Hypothèses utilisées</h3><ul><li>Un exercice de 12 mois en régime de croisière : rémunération et dividendes sont ramenés à la même année, alors que les dividendes sont en pratique versés l'année suivante.</li><li>Dividendes versés à tous les associés au prorata du capital ; seule votre part entre dans votre revenu.</li>"
+      + "<li>" + (inp.includeReserves ? "Réserves antérieures distribuées : " + E(inp.reserves) + "." : "Réserves antérieures non distribuées : seul le bénéfice de l'année est réparti.") + "</li>"
+      + (tns ? "<li>La rémunération saisie est l'enveloppe totale attribuée au gérant, cotisations sociales comprises. L'assiette sociale est cette enveloppe, plus les dividendes au-delà du seuil, après abattement de 26 %.</li><li>Compte courant d'associé retenu : " + E(inp.currentAccount) + ".</li><li>La part de dividendes soumise à cotisations ne supporte pas en plus les prélèvements sociaux de 18,6 %.</li>" : "<li>Mandataire social sans assurance chômage ni réduction générale de cotisations.</li>")
+      + "<li>" + (inp.quarterCost > 0 ? "Chaque trimestre de retraite non validé est compté pour " + E(inp.quarterCost) + " de rachat, valeur indicative saisie par le cabinet. Les stratégies sont classées sur ce revenu comparable. La déduction fiscale du rachat n'est pas prise en compte." : "Aucun coût de rachat de trimestre n'est compté.") + "</li><li>" + (inp.retirementFactor > 0 ? "Les droits de retraite acquis dans l'année sont comptés dans le classement : pension annuelle acquise, versée de " + g("ret.ageLegal") + " ans (âge légal) à " + g("ret.esperance") + " ans (espérance de vie moyenne), soit " + inp.retirementYears + " ans, après " + pc(inp.pensionLevy) + " de prélèvements (prélèvements sociaux et impôt forfaitaire)" + (num("actu") > 0 ? ", actualisée à " + num("actu") + " % par an pour un dirigeant de " + num("age") + " ans" : ", sans actualisation") + ". " + (inp.bestYearsDone ? "Les 25 meilleures années étant déjà acquises, le salaire de l'année n'augmente pas la pension de base : seuls les points de retraite complémentaire sont valorisés, les trimestres étant pris en compte par le coût de rachat." : "La pension de base est estimée à 50 % du revenu cotisé plafonné au PASS, au prorata des trimestres validés sur 172 : c'est un ordre de grandeur, qui suppose que l'année compte parmi les 25 meilleures et que le taux plein est atteint.") : "Les droits de retraite acquis sont affichés pour information et ne sont pas comptés dans le classement.") + "</li><li>Contributions sur les hauts revenus, crédits et réductions d'impôt non pris en compte.</li></ul>";
+    var lines = detailRows(pick, inp);
+    h += '<details><summary>Voir le détail expert du calcul</summary><div class="tw"><table>' + lines + "</table></div></details>"
+      + '<div class="choices noprint"><button class="btn" type="button" id="copyB">Copier le résumé de la simulation</button><span id="copyM" class="lead"></span></div></section>';
+    o.innerHTML = h;
+    var pop = $("pop"), openK = null; pinned = false;
+    function show(b) { var k = +b.getAttribute("data-k"), x = sc[k][1]; openK = k;
+      pop.innerHTML = "<h3>" + sc[k][0] + '</h3><p class="lead">Où part l\'argent, sur ' + E(inp.profit) + ".</p>" + breakdown(x) + '<p class="lead">' + x.quarters + " trimestre(s) validé(s)" + (x.quarterBuyback > 0 ? ", rachat compté " + E(x.quarterBuyback) : "") + ". Pension acquise : " + E(x.pensionTotal) + " par an" + (x.retirementValue > 0 ? ", valorisée " + E(x.retirementValue) : "") + ". Net comparable : " + E(x.netComparable) + ".</p>";
+      pop.innerHTML += '<button type="button" class="btn" id="popX">Fermer</button>'; $("popX").onclick = function (e) { e.stopPropagation(); pinned = false; pop.hidden = true; openK = null; };
+      pop.hidden = false; var r = b.getBoundingClientRect(), w = pop.offsetWidth, hh = pop.offsetHeight;
+      pop.style.left = clamp(r.left, 16, Math.max(16, window.innerWidth - w - 16)) + "px";
+      pop.style.top = (r.bottom + hh + 12 > window.innerHeight ? Math.max(8, r.top - hh - 8) : r.bottom + 8) + "px"; }
+    function hide() { pop.hidden = true; openK = null; }
+    hide();
+    Array.prototype.forEach.call(o.querySelectorAll(".info"), function (b) {
+      b.onpointerenter = function (e) { if (e.pointerType === "mouse" && !pinned) show(b); };
+      b.onpointerleave = function (e) { if (e.pointerType === "mouse" && !pinned) hide(); };
+      b.onclick = function (e) { e.stopPropagation(); var k = +b.getAttribute("data-k"); if (pinned && openK === k) { pinned = false; hide(); } else { show(b); pinned = true; } }; });
+    var summary = "Simulation rémunération ou dividendes (" + state.forme + ", " + (tns ? "TNS" : "assimilé salarié") + ", barèmes " + YEAR + ")\nBénéfice avant rémunération et IS : " + E(inp.profit) + "\n" + title + " : " + (tns ? "enveloppe de rémunération " : "salaire brut ") + E(pick.remuneration) + ", dividendes " + E(pick.dividends) + "\nNet disponible : " + E(pick.netAvailable) + "\nReste dans la société : " + E(pick.retainedInCompany) + "\nTrimestres validés : " + pick.quarters + "\nFiabilité : " + lvl + "\nSimulation indicative, à faire valider par votre expert-comptable.";
+    $("copyB").onclick = function () { var done = function () { $("copyM").textContent = "Résumé copié."; };
+      try { navigator.clipboard.writeText(summary.replace(/ /g, " ")).then(done, function () { $("copyM").textContent = summary; }); } catch (e) { $("copyM").textContent = summary; } };
+  }
+  function paramTable() {
+    var ex = $("expertD").open, nv = PARAM_LIST.filter(function (p) { return effective(p.key).status === "v"; }).length;
+    $("srcSum").textContent = "Barèmes " + YEAR + " : " + nv + " paramètres sur " + PARAM_LIST.length + " vérifiés sur une source officielle.";
+    $("ptable").innerHTML = "<tr><th>Paramètre</th><th>Valeur</th><th>Source</th><th>Statut</th><th></th></tr>" + PARAM_LIST.map(function (p, i) {
+      var e = effective(p.key), arr = typeof p.value !== "number";
+      var lab = e.validated ? "Validé par le cabinet" : e.status === "v" ? "Vérifié" : e.status === "u" ? "Fourni par le cabinet" : "Non vérifié";
+      return "<tr><td>" + p.label + "</td><td>" + (arr ? '<span class="num">' + JSON.stringify(p.value).replace(/null/g, "au-delà") + "</span>" : !ex ? '<span class="num">' + String(e.value).replace(".", ",") + "</span>" : '<input type="text" inputmode="decimal" id="pv' + i + '" aria-label="' + p.label + '" value="' + String(e.value).replace(".", ",") + '">') + "</td><td>" + (p.sourceUrl ? '<a href="' + p.sourceUrl + '" target="_blank" rel="noopener">' + p.sourceName + "</a>" : p.sourceName) + '</td><td><span class="chip ' + (e.validated ? "u" : e.status) + '">' + lab + "</span></td><td>" + (arr || !ex ? "" : '<button class="btn" type="button" data-i="' + i + '">Valider</button>') + "</td></tr>";
+    }).join("");
+    Array.prototype.forEach.call($("ptable").querySelectorAll("button"), function (b) { b.onclick = function () { var i = +b.getAttribute("data-i"), v = parseFloat(String($("pv" + i).value).replace(/\s/g, "").replace(",", ".")); if (!isFinite(v) || v < 0) return; OVERRIDES[PARAM_LIST[i].key] = { value: v, at: new Date().toISOString().slice(0, 10) }; save("rem-div-params", OVERRIDES); paramTable(); render(); }; });
+  }
+  $("valAll").onclick = function () { PARAM_LIST.forEach(function (p) { if (effective(p.key).status === "x") OVERRIDES[p.key] = { value: p.value, at: new Date().toISOString().slice(0, 10) }; }); save("rem-div-params", OVERRIDES); paramTable(); render(); };
+  $("resetP").onclick = function () { Object.keys(OVERRIDES).forEach(function (k) { delete OVERRIDES[k]; }); save("rem-div-params", OVERRIDES); paramTable(); render(); };
+  $("runT").onclick = function () { var t = runTests(), ko = t.filter(function (x) { return !x.ok; });
+    $("tests").innerHTML = '<p class="note ' + (ko.length ? "bad" : "good") + '">' + (t.length - ko.length) + " contrôles réussis sur " + t.length + "." + (ko.length ? " En échec : " + ko.map(function (x) { return x.name; }).join(" ; ") : "") + "</p>"; };
+  Array.prototype.forEach.call(document.querySelectorAll(".wrap > section input, .wrap > section select"), function (el) { if (el.id.indexOf("pv") !== 0) el.addEventListener("input", function () { build(); }); });
+  $("brand").textContent = CONFIG.cabinet;
+  $("contact").textContent = CONFIG.email ? "Faire valider cette simulation par mon expert-comptable : " + CONFIG.email : "";
+  $("expertD").addEventListener("toggle", paramTable);
+  paramTable(); build();
+  if (location.hash === "#tests") $("runT").onclick();
+})();
+</script>

@@ -1,0 +1,611 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>Simulateur apport-cession</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Mise en page : colonne formulaire à gauche (sticky), résultats à droite ; bandeau marine + filet doré */
+:root{
+  --bg:#f4f2ec; --card:#ffffff; --ink:#23272e; --muted:#5b6472; --line:#e2e0d8;
+  --head:#14213d; --head2:#1f2f52; --gold:#b7892f;
+  --hd1:#14213d; --hd2:#1f2f52; --btn:#14213d; --btn-h:#1f2f52; --on-dark:#ffffff;
+  --soft:#f3f1ea; --field-bg:#ffffff; --field-line:#cfd3da;
+  --chk-bg:#fbf8f0; --chk-line:#d0c9b5; --chk-on:#f7efd9;
+  --green:#2c5f45; --green-bg:#e7f0ea; --green-ink:#1f4433;
+  --amber:#8a6d1f; --amber-bg:#f8f0da; --amber-ink:#5c4a14;
+  --red:#8a3324; --red-bg:#fbeee9; --red-ink:#5f231a;
+  --blue:#1f4e79; --blue-bg:#e9f0f7; --blue-ink:#1d3a55;
+}
+*{box-sizing:border-box;}
+html{color-scheme:light}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15.5px;line-height:1.6;}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
+header{background:linear-gradient(160deg,var(--hd1),var(--hd2));color:#f4f2ea;padding-block:28px;border-bottom:4px solid var(--gold);}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+header h1{font-family:Georgia,serif;font-size:1.5rem;margin:0 0 4px;color:#fff;text-wrap:balance;}
+header p{margin:0;color:#c7cdd9;font-size:.9rem;max-width:760px;}
+.expert-switch{display:flex;align-items:center;gap:10px;font-size:.85rem;color:#dfe3ea;background:rgba(255,255,255,.1);padding:8px 14px;border-radius:30px;cursor:pointer;user-select:none;}
+.switch{width:42px;height:24px;background:#41506e;border-radius:20px;position:relative;transition:.2s;flex:0 0 auto;}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s;}
+body.expert .switch{background:var(--gold);}
+body.expert .switch::after{left:21px;}
+main{padding-block:26px 50px;}
+.grid{display:grid;grid-template-columns:400px minmax(0,1fr);gap:26px;align-items:start;}
+@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr);}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;min-width:0;}
+.panel.form{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;}
+@media (max-width:980px){.panel.form{position:static;max-height:none;}}
+h2.pt{font-family:Georgia,serif;font-size:1.08rem;color:var(--head);margin:0 0 16px;}
+h3.st{font-family:Georgia,serif;font-size:1.05rem;color:var(--head);margin:22px 0 12px;text-wrap:balance;}
+.field{display:block;margin-bottom:14px;font-size:.82rem;font-weight:600;color:var(--head2);}
+.field input,.field select{display:block;width:100%;margin-top:5px;padding:9px 11px;border:1px solid var(--field-line);border-radius:7px;font-size:.95rem;font-weight:400;background:var(--field-bg);color:var(--ink);font-family:inherit;}
+.field input:focus,.field select:focus,input:focus-visible,select:focus-visible{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(183,137,47,.25);}
+.hint{font-weight:400;color:var(--muted);font-size:.76rem;}
+.sep{height:1px;background:var(--line);margin:18px 0;}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:.84rem;padding:10px 12px;border:1px dashed var(--chk-line);border-radius:8px;background:var(--chk-bg);margin-bottom:10px;cursor:pointer;}
+.chk input{margin-top:3px;accent-color:var(--gold);width:18px;height:18px;flex:0 0 18px;}
+.chk b{display:block;font-weight:600;color:var(--head2);}
+.chk small{display:block;color:var(--muted);font-size:.76rem;line-height:1.4;margin-top:2px;}
+.chk:has(input:checked){border-color:var(--gold);background:var(--chk-on);}
+.expert-only{display:none;}
+body.expert .expert-only{display:block;}
+.summary{background:var(--hd1);color:#fff;border-radius:12px;padding:18px 22px;margin-bottom:20px;border:1px solid var(--line);}
+.summary h3{margin:0;font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:#f0d79a;font-weight:700;}
+.summary .main{font-size:1.1rem;font-weight:700;margin-top:6px;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.chip{background:rgba(255,255,255,.12);border-radius:20px;padding:5px 13px;font-size:.83rem;}
+.chip b{color:#f0d79a;}
+.big{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:6px;}
+@media (max-width:1180px){.big{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media (max-width:520px){.big{grid-template-columns:minmax(0,1fr);}}
+.kpi{border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:11px;padding:15px 17px;background:var(--card);min-width:0;}
+.kpi:nth-child(2){border-left-color:var(--amber);} .kpi:nth-child(3){border-left-color:var(--green);} .kpi:nth-child(4){border-left-color:var(--head2);}
+.kpi small{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;margin-bottom:3px;}
+.kpi b{font-size:1.1rem;font-weight:700;color:var(--head);line-height:1.3;font-variant-numeric:tabular-nums;}
+.kpi:nth-child(1) b{color:var(--blue);} .kpi:nth-child(2) b{color:var(--amber);} .kpi:nth-child(3) b{color:var(--green);}
+.alerts{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+.alert{padding:12px 16px;border-radius:8px;font-size:.84rem;background:var(--blue-bg);border-left:4px solid var(--blue);color:var(--blue-ink);}
+.alert.bad{background:var(--red-bg);border-left-color:var(--red);color:var(--red-ink);}
+.alert.good{background:var(--green-bg);border-left-color:var(--green);color:var(--green-ink);}
+.alert.warn{background:var(--amber-bg);border-left-color:var(--amber);color:var(--amber-ink);}
+.scroll{overflow-x:auto;}
+table{border-collapse:collapse;width:100%;font-size:.87rem;background:var(--card);font-variant-numeric:tabular-nums;}
+th,td{border:1px solid var(--line);padding:9px 12px;text-align:right;}
+th:first-child,td:first-child{text-align:left;}
+tr:first-child th{background:var(--hd1);color:#fff;font-weight:600;font-size:.8rem;}
+tr:not(:first-child) th{background:var(--soft);color:var(--head);text-align:left;}
+tr.best td{background:var(--green-bg);font-weight:700;color:var(--green);}
+.tag{display:inline-block;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:var(--amber);color:#1a1405;padding:1px 8px;border-radius:10px;vertical-align:middle;margin-left:6px;}
+.tag.ok{background:var(--green);color:#0c1a12;}
+button{font:inherit;background:var(--btn);color:var(--on-dark);border:0;border-radius:7px;padding:9px 16px;cursor:pointer;font-weight:600;}
+button:hover{background:var(--btn-h);}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+.golink{background:var(--gold);color:#1a1405;}
+.golink:hover{background:#c99a3c;}
+.note{font-size:.8rem;color:var(--muted);}
+.f{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;background:var(--soft);padding:12px 14px;border-radius:8px;white-space:pre-wrap;color:var(--head);overflow-wrap:anywhere;}
+details summary{cursor:pointer;font-weight:600;color:var(--head);}
+#params{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px;}
+#params label{display:block;font-size:.8rem;font-weight:600;color:var(--head2);}
+#params input{display:block;width:100%;margin-top:4px;padding:7px 10px;border:1px solid var(--field-line);border-radius:7px;font-size:.9rem;background:var(--field-bg);color:var(--ink);}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:20px;flex-wrap:wrap;}
+.tab{background:var(--card);color:var(--head);border:1px solid var(--line);border-bottom:3px solid transparent;margin-bottom:-2px;border-radius:9px 9px 0 0;padding:12px 24px;font-size:1rem;font-weight:700;cursor:pointer;}
+.tab:hover{background:var(--soft);}
+.tab[aria-selected="true"]{background:var(--btn);color:var(--on-dark);border-color:var(--btn);border-bottom-color:var(--gold);}
+.tab[aria-selected="true"]:hover{background:var(--btn);}
+.disclaimer{margin-top:22px;background:var(--soft);border-radius:9px;padding:14px 18px;font-size:.78rem;color:var(--muted);}
+footer{color:var(--muted);font-size:.76rem;text-align:center;padding-block:20px;}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important;}}
+
+</style>
+<header>
+  <div class="wrap">
+    <div>
+      <h1>Simulateur d'apport-cession</h1>
+      <p>Art. 150-0 B ter du CGI — apport à une holding contrôlée, cession par la holding, remploi et comparaison avec la cession directe. Choix PFU / barème à l'apport. Droit 2026.</p>
+    </div>
+    <div class="expert-switch" id="expertToggle" role="switch" aria-checked="false" tabindex="0"><span class="switch"></span> Mode expert</div>
+  </div>
+</header>
+<main><div class="wrap"><div class="grid">
+
+<section class="panel form">
+  <h2 class="pt">Votre situation</h2>
+
+  <div class="hint" style="font-weight:700;color:var(--head2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Titres apportés et apport</div>
+  <label class="field">Valeur d'apport des titres <span class="hint">(€)</span><input id="va" type="number" value="1000000" min="0"></label>
+  <label class="field">Prix d'acquisition + frais <span class="hint">(€)</span><input id="pa" type="number" value="100000" min="0"></label>
+  <label class="field">Date d'acquisition des titres<input id="dAcq" type="date" value="2014-03-01"></label>
+  <label class="field">Date de l'apport à la holding<input id="dApport" type="date" value="2026-12-15"></label>
+  <label class="field">Soulte reçue <span class="hint">(€, imposée dès l'apport)</span><input id="soulte" type="number" value="0" min="0"></label>
+  <label class="field">Moins-values reportables <span class="hint">(€)</span><input id="mv" type="number" value="0" min="0"></label>
+  <label class="field">Régime d'imposition de l'année de l'apport
+    <select id="regime"><option value="auto">Le plus favorable (calcul)</option><option value="pfu">PFU 12,8 %</option><option value="bar">Option barème (global)</option></select></label>
+  <label class="field">Date de création de la société cédée <span class="hint">(facultatif)</span><input id="dCreation" type="date"><span class="hint" style="display:block;margin-top:5px;">Sert à signaler l'abattement renforcé PME : société créée depuis moins de 10 ans à la date d'acquisition des titres.</span></label>
+  <div id="pmeHint" role="status" style="display:none;margin:0 0 8px;padding:9px 12px;border-radius:8px;background:#fdf3d9;border:1px solid #e0b64a;color:#6b4a00;font-size:.85rem;line-height:1.4;"></div>
+  <label class="chk"><input id="pme" type="checkbox"><span><b>Abattement renforcé PME</b><small>Société de moins de 10 ans à l'acquisition, PME UE, activité opérationnelle. Titres acquis avant 2018 et option barème l'année de l'apport (150-0 D, 1 quater).</small></span></label>
+  <label class="chk"><input id="exc" type="checkbox" checked><span><b>Plus-value de cession directe : revenu exceptionnel</b><small>Retenue pour 1/4 dans la CDHR (BOI-IR-CDHR-20). Sans effet sur la plus-value en report, hors CDHR.</small></span></label>
+  <label class="field">Moyenne des revenus nets des 3 années précédant la cession <span class="hint">(€, facultatif)</span><input id="moy3" type="number" min="0" placeholder="ex. 40000"><span class="hint" style="display:block;margin-top:5px;">Condition de montant du revenu exceptionnel (BOI-IR-CDHR-20, § 60 et 70) : la plus-value, retenue après abattement pour durée de détention, doit dépasser cette moyenne pour que le quart s'applique. Laissez vide pour ne pas la contrôler.</span></label>
+
+  <div class="sep"></div>
+  <div class="hint" style="font-weight:700;color:var(--head2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Foyer fiscal</div>
+  <label class="field">Revenu net imposable du foyer hors PV <span class="hint">(€)</span><input id="rni" type="number" value="40000" min="0"></label>
+  <label class="field">Nombre de parts de quotient familial<input id="nbp" type="number" value="2" min="1" step="0.5"></label>
+  <label class="field">Situation pour la CEHR<select id="sit"><option value="couple">Marié ou pacsé</option><option value="seul">Célibataire, veuf, séparé, divorcé</option></select></label>
+  <label class="field">Autres réintégrations au RFR hors PV <span class="hint">(€)</span><input id="rfrX" type="number" value="0" min="0"></label>
+  <label class="field">Personnes à charge <span class="hint">(CDHR)</span><input id="pac" type="number" value="0" min="0"></label>
+
+  <div class="sep"></div>
+  <div class="hint" style="font-weight:700;color:var(--head2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Holding et cession</div>
+  <label class="field">Date de cession par la holding<input id="dCess" type="date" value="2027-03-01"></label>
+  <label class="field">Prix de cession <span class="hint">(€)</span><input id="pc" type="number" value="1000000" min="0"></label>
+  <label class="field">Frais de cession <span class="hint">(€)</span><input id="fraisH" type="number" value="10000" min="0"></label>
+  <label class="field">Montant réinvesti dans des actifs éligibles <span class="hint">(€)</span><input id="reinv" type="number" value="990000" min="0"></label>
+  <label class="field">Branche d'activité ou actifs éligibles reçus en contrepartie de la cession <span class="hint">(€, facultatif)</span><input id="branche" type="number" value="0" min="0"><span class="hint" style="display:block;margin-top:5px;">Valeur de la branche d'activité éligible ou des actifs nécessaires à une activité éligible que la holding reçoit en paiement (échange, dation), sans passer par un réinvestissement de liquidités. Compte dans le seuil de 70 % du produit de cession (BOI-RPPM-PVBMI-30-10-60-20 § 130).</span></label>
+  <label class="field">Dans quoi la holding réinvestit-elle le prix de cession ?<select id="typeRemploi">
+    <option value="exploit">Outil d'exploitation (matériel, locaux affectés à une activité opérationnelle)</option>
+    <option value="controle">Rachat de sociétés opérationnelles avec prise de contrôle</option>
+    <option value="souscr">Souscription au capital de sociétés opérationnelles (création, augmentation de capital)</option>
+    <option value="fonds">Parts de fonds de capital-investissement (FCPR, FPCI, SLP, SCR)</option>
+    <option value="nonelig">Placements financiers, immobilier locatif, patrimoine de la holding (non éligible)</option></select>
+    <span class="hint" id="remploiHint" style="display:block;margin-top:5px;"></span></label>
+  <label class="field">Date du réinvestissement<input id="dReinv" type="date" value="2027-09-01"></label>
+  <label class="field">Date de sortie des actifs de remploi <span class="hint">(facultatif)</span><input id="dConserv" type="date"></label>
+  <label class="field">Taux d'IS de la holding<select id="tIS"><option value="25">25 %</option><option value="1525">15 % jusqu'à 42 500 €, puis 25 %</option></select></label>
+  <label class="chk"><input id="partic" type="checkbox" checked><span><b>Titres de participation</b><small>Nature des titres : cochez si les titres de la société cédée sont des titres de participation. Le régime de faveur (quote-part de 12 %) exige en plus 2 ans de détention par la holding, vérifiés automatiquement.</small><small id="particHint" style="font-weight:700;color:var(--head2)"></small></span></label>
+
+  <div class="expert-only">
+    <div class="sep"></div>
+    <details>
+      <summary>Paramètres fiscaux (modifiables)</summary>
+      <div id="params"></div>
+      <p class="note">Quote-part de frais et charges de 12 % : validée (BOI-IS-BASE-20-20-10-20 § 115). Barème IR revenus 2025. À valider : quart sur l'IR du barème (approximation), seuils de remploi (LFI 2026, art. 11), taux de PS de l'année de l'apport.</p>
+    </details>
+  </div>
+</section>
+
+<section>
+  <div class="summary" id="summary"></div>
+  <nav class="tabs" role="tablist">
+    <button class="tab" id="tbSim" role="tab" aria-selected="true" type="button">Simulation</button>
+    <button class="tab" id="tbDet" role="tab" aria-selected="false" type="button">Détail du calcul</button>
+  </nav>
+
+  <div class="pane" id="paneSim">
+    <div class="big" id="kpis"></div>
+    <div class="alerts" id="alerteBareme"></div>
+    <div class="alerts" id="alertes"></div>
+    <h3 class="st">Comparaison des scénarios</h3>
+    <div class="scroll"><table id="tab"></table></div>
+    <div style="margin-top:14px"><button id="copier" type="button">Copier la synthèse</button> <button id="goDet" class="golink" type="button" style="margin-top:0">Voir le détail du calcul →</button> <span class="note" id="cpmsg"></span></div>
+  </div>
+
+  <div class="pane" id="paneDet" hidden>
+    <h3 class="st" style="margin-top:0">Synthèse des scénarios</h3>
+    <div class="scroll"><table id="tab2"></table></div>
+    <h3 class="st">Détail de l'imposition de la plus-value d'apport</h3>
+    <div class="scroll"><table id="tabReg"></table></div>
+    <h3 class="st">Formules et méthode</h3>
+    <div id="formules" class="f"></div>
+    <h3 class="st">Formalités</h3>
+    <ol class="note">
+      <li>Année de l'apport : plus-value d'apport sur la 2074-I (Cerfa 11705), annexe de la 2042 de l'année suivante ; l'option barème se coche sur la 2042 de l'année de l'apport.</li>
+      <li>Chaque année : suivi du report sur la 2074-I ; la holding conserve l'attestation de remploi et les justificatifs (date, montant, nature des actifs, conservation 5 ans).</li>
+      <li>Année d'expiration du report : 2074 (Cerfa 11905), puis report sur la 2042 (ligne 8UT).</li>
+    </ol>
+  </div>
+
+    <h3 class="st">Apport-cession : ce qu'il faut retenir</h3>
+    <div class="alert bad" style="margin-bottom:14px"><b>Alerte : transmission à titre gratuit.</b> Donner ou transmettre les titres de la holding peut faire tomber la plus-value en report, ou la transférer au donataire.
+      <ul style="margin:8px 0 0;padding-left:1.2em">
+        <li><b>Droit en vigueur</b> : en cas de donation en pleine propriété, le donateur est exonéré et le report passe au donataire. Celui-ci est imposé s'il cède, apporte ou fait annuler les titres reçus dans les <b>6 ans</b> (<b>11 ans</b> en cas de remploi dans des fonds), ou si la holding cède les titres apportés dans les 3 ans de l'apport sans remploi conforme (BOI-RPPM-PVBMI-30-10-60-30, § 120 à 190).</li>
+        <li><b>Projet de loi de finances pour 2027, art. 5 (non adopté à ce jour)</b> : il prévoit de supprimer cette purge, avec une date d'effet annoncée au <b>01/10/2026</b>. Selon la réécriture adoptée en commission le 08/10/2026, la donation ne serait imposée que si les titres apportés ont été cédés moins de 8 ans après l'apport, et la succession resterait purgée. Le sort du texte en séance n'est pas confirmé. Relire le texte voté avant toute donation.</li>
+        <li><b>Donation-cession directe de la société fille (sans holding)</b> : donner les titres de la fille, puis les faire céder par les donataires, <b>purge la plus-value latente</b>. Le prix d'acquisition des donataires est la valeur retenue pour la détermination des droits de mutation (CGI, art. 150-0 D, 1) : s'ils revendent au même prix, il n'y a quasiment pas de plus-value. Le coût est celui des droits de donation. Une revente rapide, même au prix déjà négocié, n'est pas en soi un abus de droit : si la donation est réelle (dépouillement immédiat et irrévocable, art. 894 C. civ.), l'administration ne peut pas l'écarter pour but exclusivement fiscal (CE 30-12-2011 n° 330940 ; CE 9-4-2014 n° 353822). Le risque tient à la <b>fictivité</b> de la donation : donateur qui se réapproprie le prix, donation qui ne produit effet qu'après la vente (le donateur est encore propriétaire à la date de cession, donc imposé), clauses vidant la donation de sa substance. Ce schéma ne repose pas sur le report de l'art. 150-0 B ter.</li>
+      </ul></div>
+    <div class="alert" style="margin-bottom:14px"><b>Les cas où le report tombe</b>
+      <ol style="margin:8px 0 0;padding-left:1.4em">
+        <li>Cession, rachat, remboursement ou annulation des <b>titres de la holding</b> reçus en échange de l'apport, à tout moment.</li>
+        <li>Cession, rachat, remboursement ou annulation des <b>titres apportés</b>, <b>dans les 3 ans de l'apport</b>, sans remploi conforme. Cela inclut la liquidation de la fille dans ce délai.</li>
+        <li><b>Remploi insuffisant</b> : moins de 70 % du prix net de frais réinvesti dans une activité éligible dans les 3 ans de la cession.</li>
+        <li><b>Conservation non respectée</b> : sortie des actifs de remploi avant 5 ans.</li>
+        <li><b>Transfert du domicile fiscal hors de France.</b></li>
+      </ol>
+      <p style="margin:8px 0 0" class="note">Ne font pas tomber le report : la cession des titres apportés plus de 3 ans après l'apport, la vente du fonds de commerce par la fille, la fusion de la fille dans la holding dans les 3 ans, la liquidation judiciaire sans boni.</p></div>
+    <ol style="padding-left:1.3em;margin:0 0 6px">
+      <li><b>C'est un différé, pas une exonération.</b> L'IR, les prélèvements sociaux et la CEHR sont dus à l'expiration du report, aux règles de l'année de l'apport. L'année de l'apport, seule la soulte est imposée.</li>
+      <li><b>Cession dans les 3 ans de l'apport.</b> Le report n'est maintenu que si la holding réinvestit <b>70 %</b> du prix net de frais dans une activité éligible, dans les <b>3 ans</b> de la cession, et conserve ces actifs <b>5 ans</b> (cessions depuis le 21/02/2026).</li>
+      <li><b>Cession après 3 ans.</b> Aucun remploi n'est exigé : le report continue tant que les titres de la holding ne sont pas cédés.</li>
+      <li><b>Remploi éligible.</b> Moyens d'exploitation, prise de contrôle de sociétés opérationnelles, souscription au capital, fonds, ou branche d'activité reçue en paiement. Les placements financiers et l'immobilier de placement sont exclus.</li>
+      <li><b>Fille liquidée ou fonds vendu.</b> La vente du fonds n'est pas un événement. La liquidation de la fille n'en est un que dans les 3 ans de l'apport. Le boni perçu par la holding relève du régime mère-fille (quote-part de 5 %).</li>
+      <li><b>Le net en poche est moindre si l'on distribue.</b> Les dividendes coûtent 31,4 %, en plus de l'impôt sur la plus-value en report. La holding n'est avantageuse que si le produit reste investi.</li>
+      <li><b>IS de la holding.</b> Un prix supérieur à la valeur d'apport est taxé à l'IS : 25 % si les titres sont détenus moins de 2 ans, environ 3 % (quote-part de 12 %) pour des titres de participation détenus 2 ans ou plus. Le point de départ des 2 ans est à confirmer.</li>
+      <li><b>Abus de droit.</b> Cession préparée avant l'apport, remploi faible, holding sans substance et liquidités appréhendées par l'apporteur sont les indices à surveiller (L. 64 et L. 64 A du LPF).</li>
+      <li><b>Abattement renforcé PME.</b> Titres acquis avant 2018, société de moins de 10 ans à l'acquisition, option barème. Il ne joue que sur l'IR.</li>
+      <li><b>Quand ce n'est pas utile.</b> Si le dirigeant veut récupérer le produit pour lui, ou si la plus-value est modeste, la cession directe est souvent plus simple et au moins aussi favorable.</li>
+    </ol>
+    <div class="alert good" style="margin:14px 0"><b>Quand l'apport-cession est utile</b>
+      <ol style="margin:8px 0 0;padding-left:1.4em">
+        <li><b>Le produit reste investi dans la holding.</b> Le dirigeant finance des acquisitions ou des projets avec la totalité du prix, sans avoir payé l'impôt sur la plus-value. Les dividendes remontant des filiales bénéficient du régime mère-fille (quote-part de 5 %), et la distribution au particulier est rare ou tardive.</li>
+        <li><b>Le dirigeant n'a pas besoin du produit pour vivre</b> : il n'a donc pas à distribuer et à payer les 31,4 % de prélèvements sur dividendes.</li>
+        <li><b>La plus-value est élevée avec peu ou pas d'abattement</b> : l'impôt évité à court terme est plus lourd, CEHR comprise.</li>
+        <li><b>Une transmission est envisagée</b> : en droit actuel, la donation ou le décès peut effacer l'impôt en report. Cet effet est menacé par le projet de loi de finances 2027 : voir l'alerte ci-dessus.</li>
+      </ol>
+      <p style="margin:8px 0 0" class="note">Dans le simulateur, si tout le produit est distribué, la cession directe l'emporte : l'avantage de la holding est un gain de trésorerie, pas une économie d'impôt.</p></div>
+    <p class="note">Sources : CGI art. 150-0 B ter, 150-0 D ; BOI-RPPM-PVBMI-30-10-60-20 et -30 ; BOI-IS-BASE-10-10-20 et 20-20-10-20 ; loi n° 2026-103, art. 11. Simulation indicative.</p>
+
+    <div class="disclaimer">
+    <strong>Avertissement.</strong> Simulation indicative, sans valeur de conseil. Plus-value en report : IR, prélèvements sociaux et CEHR sont dus à l'expiration du report, selon les règles et paramètres de l'année de l'apport (BOI-RPPM-PVBMI-30-10-60-20, §360-370) ; aucune CDHR sur cette plus-value (BOI-IR-CDHR-10, §190). La CDHR est modélisée pour la cession directe et la soulte, où le quart ne concerne que les revenus exceptionnels. À valider par le professionnel avant toute décision.
+  </div>
+</section>
+
+</div></div></main>
+<footer>Simulateur d'apport-cession — calcul local dans votre navigateur, aucune donnée transmise.</footer>
+
+<script>
+// ENGINE-START
+const P = {
+  pfuIR:12.8, ps:18.6, ps2025:17.2,
+  qp:12,                 // quote-part de frais et charges sur PV long terme (IS)
+  isNormal:25, isReduit:15, isSeuil:42500,
+  seuilRemploi:70, delaiRemploi:3, conservation:5, dateLFI:'2026-02-21',
+  seuils:[11600,29579,84577,181917], taux:[11,30,41,45]
+};
+function irParts(rni,parts){
+  const q=Math.max(0,rni)/parts, s=P.seuils, t=[0].concat(P.taux);
+  let tax=0, prev=0;
+  for(let i=0;i<s.length;i++){ if(q>prev){ tax+=(Math.min(q,s[i])-prev)*t[i]/100; } prev=s[i]; }
+  if(q>prev) tax+=(q-prev)*t[t.length-1]/100;
+  return tax*parts;
+}
+function cehr(rfr,couple){
+  const s1=couple?500000:250000, s2=couple?1000000:500000;
+  return rfr<=s1?0:(Math.min(rfr,s2)-s1)*0.03+Math.max(0,rfr-s2)*0.04;
+}
+function cdhr(R,couple,irPlusCehr,pac){
+  const seuil=couple?500000:250000, thr=couple?660000:330000;
+  if(R<=seuil) return 0;
+  let A=0.20*R;
+  if(R<=thr) A=Math.min(A,0.825*(R-seuil));
+  return Math.max(0,A-(irPlusCehr+(couple?12500:0)+1500*(pac||0)));
+}
+function annees(d1,d2){
+  const a=new Date(d1), b=new Date(d2);
+  if(isNaN(a)||isNaN(b)||b<a) return 0;
+  let y=b.getFullYear()-a.getFullYear();
+  const anniv=new Date(a); anniv.setFullYear(a.getFullYear()+y);
+  if(anniv>b) y--;
+  return Math.max(0,y);
+}
+function plusAns(d,n){ const a=new Date(d); a.setFullYear(a.getFullYear()+n); return a; }
+function tauxAbattement(dAcq,dRef,pme){
+  const a=new Date(dAcq);
+  if(isNaN(a)||a>=new Date('2018-01-01')) return {taux:0,ans:annees(dAcq,dRef),eligible:false};
+  const ans=annees(dAcq,dRef); let t=0;
+  if(pme){ t= ans>=8?85: ans>=4?65: ans>=1?50:0; }
+  else   { t= ans>=8?65: ans>=2?50:0; }
+  return {taux:t,ans,eligible:true};
+}
+// Imposition d'une plus-value de cession de titres (PFU ou barème avec abattement), règles de l'année annF
+function calcIR(i,pv,ab,annF,avecCdhr){
+  pv=Math.max(0,pv);
+  const couple=i.sit!=='seul';
+  const tPS=(annF<2025)?P.ps2025:P.ps;
+  const ps=pv*tPS/100;
+  const rfr0=i.rni+(i.rfrX||0);
+  const ce=cehr(rfr0+pv,couple)-cehr(rfr0,couple);
+  const irPfu=pv*P.pfuIR/100;
+  const base=pv*(1-ab.taux/100);
+  const irBase=irParts(i.rni,i.nbp);
+  const irBar=irParts(i.rni+base,i.nbp)-irBase;
+  // CDHR (art. 224) : exclue pour la PV en report dont le report expire (BOI-IR-CDHR-10 §190, §320)
+  let cdP=0, cdB=0;
+  if(avecCdhr){
+    const okE=amt=>i.exc&&(i.moy3==null||amt>i.moy3);   // exceptionnel par nature (case) et par montant (BOI-IR-CDHR-20 § 60-70)
+    const cehrFull=cehr(rfr0+pv,couple), rfrFull=rfr0+pv;
+    const cd=(f,irReg)=>{ const R=rfr0+pv*f; const cehr1=cehrFull-cehrFull*(pv/Math.max(1,rfrFull))*(1-f); return cdhr(R,couple,irBase+irReg*f+cehr1,i.pac); };
+    cdP=cd(okE(pv)?0.25:1,irPfu);
+    cdB=cd(okE(base)?0.25:1,irBar);
+  }
+  const pfu={ir:irPfu,base:pv,cdhr:cdP,total:irPfu+ce+ps+cdP};
+  const bar={ir:irBar,base,cdhr:cdB,total:irBar+ce+ps+cdB};
+  let choix;
+  if(i.regime==='pfu') choix='pfu'; else if(i.regime==='bar') choix='bar';
+  else choix=(bar.total<pfu.total)?'bar':'pfu';
+  const sel=choix==='bar'?bar:pfu;
+  return {pv,tPS,ps,cehr:ce,pfu,bar,choix,sel,ab,annF};
+}
+// Point de bascule barème / PFU (plus-value brute à partir de laquelle le barème coûte plus cher)
+function ecartBar(i,pv,ab,annF){ const r=calcIR(i,pv,ab,annF); return r.bar.ir-r.pfu.ir; }
+const GRILLE_BASC=[1000,5000,10000,20000,50000,100000,150000,200000,300000,400000,500000,750000,1000000,1500000,2000000,3000000,5000000,10000000,20000000];
+function seuilBascule(i,ab,annF){
+  let prev=null;
+  for(const g of GRILLE_BASC){
+    if(ecartBar(i,g,ab,annF)>1){
+      if(prev===null) return 0;
+      let lo=prev,hi=g;
+      for(let n=0;n<40&&hi-lo>1;n++){ const m=(lo+hi)/2; if(ecartBar(i,m,ab,annF)>1) hi=m; else lo=m; }
+      return hi;
+    }
+    prev=g;
+  }
+  return null;
+}
+function alerteRegime(i,r,ab){
+  if(r.pv<=0) return null;
+  const ecart=r.bar.total-r.pfu.total;
+  const marge=0.05*Math.max(1,r.pfu.ir);
+  let niveau;
+  if(ecart>1) niveau='rouge'; else niveau=(-ecart<marge)?'orange':'vert';
+  return {niveau,ecart,seuil:seuilBascule(i,ab,r.annF),sansAbatt:ab.taux===0,eligible:ab.eligible};
+}
+// IS de la holding sur la plus-value de cession des titres apportés
+function isHolding(i,pvH,anc){
+  if(pvH<=0) return {pvH:0,lt:false,base:0,is:0};
+  const lt=i.partic&&anc>=2;
+  const base=lt?pvH*P.qp/100:pvH;
+  const is=(i.tIS==='1525')?P.isReduit/100*Math.min(base,P.isSeuil)+P.isNormal/100*Math.max(0,base-P.isSeuil):base*P.isNormal/100;
+  return {pvH,lt,base,is};
+}
+function simuler(i){
+  const dA=new Date(i.dApport), dC=new Date(i.dCess);
+  const yA=dA.getFullYear(), yC=dC.getFullYear();
+  const ab0=tauxAbattement(i.dAcq,i.dApport,i.pme);
+  const pvB=Math.max(0,i.va-i.pa);
+  const pvImm=Math.min(i.soulte,pvB);
+  const pvRep=Math.max(0,pvB-pvImm-i.mv);
+  const rImm=calcIR(i,pvImm,ab0,yA,true), rRep=calcIR(i,pvRep,ab0,yA,false);
+  // cession directe (règles de l'année de cession, abattement à la date de cession)
+  const abD=tauxAbattement(i.dAcq,i.dCess,i.pme);
+  const pvD=Math.max(0,i.pc-i.fraisH-i.pa-i.mv);
+  const rD=calcIR(i,pvD,abD,yC,true);
+  // holding
+  const anc=annees(i.dApport,i.dCess);
+  const H=isHolding(i,i.pc-i.fraisH-i.va,anc);
+  const dans3=!isNaN(dA)&&!isNaN(dC)&&dC<plusAns(i.dApport,3);
+  const horsChamp=!isNaN(dC)&&dC<new Date(P.dateLFI);      // règles de remploi applicables aux cessions depuis le 21/02/2026
+  // Remploi (BOI-RPPM-PVBMI-30-10-60-20, I-A-2-b) : seuil sur le prix de cession net des frais
+  const produitNet=Math.max(0,i.pc-i.fraisH);
+  const seuilMontant=produitNet*P.seuilRemploi/100;
+  const echeance=plusAns(i.dCess,P.delaiRemploi);
+  const dR=i.dReinv?new Date(i.dReinv):null, dK=i.dConserv?new Date(i.dConserv):null;
+  const reinvEl=(i.typeRemploi==='nonelig'?0:i.reinv)+(i.branche||0);
+  const reinvOK=reinvEl>=seuilMontant;
+  const delaiOK=!(dR&&!isNaN(dR))||dR<=echeance;
+  const finConserv=(dR&&!isNaN(dR))?plusAns(i.dReinv,P.conservation):null;
+  const conservOK=!(dK&&!isNaN(dK)&&finConserv)||dK>=finConserv;
+  let evenement=null, anneeExp=null;
+  if(dans3){
+    if(!reinvOK){ evenement='insuffisant'; anneeExp=echeance.getFullYear(); }
+    else if(!delaiOK){ evenement='delai'; anneeExp=echeance.getFullYear(); }
+    else if(!conservOK){ evenement='conservation'; anneeExp=dK.getFullYear(); }
+  }
+  const remploiOK=!evenement;
+  const applicable=evenement?2:1;
+  const tDiv=(P.pfuIR+P.ps)/100;
+  const mk=(label,immediat,differe,note)=>{
+    const capital=i.pc-i.fraisH-immediat;
+    return {label,immediat,differe,total:immediat+differe,capital,note};
+  };
+  const s0=mk('Cession directe des titres par le dirigeant',rD.sel.total,0,'');
+  const s1=mk('Apport-cession, report maintenu',rImm.sel.total+H.is,rRep.sel.total,'');
+  const s2=mk('Apport-cession, report expiré',rImm.sel.total+H.is+rRep.sel.total,0,'');
+  s0.netDistrib=s0.capital;
+  // Net en poche si la holding distribue toute sa trésorerie (dividendes au PFU + PS).
+  // L'impôt personnel sur la plus-value en report est payé par le dirigeant, pas par la holding :
+  // la trésorerie distribuée est la même dans les deux scénarios (prix - frais - IS - soulte).
+  const tresoH=i.pc-i.fraisH-H.is-i.soulte;
+  const netApport=tresoH*(1-tDiv)+i.soulte-rImm.sel.total-rRep.sel.total;
+  s1.netDistrib=netApport;
+  s2.netDistrib=netApport;
+  return {ab0,abD,pvB,pvImm,pvRep,rImm,rRep,pvD,rD,H,anc,dans3,horsChamp,produitNet,seuilMontant,echeance,reinvEl,reinvOK,delaiOK,conservOK,finConserv,evenement,anneeExp,remploiOK,applicable,tDiv,scen:[s0,s1,s2],yA,yC};
+}
+// ENGINE-END
+
+const $=id=>document.getElementById(id);
+const eur=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+const nv=id=>parseFloat($(id).value)||0;
+const pct=n=>(Math.round(n*10)/10).toString().replace('.',',')+' %';
+
+const PARAM_DEF=[
+  ['pfuIR','Taux IR du PFU (%)','vérifié'],['ps','Prélèvements sociaux, dès 2025 (%)','vérifié'],['ps2025','Prélèvements sociaux avant 2025 (%)','vérifié'],
+  ['qp','Quote-part de frais et charges, PV long terme (%)','vérifié'],['isNormal','Taux normal d\'IS (%)','vérifié'],['isReduit','Taux réduit d\'IS (%)','vérifié'],['isSeuil','Plafond du taux réduit (€)','vérifié'],
+  ['seuilRemploi','Seuil de remploi du produit net de cession (%)','vérifié'],['delaiRemploi','Délai de remploi après la cession (ans)','vérifié'],['conservation','Conservation des actifs de remploi (ans)','vérifié']
+];
+(function(){
+  $('params').innerHTML=PARAM_DEF.map(([k,l,s])=>`<label>${l} <span class="tag ${s==='vérifié'?'ok':''}">${s}</span><input type="number" step="0.1" data-p="${k}" value="${P[k]}"></label>`).join('');
+  $('params').addEventListener('input',e=>{ const k=e.target.dataset.p; if(k){ const v=parseFloat(e.target.value); if(isFinite(v)) P[k]=v; run(); } });
+})();
+
+function texteRegime(a){
+  const e=Math.abs(a.ecart); let cls,h;
+  if(a.niveau==='rouge'){ cls='bad'; h=`<b>Barème défavorable</b> : l'option barème coûte ${eur(e)} de plus que le PFU (IR, CEHR et PS).`; }
+  else if(a.niveau==='orange'){ cls=''; h=`<b>Barème et PFU quasi équivalents</b> : gain de seulement ${eur(e)} pour le barème ; l'option est globale et irrévocable.`; }
+  else { cls='good'; h=`<b>Barème avantageux</b> : l'option barème fait gagner ${eur(e)} par rapport au PFU.`; }
+  if(a.seuil===null) h+=` Aucun point de bascule trouvé jusqu'à 20 M€ de plus-value.`;
+  else if(a.seuil===0) h+=` Le barème est défavorable dès les plus petites plus-values avec ces paramètres.`;
+  else h+=` <b>Point de bascule</b> : environ ${eur(a.seuil)} de plus-value brute. En dessous, le barème n'est pas plus coûteux ; au-delà, il l'est.`;
+  if(a.sansAbatt) h+=` <i>Aucun abattement pour durée applicable (titres acquis depuis 2018 ou durée insuffisante à la date de l'apport) : le barème est alors rarement favorable.</i>`;
+  h+=` <i>L'option se fait l'année de l'apport, sur la 2042, pour tous les revenus du capital de cette année.</i>`;
+  return {cls,h};
+}
+
+let synth='';
+function run(){
+  const i={va:nv('va'),pa:nv('pa'),dAcq:$('dAcq').value,dApport:$('dApport').value,dCess:$('dCess').value,soulte:nv('soulte'),mv:nv('mv'),
+    regime:$('regime').value,pme:$('pme').checked,
+    rni:nv('rni'),nbp:Math.max(1,nv('nbp')),sit:$('sit').value,rfrX:nv('rfrX'),pac:nv('pac'),exc:$('exc').checked,moy3:($('moy3').value===''?null:nv('moy3')),
+    pc:nv('pc'),fraisH:nv('fraisH'),reinv:nv('reinv'),dReinv:$('dReinv').value,dConserv:$('dConserv').value,typeRemploi:$('typeRemploi').value,branche:nv('branche'),tIS:$('tIS').value,partic:$('partic').checked};
+  if(isNaN(new Date(i.dApport))||isNaN(new Date(i.dCess))||isNaN(new Date(i.dAcq))){ $('kpis').innerHTML='<div class="kpi"><small>Saisie</small><b>Renseigner les trois dates</b></div>'; $('summary').innerHTML=''; return; }
+  const r=simuler(i), [s0,s1,s2]=r.scen, ap=r.scen[r.applicable];
+
+  // statut du régime de faveur (nature + durée de détention par la holding)
+  { const aH=annees(i.dApport,i.dCess); const dA2=new Date(i.dApport), dC2=new Date(i.dCess);
+    let mois=(dC2.getFullYear()-dA2.getFullYear())*12+(dC2.getMonth()-dA2.getMonth())-(dC2.getDate()<dA2.getDate()?1:0); if(mois<0) mois=0;
+    const dur=mois>=24?(Math.floor(mois/12)+' an'+(Math.floor(mois/12)>1?'s':'')+(mois%12?' '+(mois%12)+' mois':'')):(mois+' mois');
+    $('particHint').textContent=!i.partic?'Case décochée : IS sur la plus-value entière.':(aH>=2?('Détention de '+dur+' à la date de cession : régime de faveur applicable (quote-part de 12 %).'):('Détention de '+dur+' à la date de cession, moins de 2 ans : régime de faveur non applicable, IS sur la plus-value entière.')); }
+  // aide sous le champ « nature du remploi »
+  { const hh={exploit:'Éligible : compte dans le seuil de 70 %. Exclus : activités à revenus garantis (art. L. 314-18 du code de l\'énergie), activités financières, gestion du patrimoine mobilier ou immobilier de la holding, activités immobilières.',
+      controle:'Éligible : la holding doit obtenir le contrôle de chaque société acquise (activité opérationnelle, IS, siège UE/EEE).',
+      souscr:'Éligible : souscription en numéraire au capital de sociétés exerçant une activité opérationnelle éligible.',
+      fonds:'Éligible si l\'actif du fonds respecte son quota d\'investissement de 75 % en sociétés éligibles (condition portant sur le fonds, non contrôlée ici). Les sommes à verser doivent l\'être dans les 5 ans de l\'engagement de souscription.',
+      nonelig:'Non éligible : ces sommes ne comptent pas dans le seuil de 70 % et le report expire.'};
+    $('remploiHint').textContent=hh[i.typeRemploi]||''; }
+
+
+  // KPIs
+  const gain=ap.capital-s0.capital;
+  $('kpis').innerHTML=[
+    ['Impôt immédiat (scénario applicable)',eur(ap.immediat)],
+    ['Impôt différé, dû à l\'expiration du report',eur(ap.differe)],
+    ['Capital disponible après impôt immédiat',eur(ap.capital)],
+    ['Avantage de trésorerie vs cession directe',(gain>=0?'+':'−')+eur(Math.abs(gain)).replace('-','')]
+  ].map(([k,v])=>`<div class="kpi"><small>${k}</small><b>${v}</b></div>`).join('');
+
+
+  // bandeau de synthèse
+  { const chR=(r.rRep.pv>0?r.rRep:r.rImm);
+    const statut=!r.dans3?'Cession à plus de 3 ans : pas de remploi obligatoire':(r.evenement?('Report expiré ('+r.anneeExp+')'):'Report maintenu sous conditions');
+    $('summary').innerHTML='<h3>Synthèse</h3><div class="main">'+ap.label+'</div><div class="chips">'+
+      '<span class="chip">Régime à l\'apport : <b>'+(chR.choix==='bar'?'Barème':'PFU')+'</b></span>'+
+      '<span class="chip">Plus-value en report : <b>'+eur(r.pvRep)+'</b></span>'+
+      '<span class="chip">Statut : <b>'+statut+'</b></span>'+
+      '<span class="chip">Total des impôts : <b>'+eur(ap.total)+'</b> vs <b>'+eur(s0.total)+'</b> en cession directe</span></div>'; }
+  // alerte barème / PFU
+  const aR=alerteRegime(i,r.rRep.pv>0?r.rRep:r.rImm,r.ab0);
+  if(aR){ const t=texteRegime(aR); $('alerteBareme').innerHTML=`<div class="alert ${t.cls}">${t.h}</div>`; var txtR=t.h.replace(/<[^>]+>/g,''); }
+  else { $('alerteBareme').innerHTML=''; var txtR=''; }
+
+  // alertes
+  const al=[];
+  if(i.exc && r.pvD>0){ const baseD=r.pvD*(1-r.abD.taux/100);
+    if(i.moy3==null) al.push(['',`<b>Revenu exceptionnel (CDHR)</b> : la condition de montant n'est pas contrôlée. Renseignez la moyenne des revenus nets des 3 années précédentes pour la vérifier (la plus-value après abattement, ${eur(baseD)}, doit la dépasser).`]);
+    else if(baseD>i.moy3) al.push(['good',`<b>Revenu exceptionnel (CDHR)</b> : plus-value après abattement de ${eur(baseD)} supérieure à la moyenne de ${eur(i.moy3)} : condition de montant remplie, quart applicable si la plus-value est aussi exceptionnelle par sa nature (opération ponctuelle).`]);
+    else al.push(['warn',`<b>Revenu exceptionnel (CDHR)</b> : plus-value après abattement de ${eur(baseD)} non supérieure à la moyenne de ${eur(i.moy3)} : condition de montant non remplie : le quart n'est pas appliqué (au PFU, la plus-value est comparée sans abattement).`]);
+  }
+  { const dA2=new Date(i.dApport), dC2=new Date(i.dCess); let mois=(dC2.getFullYear()-dA2.getFullYear())*12+dC2.getMonth()-dA2.getMonth(); if(dC2.getDate()<dA2.getDate()) mois--; mois=Math.max(0,mois); const partR=r.produitNet>0?Math.min(100,r.reinvEl/r.produitNet*100):0;
+    const ind=[];
+    ind.push(`délai entre l'apport et la cession : <b>${mois} mois</b>${mois<12?' (très court, indice fort d\'une cession préparée)':''}`);
+    ind.push(`part du produit net réinvestie dans une activité éligible : <b>${pct(Math.round(partR*10)/10)}</b> (seuil légal ${pct(P.seuilRemploi)})${partR<P.seuilRemploi?' : réinvestissement insuffisant, indice défavorable':''}`);
+    if(i.soulte>0) ind.push(`soulte de <b>${eur(i.soulte)}</b> : vérifier son intérêt économique pour la holding`);
+    if(i.typeRemploi==='nonelig') ind.push(`remploi déclaré en placements non éligibles : indice défavorable`);
+    al.push(['warn',`<b>Risque d'abus de droit : critères d'appréciation</b>
+<br>• <b>Texte (LPF, art. L. 64)</b> : l'administration peut écarter les actes fictifs ou ceux qui, recherchant le bénéfice littéral d'un texte contre les objectifs de ses auteurs, <b>n'ont pu être inspirés par aucun autre motif que fiscal</b>. <b>Art. L. 64 A</b> : même logique lorsque le <b>motif principal</b> est d'éluder ou d'atténuer l'impôt (sous réserve de l'art. 205 A du CGI). Litige soumis, à la demande du contribuable, au Comité de l'abus de droit fiscal.
+<br>• <b>Majoration (CGI, art. 1729 b)</b> : 80 % en cas d'abus de droit L. 64, ramenée à 40 % s'il n'est pas établi que le contribuable a eu l'initiative principale des actes ou en a été le principal bénéficiaire.
+<br>• <b>Indices retenus en pratique pour un apport-cession</b> (grille jurisprudentielle, à confirmer sur les décisions) : (1) l'apporteur, qui contrôle la holding, peut <b>appréhender les liquidités</b> (dividendes, comptes courants, prêts, soulte portée en compte courant) ; (2) <b>absence de réinvestissement économique significatif</b> dans une activité réelle, produit conservé en placements patrimoniaux ; (3) cession <b>préparée avant l'apport</b> (promesse, offre acceptée) ou délai très court ; (4) holding <b>sans substance</b> (moyens, décisions, objet social cohérent) ; (5) soulte sans intérêt économique pour la société bénéficiaire.
+<br>• <b>Sécurisation</b> : remploi conforme à l'art. 150-0 B ter (${pct(P.seuilRemploi)}, ${P.delaiRemploi} ans, conservation ${P.conservation} ans), projet économique documenté, flux vers l'apporteur justifiés, rescrit ou saisine du Comité en cas de doute.
+<br>• <b>Votre dossier</b> : ${ind.join(' ; ')}.`]);
+  }
+  const fd=d=>d?d.toLocaleDateString('fr-FR'):'';
+  $('pmeHint').style.display='none';
+  { const dc=$('dCreation').value?new Date($('dCreation').value):null, da=new Date(i.dAcq);
+    if(dc&&!isNaN(dc)&&!isNaN(da)&&da<new Date('2018-01-01')&&!i.pme&&dc<=da&&da<new Date(dc.getFullYear()+10,dc.getMonth(),dc.getDate())){
+      const aN=tauxAbattement(i.dAcq,i.dApport,false), aP=tauxAbattement(i.dAcq,i.dApport,true);
+      $('pmeHint').style.display='block'; $('pmeHint').innerHTML=`<b>Abattement renforcé PME vraisemblablement applicable</b> : société de moins de 10 ans à l'acquisition. Cochez la case ci-dessous si elle est aussi une PME européenne exerçant une activité opérationnelle : abattement à l'apport de ${aP.taux} % au lieu de ${aN.taux} %.`;
+      al.push(['',`<b>Abattement renforcé PME vraisemblablement applicable</b> : la société avait moins de 10 ans à l'acquisition des titres (créée le ${fd(dc)}, titres acquis le ${fd(da)}). Si elle répond aussi à la définition de la PME européenne, est soumise à l'IS, exerce une activité opérationnelle (hors gestion de patrimoine et activités financières ou immobilières) et a son siège dans l'UE ou l'EEE, cochez « Abattement renforcé PME » : taux à l'apport de ${aP.taux} % au lieu de ${aN.taux} % (CGI, art. 150-0 D, 1 quater ; IR du barème uniquement, PS sur la plus-value brute).`]);
+    } }
+  if(r.horsChamp) al.push(['bad',`<b>Hors champ</b> : les règles de remploi codées (70 % du produit net, 3 ans, conservation 5 ans) s'appliquent aux cessions de titres apportés réalisées à compter du 21/02/2026 (LFI 2026, art. 11).`]);
+  if(r.dans3 && r.evenement){
+    const cause={insuffisant:`remploi éligible de ${eur(r.reinvEl)} inférieur au seuil de ${eur(r.seuilMontant)} (${pct(P.seuilRemploi)} de ${eur(r.produitNet)}, prix de cession net des frais)`,delai:`réinvestissement le ${fd(new Date(i.dReinv))}, après l'échéance du ${fd(r.echeance)} (${P.delaiRemploi} ans après la cession)`,conservation:`actifs de remploi sortis le ${fd(new Date(i.dConserv))}, avant la fin de la conservation de ${P.conservation} ans (${fd(r.finConserv)})`}[r.evenement];
+    al.push(['bad',`<b>Report expiré au titre de l'année ${r.anneeExp}</b> : ${cause}. La plus-value d'apport de ${eur(r.pvRep)} est imposée : ${eur(r.rRep.sel.total)} (IR, CEHR et PS aux règles de l'année de l'apport), avec intérêt de retard décompté depuis la date de l'apport (CGI, art. 150-0 B ter, I, dernier alinéa).`]);
+  }
+  if(r.dans3 && !r.evenement){
+    const fin=r.finConserv?` jusqu'au ${fd(r.finConserv)}`:'';
+    al.push(['',`<b>Report maintenu sous conditions</b> : cession à moins de 3 ans de l'apport. Remploi d'au moins ${eur(r.seuilMontant)} (${pct(P.seuilRemploi)} du produit net de ${eur(r.produitNet)}, liquidités réinvesties et/ou branche d'activité ou actifs éligibles reçus en contrepartie de la cession, § 130) avant le ${fd(r.echeance)}, puis conservation des actifs de remploi pendant ${P.conservation} ans${fin}. Tout manquement fait expirer le report l'année concernée.`+(i.dReinv?'':' Date de réinvestissement non renseignée : délai et conservation non vérifiés.')]);
+    const tx={exploit:`Moyens permanents d'exploitation affectés à l'activité de la holding (industrielle, commerciale, artisanale, agricole ou libérale). Exclus : activités à revenus garantis (tarif réglementé de rachat ou complément de rémunération, art. L. 314-18 du code de l\'énergie), activités financières, gestion de son propre patrimoine mobilier ou immobilier, construction en vue de la vente ou de la location, activités immobilières.`,controle:`Acquisition d'une fraction du capital de sociétés exerçant une activité éligible, qui doit conférer à la holding le contrôle de chacune d'elles (IS, siège en France, UE ou EEE avec convention d'assistance). Les sociétés holding passives sont exclues.`,souscr:`Souscription en numéraire au capital initial ou à une augmentation de capital de sociétés exerçant une activité éligible (ou holding exclusivement animatrices de telles sociétés), effectivement libérée.`,fonds:`Souscription de parts de FCPR, FPCI, SLP ou SCR, dont l'actif respecte le quota de 75 % au terme de 5 ans à compter de l'engagement de souscription ; sommes à verser dans les 5 ans.`,nonelig:`Actifs non éligibles : ce montant n'est pas à saisir dans le champ de remploi.`}[i.typeRemploi];
+    al.push(['',`<b>Nature du remploi</b> : ${tx}`]);
+  }
+  if(!r.dans3) al.push(['good',`<b>Cession à plus de 3 ans de l'apport</b> : aucune obligation de remploi, le report se poursuit tant qu'aucun autre événement n'y met fin (cession ou rachat des titres de la holding, transfert du domicile hors de France, etc.).`]);
+  if(r.H.pvH>0 && !r.H.lt) al.push(['',`Plus-value de la holding de ${eur(r.H.pvH)} imposée à l'IS sans régime de faveur (détention de moins de 2 ans ou titres hors participation) : IS de ${eur(r.H.is)}.`]);
+  if(r.H.pvH>0 && r.H.lt) al.push(['',`Plus-value de la holding de ${eur(r.H.pvH)} à long terme : quote-part de ${pct(P.qp)} imposée, soit ${eur(r.H.is)} d'IS.`]);
+  if(i.va>0 && i.pc>i.va*1.02) al.push(['',`Prix de cession supérieur à la valeur d'apport de ${eur(i.pc-i.va)} : écart taxé à l'IS dans la holding. Un écart important entre les deux valeurs est un indice de sous-évaluation à l'apport.`]);
+  if(i.soulte>0) al.push(['',`Soulte de ${eur(i.soulte)} imposée dès l'année de l'apport (${eur(r.rImm.sel.total)}). Le report est perdu si la soulte dépasse 10 % de la valeur nominale des titres reçus.`]);
+  if(r.pvB===0) al.push(['',`Moins-value ou plus-value nulle à l'apport : pas de report, l'article 150-0 B s'applique.`]);
+  $('alertes').innerHTML=al.map(([c,h])=>`<div class="alert ${c}">${h}</div>`).join('');
+
+  // tableau comparatif
+  const head='<tr><th>Scénario</th><th>Impôt immédiat</th><th>Impôt différé</th><th>Total des impôts</th><th>Capital disponible</th><th>Net en poche si tout est distribué</th></tr>';
+  const minTot=Math.min(...r.scen.map(s=>s.total));
+  $('tab').innerHTML=head+r.scen.map((s,k)=>{
+    const cls=(k===0?'':(k===r.applicable?'best':''));
+    const tag=(k===r.applicable)?' <span class="tag ok">votre cas</span>':'';
+    return `<tr class="${cls}"><td>${s.label}${tag}</td><td class="num">${eur(s.immediat)}</td><td class="num">${eur(s.differe)}</td><td class="num">${eur(s.total)}</td><td class="num">${eur(s.capital)}</td><td class="num">${eur(s.netDistrib)}</td></tr>`;
+  }).join('');
+  $('tab2').innerHTML=$('tab').innerHTML;
+
+  // détail de l'imposition d'apport
+  const L=(k,v)=>`<tr><td>${k}</td><td class="num">${v}</td></tr>`;
+  const x=r.rRep, ch=x.choix==='bar'?'Barème':'PFU';
+  $('tabReg').innerHTML='<tr><th>Ligne</th><th>Montant</th></tr>'+
+    L('Plus-value brute d\'apport (valeur d\'apport − prix d\'acquisition)',eur(r.pvB))+
+    L('dont imposée immédiatement (soulte)',eur(r.pvImm))+
+    L('Plus-value placée en report (après moins-values)',eur(r.pvRep))+
+    L('Abattement pour durée à la date de l\'apport ('+r.ab0.ans+' ans)',r.ab0.taux+' %')+
+    L('PFU : IR '+pct(P.pfuIR)+' × PV',eur(x.pfu.ir))+
+    L('Barème : base après abattement',eur(x.bar.base))+
+    L('Barème : T(RNI + base) − T(RNI)',eur(x.bar.ir))+
+    L('CEHR (même montant dans les deux régimes)',eur(x.cehr))+
+    L('Prélèvements sociaux '+pct(x.tPS)+' sur la PV brute (même montant)',eur(x.ps))+
+    L('Total PFU',eur(x.pfu.total))+
+    L('Total barème',eur(x.bar.total))+
+    L('Régime retenu',ch)+
+    L('CDHR sur la PV en report','0 € (exclue du revenu de référence, art. 224 II)')+
+    L('IS de la holding',eur(r.H.is))+
+    '<tr><th>Cession directe (comparaison)</th><th></th></tr>'+
+    L('Plus-value de cession directe (abattement '+r.abD.taux+' % à la date de cession)',eur(r.pvD))+
+    L('IR retenu ('+(r.rD.choix==='bar'?'barème':'PFU')+')',eur(r.rD.sel.ir))+
+    L('CEHR',eur(r.rD.cehr))+
+    L('CDHR'+(i.exc?' (PV exceptionnelle retenue pour 1/4)':''),eur(r.rD.sel.cdhr))+
+    L('Prélèvements sociaux',eur(r.rD.ps))+
+    L('Total cession directe',eur(r.rD.sel.total))+
+    '<tr><th>Net en poche si tout est distribué</th><th></th></tr>'+
+    L('Cession directe : prix de cession − frais',eur(i.pc-i.fraisH))+
+    L('Cession directe : − impôts et prélèvements (IR, CEHR, CDHR, PS)','− '+eur(r.rD.sel.total))+
+    L('<b>Cession directe : net en poche</b>','<b>'+eur(s0.netDistrib)+'</b>')+
+    L('Apport-cession : prix de cession − frais − IS de la holding'+(i.soulte>0?' − soulte versée':''),eur(i.pc-i.fraisH-r.H.is-i.soulte))+
+    L('× (1 − '+pct(r.tDiv*100)+') : dividendes au PFU + prélèvements sociaux, soit un net de',eur((i.pc-i.fraisH-r.H.is-i.soulte)*(1-r.tDiv)))+
+    (i.soulte>0?L('+ soulte reçue − impôt sur la soulte',eur(i.soulte-r.rImm.sel.total)):'')+
+    L('− impôt personnel sur la plus-value en report (IR, CEHR, PS), payé par le dirigeant','− '+eur(r.rRep.sel.total))+
+    L('<b>Apport-cession : net en poche (report maintenu ou expiré)</b>','<b>'+eur(s1.netDistrib)+'</b>')+
+    L('Écart apport-cession − cession directe',(s1.netDistrib-s0.netDistrib>=0?'+':'− ')+eur(Math.abs(s1.netDistrib-s0.netDistrib)));
+
+  // formules
+  $('formules').textContent=[
+    'Plus-value d\'apport = valeur d\'apport − prix d\'acquisition (150-0 D)',
+    'Report = plus-value − soulte (imposée immédiatement) − moins-values',
+    'Taux, assiette et PS figés à l\'année de l\'apport (BOI-RPPM-PVBMI-30-10-60-20, §360)',
+    'PFU : IR = 12,8 % × PV ; PS = '+pct(x.tPS)+' × PV brute',
+    'Barème : IR = T(RNI + PV × (1 − abattement)) − T(RNI), PS inchangés',
+    'Abattement durée : titres acquis avant 2018 + option barème, durée arrêtée à l\'apport',
+    'CEHR sur la PV en report = CEHR(RFR de l\'année de l\'apport + PV) − CEHR(RFR de l\'année de l\'apport), due l\'année d\'expiration du report (CGI, art. 200 A, 2 ter b ; BOI-RPPM-PVBMI-30-10-60-20, §370)',
+    'CDHR = [20 % × RREF − décote] − [IR1 + CEHR1 + 12 500 € (couple) + 1 500 € × pers. à charge] (art. 224)',
+    'CDHR cession directe : PV exceptionnelle retenue pour 1/4 dans RREF, IR1 et CEHR1 (BOI-IR-CDHR-20) ; CDHR nulle sur la PV en report',
+    'Point de bascule : plus-value pour laquelle IR barème = IR PFU (dichotomie)',
+    'IS holding = taux × (PC − frais − valeur d\'apport), ou × '+pct(P.qp)+' si long terme (≥ 2 ans)',
+    'Remploi : ≥ '+pct(P.seuilRemploi)+' du prix de cession net des frais, dans les '+P.delaiRemploi+' ans de la cession, conservation '+P.conservation+' ans (cession < 3 ans de l\'apport)',
+    'Net si tout est distribué = (prix − frais − IS holding − soulte) × (1 − 31,4 %) + soulte − impôt sur soulte − impôt sur la PV en report (cession directe : capital déjà net)'
+  ].join('\n');
+
+  synth=`Apport-cession — apport ${i.dApport}, cession ${i.dCess}\nPlus-value d'apport : ${eur(r.pvB)} (report ${eur(r.pvRep)})\n`+
+    r.scen.map((s,k)=>`${k===r.applicable?'► ':'  '}${s.label} : immédiat ${eur(s.immediat)}, différé ${eur(s.differe)}, capital ${eur(s.capital)}`).join('\n')+
+    (txtR?'\n'+txtR:'');
+}
+function showTab(n){
+  $('paneSim').hidden=(n!=='sim'); $('paneDet').hidden=(n!=='det');
+  $('tbSim').setAttribute('aria-selected',n==='sim'); $('tbDet').setAttribute('aria-selected',n==='det');
+}
+$('tbSim').addEventListener('click',()=>showTab('sim'));
+$('tbDet').addEventListener('click',()=>showTab('det'));
+$('goDet').addEventListener('click',()=>{showTab('det');window.scrollTo({top:0,behavior:'smooth'});});
+document.addEventListener('input',e=>{ if(!e.target.dataset.p) run(); });
+document.addEventListener('change',run);
+$('copier').addEventListener('click',()=>{
+  const ok=()=>{$('cpmsg').textContent='Copié.';};
+  const fb=()=>{const ta=document.createElement('textarea');ta.value=synth;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){$('cpmsg').textContent='Copie impossible.';}ta.remove();};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(synth).then(ok,fb);}else fb();
+});
+run();
+
+const et=$('expertToggle');
+function toggleExpert(){ document.body.classList.toggle('expert'); et.setAttribute('aria-checked',document.body.classList.contains('expert')); }
+et.addEventListener('click',toggleExpert);
+et.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleExpert();} });
+
+</script>
+</body></html>

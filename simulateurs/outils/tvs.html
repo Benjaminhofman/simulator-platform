@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Simulateur TVS 2026</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:             #f5f4f0;
+    --surface:        #ffffff;
+    --surface-alt:    #f9f8f5;
+    --border:         #e2e0db;
+    --border-strong:  #c8c5bf;
+    --text:           #1a1a18;
+    --text-muted:     #6b6a66;
+    --sidebar:        #1c2130;
+    --sidebar-text:   #c8cad0;
+    --green:          #2e7d50;
+    --green-bg:       #e8f4ed;
+    --green-border:   #a8d4b8;
+    --green-dark:     #1a5538;
+    --amber:          #b86e00;
+    --amber-bg:       #fff3e0;
+    --amber-border:   #f0c070;
+    --danger-bg:      #fdecea;
+    --danger-text:    #9b1c1c;
+    --danger-border:  #f5b8b8;
+    --radius:         8px;
+  }
+  body { font-family: system-ui, -apple-system, sans-serif; font-size: 15px; color: var(--text); background: var(--bg); line-height: 1.6; }
+
+  /* ── Header Fidbox ── */
+  .site-header {
+    background: var(--sidebar);
+    color: var(--sidebar-text);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 56px;
+    border-bottom: 2px solid #2e7d50;
+  }
+  .site-header .logo { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+  .site-header .logo span { color: #5cb87a; }
+  .site-header .breadcrumb { font-size: 13px; color: #7a8090; }
+  .site-header .breadcrumb::before { content: "/"; margin: 0 8px; }
+
+  /* ── Page ── */
+  .page { max-width: 820px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  .page-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
+  .page-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 2rem; }
+
+  .section-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.75rem; margin-top: 2rem; }
+  .page > .section-title { margin-top: 0; }
+
+  /* ── Cards ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid #2e7d50; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+  .vehicle-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+  .vehicle-label { font-size: 15px; font-weight: 600; }
+  .remove-btn { font-size: 13px; color: var(--text-muted); cursor: pointer; border: 1px solid var(--border); background: none; border-radius: var(--radius); padding: 4px 12px; font-family: inherit; }
+  .remove-btn:hover { color: var(--danger-text); border-color: var(--danger-border); background: var(--danger-bg); }
+
+  /* ── Form ── */
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+  .field input, .field select {
+    width: 100%; height: 38px; padding: 0 12px; font-size: 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text); font-family: inherit;
+    transition: background 0.15s;
+  }
+  .field input:focus, .field select:focus {
+    outline: 2px solid var(--green); outline-offset: 1px;
+  }
+  .hint { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+  .hint.warn { color: var(--amber); background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: 4px; padding: 3px 7px; }
+  .toggle-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; background: #f9f8f5; border-radius: 6px; padding: 8px 12px; border: 1px solid #e2e0db; }
+  .toggle-row label { font-size: 13px; color: var(--text-muted); cursor: pointer; }
+  .toggle-row input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--green); flex-shrink: 0; }
+
+  /* ── Buttons ── */
+  .add-btn {
+    border: 1px dashed var(--border-strong); border-radius: 12px; padding: 0 1rem;
+    text-align: center; cursor: pointer; color: var(--text-muted); font-size: 14px;
+    background: none; width: 100%; margin-bottom: 1.5rem; font-family: inherit;
+    height: 48px; display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: background 0.2s;
+  }
+  .add-btn:hover { color: var(--green); border-color: var(--green-border); background: var(--green-bg); }
+  .add-icon { font-size: 18px; line-height: 1; }
+  .calc-btn {
+    width: 100%; height: 52px; font-size: 16px; font-weight: 600; cursor: pointer;
+    border-radius: 8px; border: 1px solid var(--green-border);
+    background: var(--green-bg); color: var(--green-dark); margin-bottom: 2rem; font-family: inherit;
+    transition: background 0.15s, color 0.15s, box-shadow 0.2s;
+  }
+  .calc-btn:hover { background: var(--green); color: #fff; border-color: var(--green); box-shadow: 0 2px 8px rgba(46,125,80,0.18); }
+
+  /* ── Results ── */
+  .results { display: none; }
+  .results.visible { display: block; }
+  .result-card { background: var(--surface-alt); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+  .result-card.result-card-soc { border-left: 4px solid #2e7d50; }
+  .result-card.result-card-sal { border-left: 4px solid #b86e00; }
+  .result-veh-name { font-size: 14px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .result-line { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: var(--text-muted); padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .result-line:last-child { border-bottom: none; }
+  .result-line.total { font-size: 14px; font-weight: 600; color: var(--text); background: #f0f7f3; padding: 8px 12px; border-radius: 6px; margin-top: 8px; border: none; }
+  .result-line span:last-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+  .result-line.total span:last-child { color: var(--green-dark); }
+  .result-sub { font-size: 11px; color: var(--text-muted); padding: 2px 0 4px; font-style: italic; }
+
+  /* ── Summary ── */
+  .summary-box { border: 2px solid var(--green-border); border-radius: 12px; padding: 1.5rem; background: var(--green-bg); box-shadow: 0 2px 12px rgba(46,125,80,0.12); }
+  .summary-title { font-size: 11px; font-weight: 600; color: var(--green-dark); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 1rem; }
+  .summary-line { display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0; border-bottom: 1px solid var(--green-border); color: var(--text-muted); }
+  .summary-line:last-child { border-bottom: none; }
+  .summary-total { font-size: 22px; font-weight: 700; color: var(--green-dark); margin-top: 12px; padding-top: 12px; border-top: 2px solid var(--green-border); display: flex; justify-content: space-between; align-items: baseline; }
+  .abattement-note { font-size: 11px; color: var(--text-muted); margin-top: 10px; line-height: 1.5; }
+
+  /* ── Badges ── */
+  .badge { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; }
+  .badge-soc { background: var(--green-bg); color: var(--green-dark); border: 1px solid var(--green-border); }
+  .badge-sal { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+
+  /* ── Misc ── */
+  .error-msg { color: var(--danger-text); font-size: 13px; background: var(--danger-bg); border: 1px solid var(--danger-border); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 1rem; display: none; }
+  .footer-note { font-size: 11px; color: var(--text-muted); margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); line-height: 1.6; }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(28,33,48,0.75) 40%, rgba(28,33,48,0.2));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 2.5rem;
+    color: #fff;
+  }
+  .hero-overlay h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .hero-overlay p {
+    font-size: 14px;
+    opacity: 0.85;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .page { padding: 1.5rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-overlay">
+    <h2>Simulateur TVS 2026</h2>
+    <p>Calculez la taxe annuelle sur vos véhicules de tourisme</p>
+  </div>
+</div>
+
+
+
+<div class="page">
+  <p class="page-title">Taxe sur les véhicules de tourisme 2026</p>
+  <p class="page-sub">Barèmes WLTP, NEDC et puissance administrative — multi-véhicules, prorata, coefficient km, abattement salarié</p>
+
+  <p class="section-title">Véhicules</p>
+  <div id="vehicles-container"></div>
+  <button class="add-btn" onclick="addVehicle()"><span class="add-icon">+</span> Ajouter un véhicule</button>
+  <div class="error-msg" id="error-msg"></div>
+  <button class="calc-btn" onclick="calculate()">Calculer la TVS 2026</button>
+
+  <div class="results" id="results">
+    <p class="section-title">Détail par véhicule</p>
+    <div id="results-detail"></div>
+    <p class="section-title">Récapitulatif</p>
+    <div id="results-summary"></div>
+  </div>
+
+  <div class="footer-note">
+    Sources : BOFiP — taxe sur les émissions de CO₂ et taxe sur les émissions de polluants atmosphériques 2026.
+    Barème PA : forfaits cumulatifs par tranche franchie (non proportionnels au nombre de CV).
+    Abattement de 15 000 € applicable au cumul CO₂ + polluants des véhicules de salariés/dirigeants après prorata et coefficient km.
+    Soumis au plafond de minimis 300 000 € sur 3 ans glissants.
+  </div>
+</div>
+
+<script>
+const WLTP = [[0,4,0],[5,45,1],[46,53,2],[54,85,3],[86,105,4],[106,125,10],[126,145,50],[146,165,60],[166,Infinity,65]];
+const NEDC = [[0,3,0],[4,37,1],[38,44,2],[45,70,3],[71,87,4],[88,103,10],[104,120,50],[121,136,60],[137,Infinity,65]];
+const PA   = [{lo:1,hi:3,t:2000},{lo:4,hi:6,t:3000},{lo:7,hi:10,t:4500},{lo:11,hi:15,t:5250},{lo:16,hi:Infinity,t:6500}];
+
+function co2Tax(val, tranches) {
+  let total = 0;
+  for (const [lo, hi, tarif] of tranches) {
+    if (val < lo) break;
+    total += (Math.min(val, hi) - lo + 1) * tarif;
+  }
+  return total;
+}
+function calcPA(cv) { return PA.filter(t => cv >= t.lo).reduce((s,t) => s+t.t, 0); }
+function paStr(cv)  { return PA.filter(t => cv >= t.lo).map(t => t.t.toLocaleString('fr-FR')+' €').join(' + '); }
+
+const CRITAIR = [
+  { v:'0',  lbl:"Crit'Air 0 — 100 % électrique ou hydrogène",                               hint:"Vignette verte · catégorie E · 0 €",                                                warn:false, tarif:0,   fl:"Catégorie E" },
+  { v:'1',  lbl:"Crit'Air 1 — essence Euro 5/6 (≥ 2011), hybride rechargeable, gaz",        hint:"Vignette violette · catégorie 1 · 130 €",                                          warn:false, tarif:130, fl:"Catégorie 1" },
+  { v:'2',  lbl:"Crit'Air 2 — jaune : diesel Euro 5/6 ou essence Euro 4",       hint:"⚠ Vignette jaune · polluants · 650 € — diesel Euro 5/6 ici, pas catégorie 1",      warn:true,  tarif:650, fl:"Polluants · Crit'Air 2" },
+  { v:'3',  lbl:"Crit'Air 3 — essence Euro 2/3 (1997-2005) · diesel Euro 4 (2006-2010)",    hint:"Vignette orange · polluants · 650 €",                                              warn:false, tarif:650, fl:"Polluants · Crit'Air 3" },
+  { v:'4',  lbl:"Crit'Air 4 — diesel Euro 3 (2001-2005)",                                   hint:"Vignette bordeaux · polluants · 650 €",                                            warn:false, tarif:650, fl:"Polluants · Crit'Air 4" },
+  { v:'5',  lbl:"Crit'Air 5 — diesel Euro 2 (oct. 1997 – déc. 2000)",                       hint:"Vignette grise · polluants · 650 €",                                               warn:false, tarif:650, fl:"Polluants · Crit'Air 5" },
+  { v:'nc', lbl:"Non classé — avant le 31 décembre 1996",                                   hint:"Sans vignette · polluants · 650 €",                                                warn:false, tarif:650, fl:"Polluants · non classé" }
+];
+function getCritair(v) { return CRITAIR.find(c=>c.v===v)||CRITAIR[2]; }
+
+function coeffKm(km) {
+  if (km<=15000) return 0;
+  if (km<=25000) return 0.25;
+  if (km<=35000) return 0.50;
+  if (km<=45000) return 0.75;
+  return 1.0;
+}
+
+let count=0;
+
+function updateCritairHint(id) {
+  const c=getCritair(document.getElementById('critair-'+id).value);
+  const el=document.getElementById('critair-hint-'+id);
+  el.textContent=c.hint; el.className='hint'+(c.warn?' warn':'');
+}
+function toggleFields(id) {
+  const v=document.getElementById('bareme-'+id).value;
+  document.getElementById('f-co2-'+id).style.display=v==='pa'?'none':'';
+  document.getElementById('f-cv-'+id).style.display=v==='pa'?'':'none';
+}
+function toggleKm(id) {
+  document.getElementById('f-km-'+id).style.display=
+    document.getElementById('type-'+id).value==='sal'?'':'none';
+}
+function removeVehicle(id) { document.getElementById('veh-'+id)?.remove(); }
+
+function addVehicle() {
+  count++;
+  const id=count;
+  const div=document.createElement('div');
+  div.className='card'; div.id='veh-'+id;
+  const opts=CRITAIR.map(c=>`<option value="${c.v}"${c.v==='2'?' selected':''}>${c.lbl}</option>`).join('');
+  div.innerHTML=`
+    <div class="vehicle-header">
+      <span class="vehicle-label">Véhicule ${id}</span>
+      <button class="remove-btn" onclick="removeVehicle(${id})">Supprimer</button>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label for="bareme-${id}">Barème CO₂</label>
+        <select id="bareme-${id}" onchange="toggleFields(${id})">
+          <option value="wltp">WLTP — 1re immat. ≥ mars 2020</option>
+          <option value="nedc">NEDC — 1re immat. avant mars 2020</option>
+          <option value="pa">Puissance administrative</option>
+        </select>
+      </div>
+      <div class="field" id="f-co2-${id}">
+        <label for="co2-${id}">Émissions CO₂ (g/km)</label>
+        <input type="number" id="co2-${id}" min="0" value="120" />
+      </div>
+      <div class="field" id="f-cv-${id}" style="display:none">
+        <label for="cv-${id}">Puissance fiscale (CV)</label>
+        <input type="number" id="cv-${id}" min="1" value="7" />
+        <span class="hint">Cumul de forfaits par tranche franchie</span>
+      </div>
+      <div class="field">
+        <label for="critair-${id}">Vignette Crit'Air</label>
+        <select id="critair-${id}" onchange="updateCritairHint(${id})">${opts}</select>
+        <span class="hint warn" id="critair-hint-${id}">⚠ Vignette jaune · polluants · 650 € — diesel Euro 5/6 ici, pas catégorie 1</span>
+      </div>
+      <div class="field">
+        <label for="type-${id}">Affectation</label>
+        <select id="type-${id}" onchange="toggleKm(${id})">
+          <option value="soc">Véhicule de société</option>
+          <option value="sal">Salarié / dirigeant — frais remboursés</option>
+        </select>
+      </div>
+      <div class="field" id="f-km-${id}" style="display:none">
+        <label for="km-${id}">Km professionnels remboursés</label>
+        <input type="number" id="km-${id}" min="0" value="20000" />
+      </div>
+      <div class="field">
+        <label for="jours-${id}">Jours d'affectation</label>
+        <input type="number" id="jours-${id}" min="1" max="365" value="365" />
+        <span class="hint">Prorata = jours / 365</span>
+      </div>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="e85-${id}" />
+      <label for="e85-${id}">Superéthanol E85 — −40 % CO₂ si ≤ 250 g/km, ou −2 CV si ≤ 12 CV</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="exo-${id}" />
+      <label for="exo-${id}">Véhicule exonéré (taxi, auto-école, handicap, électrique…)</label>
+    </div>
+  `;
+  document.getElementById('vehicles-container').appendChild(div);
+}
+
+function calculate() {
+  const errEl=document.getElementById('error-msg');
+  errEl.style.display='none';
+  const cards=document.querySelectorAll('[id^="veh-"]');
+  if (!cards.length) { errEl.textContent='Ajoutez au moins un véhicule.'; errEl.style.display='block'; return; }
+
+  document.getElementById('results-detail').innerHTML='';
+  document.getElementById('results-summary').innerHTML='';
+
+  let totalSoc=0, totalSalBrut=0;
+  const results=[];
+
+  cards.forEach(card => {
+    const rid=card.id.replace('veh-','');
+    const bareme  =document.getElementById('bareme-'+rid).value;
+    const critair =getCritair(document.getElementById('critair-'+rid).value);
+    const type    =document.getElementById('type-'+rid).value;
+    const jours   =parseInt(document.getElementById('jours-'+rid).value)||365;
+    const e85     =document.getElementById('e85-'+rid).checked;
+    const exo     =document.getElementById('exo-'+rid).checked;
+    const label   =card.querySelector('.vehicle-label').textContent;
+    const prorata =jours/365;
+
+    if (exo) { results.push({label,type,exo:true}); return; }
+
+    let taxeCO2=0, baremeUsed='', paDetail='';
+    if (bareme==='wltp'||bareme==='nedc') {
+      let co2=parseFloat(document.getElementById('co2-'+rid).value)||0;
+      let co2Eff=co2, e85Note='';
+      if (e85&&co2<=250) { co2Eff=Math.round(co2*0.6); e85Note=` (E85 : ${co2}×60%=${co2Eff} g/km)`; }
+      taxeCO2=co2Tax(co2Eff, bareme==='wltp'?WLTP:NEDC);
+      baremeUsed=(bareme==='wltp'?'WLTP':'NEDC')+` — ${co2Eff} g/km${e85Note}`;
+    } else {
+      let cv=parseInt(document.getElementById('cv-'+rid).value)||0;
+      let cvEff=cv, e85Note='';
+      if (e85&&cv<=12) { cvEff=Math.max(1,cv-2); e85Note=` (E85 : ${cv}−2=${cvEff} CV)`; }
+      taxeCO2=calcPA(cvEff);
+      baremeUsed=`Puissance admin. — ${cvEff} CV${e85Note}`;
+      paDetail=paStr(cvEff);
+    }
+
+    const taxePol=critair.tarif;
+    const taxeBrut=taxeCO2+taxePol;
+    const taxeApresProrata=Math.round(taxeBrut*prorata);
+
+    let km=0, coeff=1;
+    if (type==='sal') { km=parseInt(document.getElementById('km-'+rid).value)||0; coeff=coeffKm(km); }
+    const taxeFinale=Math.round(taxeApresProrata*coeff);
+
+    if (type==='soc') totalSoc+=taxeFinale; else totalSalBrut+=taxeFinale;
+    results.push({label,type,bareme:baremeUsed,paDetail,critairLabel:critair.fl,taxeCO2,taxePol,taxeBrut,prorata,jours,coeff,km,taxeApresProrata,taxeFinale,exo:false});
+  });
+
+  const detail=document.getElementById('results-detail');
+  results.forEach(r => {
+    const d=document.createElement('div'); d.className='result-card ' + (r.type==='soc' ? 'result-card-soc' : 'result-card-sal');
+    const badge=r.type==='soc'
+      ?'<span class="badge badge-soc">Société</span>'
+      :'<span class="badge badge-sal">Salarié / dirigeant</span>';
+    if (r.exo) {
+      d.innerHTML=`<div class="result-veh-name">${r.label} ${badge}</div>
+        <div class="result-line"><span>Statut</span><span>Exonéré — 0 €</span></div>`;
+    } else {
+      const prorataNote=r.jours<365?` (${r.jours} j / 365 = ${Math.round(r.prorata*100)} %)`:'(100 %)';
+      const paLine=r.paDetail?`<div class="result-sub">${r.paDetail}</div>`:'';
+      const kmLine=r.type==='sal'
+        ?`<div class="result-line"><span>Coefficient km (${r.km.toLocaleString('fr-FR')} km → ${Math.round(r.coeff*100)} %)</span><span>${r.taxeFinale.toLocaleString('fr-FR')} €</span></div>`:'';
+      d.innerHTML=`
+        <div class="result-veh-name">${r.label} ${badge}</div>
+        <div class="result-line"><span>Taxe CO₂ — ${r.bareme}</span><span>${r.taxeCO2.toLocaleString('fr-FR')} €</span></div>
+        ${paLine}
+        <div class="result-line"><span>Taxe polluants — ${r.critairLabel}</span><span>${r.taxePol.toLocaleString('fr-FR')} €</span></div>
+        <div class="result-line"><span>Sous-total</span><span>${r.taxeBrut.toLocaleString('fr-FR')} €</span></div>
+        <div class="result-line"><span>Prorata ${prorataNote}</span><span>${r.taxeApresProrata.toLocaleString('fr-FR')} €</span></div>
+        ${kmLine}
+        <div class="result-line total"><span>Taxe due</span><span>${r.taxeFinale.toLocaleString('fr-FR')} €</span></div>
+      `;
+    }
+    detail.appendChild(d);
+  });
+
+  const salApresAbt=Math.max(0,totalSalBrut-15000);
+  const totalFinal=totalSoc+salApresAbt;
+  const s=document.createElement('div'); s.className='summary-box';
+  const socLine=totalSoc>0?`<div class="summary-line"><span>Véhicules de société</span><span>${totalSoc.toLocaleString('fr-FR')} €</span></div>`:'';
+  const salLines=totalSalBrut>0?`
+    <div class="summary-line"><span>Salariés / dirigeants — brut</span><span>${totalSalBrut.toLocaleString('fr-FR')} €</span></div>
+    <div class="summary-line"><span>Abattement 15 000 € (de minimis)</span><span>− ${Math.min(15000,totalSalBrut).toLocaleString('fr-FR')} €</span></div>
+    <div class="summary-line"><span>Salariés / dirigeants — net</span><span>${salApresAbt.toLocaleString('fr-FR')} €</span></div>
+  `:'';
+  s.innerHTML=`
+    <p class="summary-title">TVS 2026 — total à déclarer</p>
+    ${socLine}${salLines}
+    <div class="summary-total"><span>Total TVS</span><span>${totalFinal.toLocaleString('fr-FR')} €</span></div>
+    ${totalSalBrut>0?`<p class="abattement-note">Abattement appliqué après coefficient km et prorata. Plafond de minimis : 300 000 € sur 3 ans glissants.</p>`:''}
+  `;
+  document.getElementById('results-summary').appendChild(s);
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+addVehicle();
+</script>
+</body>
+</html>

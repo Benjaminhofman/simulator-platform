@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulateur Holding 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap');
+:root{--bg:#f5f6fa;--surface:#fff;--surface2:#f0f2f8;--border:#dde1ee;--accent:#2563eb;--green:#16a34a;--amber:#d97706;--red:#dc2626;--text:#111827;--muted:#6b7280;--mono:'DM Mono',monospace;--sans:'Sora',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
+header{border-bottom:1px solid var(--border);padding:20px 36px;display:flex;align-items:center;gap:14px;background:var(--surface)}
+.logo-tag{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;background:rgba(37,99,235,.08);padding:3px 8px;border-radius:3px}
+header h1{font-size:16px;font-weight:600}
+.year-badge{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto}
+.container{display:grid;grid-template-columns:310px 1fr;min-height:calc(100vh - 61px)}
+aside{border-right:1px solid var(--border);padding:24px 20px;overflow-y:auto;background:var(--surface)}
+.slabel{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.ig{margin-bottom:14px}
+.ig label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.hint{font-size:10px;color:#9ca3af;margin-top:2px;font-family:var(--mono)}
+input[type=number],select{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:13px;padding:7px 10px;border-radius:6px;outline:none;-moz-appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+input[type=number]:focus,select:focus{border-color:var(--accent)}
+.tg{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.tg button{flex:1;padding:7px;background:none;border:none;color:var(--muted);font-family:var(--sans);font-size:12px;cursor:pointer;transition:all .15s}
+.tg button.active{background:var(--accent);color:#fff;font-weight:600}
+.sep{height:1px;background:var(--border);margin:18px 0}
+main{padding:24px 28px;overflow-y:auto}
+.qbox{background:var(--surface);border:2px solid var(--accent);border-radius:10px;padding:18px 22px;margin-bottom:24px;display:flex;align-items:center;gap:18px}
+.qbox label{font-size:14px;font-weight:600;white-space:nowrap}
+.qbox .qsub{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.qbox input{width:160px;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:20px;font-weight:500;padding:7px 12px;border-radius:8px;outline:none;-moz-appearance:textfield}
+.qbox input::-webkit-outer-spin-button,.qbox input::-webkit-inner-spin-button{-webkit-appearance:none}
+.scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;cursor:help}
+.card.best{border-color:var(--green)}.card.worst{border-color:var(--red)}
+.ctag{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.card.best .ctag{color:var(--green)}.card.worst .ctag{color:var(--red)}
+.ctitle{font-size:13px;font-weight:600;margin-bottom:2px}
+.csub{font-size:10px;color:var(--muted);margin-bottom:12px}
+.camt{font-family:var(--mono);font-size:22px;font-weight:500}
+.card.best .camt{color:var(--green)}.card.worst .camt{color:var(--red)}
+.clabel{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px}
+.cnote{font-size:10px;color:#9ca3af;font-family:var(--mono);margin-top:4px;font-style:italic}
+.cwarn{font-family:var(--mono);font-size:10px;color:var(--red);margin-top:6px;line-height:1.5;font-style:italic}
+.tw{position:relative}
+.tb{display:none;position:absolute;top:calc(100% + 8px);bottom:auto;left:50%;transform:translateX(-50%);background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:11px;line-height:1.9;z-index:200;min-width:270px;box-shadow:0 8px 32px rgba(0,0,0,.2);pointer-events:none}
+.tb::before{content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-bottom-color:#334155}
+#tt-s1, #tt-s2 {
+  left: calc(100% + 10px);
+  top: 0;
+  bottom: auto;
+  transform: none;
+}
+#tt-s1::before, #tt-s2::before {
+  top: 16px;
+  left: auto;
+  right: 100%;
+  bottom: auto;
+  transform: none;
+  border: 6px solid transparent;
+  border-right-color: #334155;
+}
+.tw:hover .tb{display:block}
+.tp{color:#4ade80}.tn{color:#f87171}
+.bsec{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:18px}
+.blabel{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+.brow{display:grid;grid-template-columns:160px 1fr 100px;align-items:center;gap:10px;margin-bottom:10px}
+.bname{font-size:12px;color:var(--muted)}
+.btrack{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bfill{height:100%;border-radius:4px;transition:width .5s ease}
+.bf1{background:linear-gradient(90deg,var(--amber),#fbbf24)}
+.bf2{background:linear-gradient(90deg,#6366f1,#818cf8)}
+.bf3{background:linear-gradient(90deg,var(--green),#4ade80)}
+.bpct{font-family:var(--mono);font-size:12px;text-align:right}
+.psec{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:18px}
+.phdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.ptitle{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.swrap{display:flex;align-items:center;gap:10px}
+.swrap label{font-size:12px;color:var(--muted)}
+input[type=range]{width:130px;accent-color:var(--accent);cursor:pointer}
+.sval{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--accent);min-width:48px}
+.ptable{width:100%;border-collapse:collapse}
+.ptable th{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;text-align:right;padding:5px 10px;border-bottom:1px solid var(--border)}
+.ptable th:first-child{text-align:left}
+.ptable td{font-family:var(--mono);font-size:12px;padding:9px 10px;text-align:right;border-bottom:1px solid var(--surface2)}
+.ptable td:first-child{text-align:left;color:var(--muted);font-size:11px}
+.ptable tr.hl{background:rgba(37,99,235,.04)}
+.ptable tr.hl td{font-weight:600}
+.vb{color:var(--green)}.vw{color:var(--red)}
+.wsec{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:18px}
+.detail-toggle{
+  font-family:var(--mono);font-size:10px;color:var(--accent);
+  cursor:pointer;margin-top:8px;display:inline-block;
+  text-decoration:underline;
+}
+.detail-content{
+  display:none;background:var(--surface2);border-radius:6px;
+  padding:12px 14px;margin-top:8px;font-family:var(--mono);
+  font-size:11px;line-height:1.9;color:var(--muted);
+}
+.detail-content.open{display:block;}
+.wtitle{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+.wrow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--surface2);font-size:12px}
+.wrow:last-child{border-bottom:none}
+.wkey{color:var(--muted)}
+.wval{font-family:var(--mono);font-size:12px}
+.wval.neg{color:var(--red)}.wval.pos{color:var(--green)}.wval.neu{color:var(--text)}
+.wrow.tot .wkey{color:var(--text);font-weight:600;font-size:13px}
+.wrow.tot .wval{font-size:14px;color:var(--green);font-weight:600}
+.patsec{background:rgba(37,99,235,.04);border:1px solid rgba(37,99,235,.2);border-radius:10px;padding:18px 22px;margin-bottom:18px}
+.pattitle{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.patlist{list-style:none}
+.patlist li{font-size:12px;color:var(--muted);padding:4px 0;border-bottom:1px solid rgba(37,99,235,.1);display:flex;gap:8px}
+.patlist li:last-child{border-bottom:none}
+.patlist li::before{content:'→';color:var(--accent);font-family:var(--mono);flex-shrink:0}
+.dbar{padding:12px 18px;border-radius:8px;font-size:13px;line-height:1.6;border:1px solid;margin-bottom:18px}
+.dbar.fav{background:rgba(22,163,74,.06);border-color:rgba(22,163,74,.3);color:var(--green)}
+.dbar.neu{background:rgba(217,119,6,.06);border-color:rgba(217,119,6,.3);color:var(--amber)}
+.dbar span{color:var(--text);font-weight:600}
+footer{text-align:center;padding:14px;font-size:10px;color:var(--muted);font-family:var(--mono);border-top:1px solid var(--border);background:var(--surface)}
+</style>
+<meta property="og:title" content="Simulateur Holding Immobilier vs Dividendes & Rémunération">
+<meta property="og:description" content="Investissement immobilier via holding ou retrait en dividendes et rémunération ? Comparez le coût réel, les charges sociales, l'impôt et les frais de structure.">
+<meta property="og:image" content="https://pub-14910f5b50c64720b262e2fa6bc465e1.r2.dev/holding.png">
+<meta property="og:url" content="https://fiscalite-entrepreneur.fr/simulateurs/outils/holding-immobilier.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+</head>
+<body>
+<header>
+  <span class="logo-tag">Fiscal 2026</span>
+  <h1>Holding vs Investissement Direct — Locatif</h1>
+  <span class="year-badge">Taux 2026 · PFU 31,4 %</span>
+</header>
+<div class="container">
+<aside>
+  <div class="slabel">Société</div>
+  <div class="ig">
+    <label>Forme juridique</label>
+    <div class="tg">
+      <button id="btn-sas" class="active" onclick="setForme('SAS')">SAS / SASU</button>
+      <button id="btn-sarl" onclick="setForme('SARL')">SARL / EURL</button>
+    </div>
+  </div>
+  <div class="ig" id="grp-capital" style="display:none">
+    <label>Capital social (€)</label>
+    <input type="number" id="capital" value="10000" step="1000">
+    <div class="hint">Seuil 10% = cotisations TNS sur dividendes</div>
+  </div>
+  <div class="ig" id="grp-cca" style="display:none">
+    <label>Comptes courants d'associés (€)</label>
+    <input type="number" id="cca" value="0" step="10000">
+    <div class="hint">Seuil TNS = 10% × (capital + CCA)</div>
+  </div>
+  <div class="ig">
+    <label>TMI (IR)</label>
+    <select id="tmi">
+      <option value="0">0 %</option>
+      <option value="0.11">11 %</option>
+      <option value="0.30" selected>30 %</option>
+      <option value="0.41">41 %</option>
+      <option value="0.45">45 %</option>
+    </select>
+  </div>
+  <div class="sep"></div>
+  <div class="slabel">Taux fiscaux</div>
+  <div class="ig"><label>IS taux réduit (%) — jusqu'à 42 500 €</label><input type="number" id="is_r" value="15" step="1"></div>
+  <div class="ig"><label>IS taux normal (%)</label><input type="number" id="is_n" value="25" step="1"></div>
+  <div class="ig"><label>Prélèvements sociaux PFU (%)</label><input type="number" id="ps" value="18.6" step="0.1"><div class="hint">18,6 % depuis 01/2026</div></div>
+  <div class="ig"><label>IR flat tax (%)</label><input type="number" id="ir" value="12.8" step="0.1"></div>
+  <div class="sep"></div>
+  <div class="slabel">Charges sociales</div>
+  <div class="ig"><label>Charges patronales SAS (% du brut)</label><input type="number" id="cs_pat" value="45" step="1"><div class="hint">Coût emp. = brut × (1 + patronal)</div></div>
+  <div class="ig"><label>Charges salariales SAS (% du brut)</label><input type="number" id="cs_sal" value="22" step="1"></div>
+  <div class="ig"><label>Cotisations TNS SARL rémunération (%)</label><input type="number" id="cs_tns_r" value="45" step="1"><div class="hint">Déductibles IS</div></div>
+  <div class="ig"><label>Cotisations TNS SARL dividendes (%)</label><input type="number" id="cs_tns_d" value="45" step="1"><div class="hint">Fraction > 10% capital — déductibles IS</div></div>
+  <div class="sep"></div>
+  <div class="slabel">Coûts Holding + SCI</div>
+  <div class="ig"><label>Frais création holding (€)</label><input type="number" id="cr_h" value="1500" step="100"></div>
+  <div class="ig"><label>Frais création SCI (€)</label><input type="number" id="cr_s" value="1500" step="100"></div>
+  <div class="ig"><label>Amortissement création (années)</label><input type="number" id="amort" value="5" step="1" min="1"></div>
+  <div class="ig"><label>Comptabilité holding (€/an)</label><input type="number" id="cpt_h" value="2000" step="100"></div>
+  <div class="ig"><label>Comptabilité SCI (€/an)</label><input type="number" id="cpt_s" value="1000" step="100"></div>
+  <div class="ig"><label>Quote-part mère-fille (%)</label><input type="number" id="qp" value="5" step="1"></div>
+</aside>
+<main>
+  <div class="qbox">
+    <div><label>Montant net à investir par an</label><div class="qsub">Combien voulez-vous disposer pour investir ?</div></div>
+    <input type="number" id="cible" value="50000" step="5000" min="1">
+    <div style="font-size:12px;color:var(--muted);max-width:180px;line-height:1.5">Combien la société doit-elle générer pour que vous disposiez de ce montant net à investir ?</div>
+  </div>
+  <div class="scenarios">
+    <div class="card tw" id="card-s1">
+      <div class="ctag" id="tag-s1">Scénario A</div>
+      <div class="ctitle">Salaire</div>
+      <div class="csub" id="sub-s1">—</div>
+      <div class="camt" id="amt-s1">—</div>
+      <div class="clabel">bénéfice nécessaire</div>
+      <div class="tb" id="tt-s1"></div>
+    </div>
+    <div class="card tw" id="card-s2">
+      <div class="ctag">Scénario B</div>
+      <div class="ctitle">Dividendes directs</div>
+      <div class="csub" id="sub-s2">—</div>
+      <div class="camt" id="amt-s2">—</div>
+      <div class="clabel">bénéfice nécessaire</div>
+      <div class="tb" id="tt-s2"></div>
+    </div>
+    <div class="card tw" id="card-s3">
+      <div class="ctag">Scénario C</div>
+      <div class="ctitle">Holding + SCI</div>
+      <div class="csub">Régime mère-fille · IS</div>
+      <div class="camt" id="amt-s3">—</div>
+      <div class="clabel">bénéfice nécessaire</div>
+      <div class="cnote" id="note-s3">Argent disponible dans la holding</div>
+      <div class="cwarn">Hypothèse : les fonds restent investis<br>dans la holding/SCI et ne sont pas<br>distribués au dirigeant.</div>
+      <div class="tb" id="tt-s3"></div>
+    </div>
+  </div>
+  <div id="dbar" class="dbar fav"></div>
+  <div class="bsec">
+    <div class="blabel">Coût pour la société par scénario (pour obtenir le même net)</div>
+    <div class="brow"><div class="bname" id="bl-s1">Salaire</div><div class="btrack"><div class="bfill bf1" id="bar-s1" style="width:0%"></div></div><div class="bpct" id="bp-s1">—</div></div>
+    <div class="brow"><div class="bname" id="bl-s2">Dividendes</div><div class="btrack"><div class="bfill bf2" id="bar-s2" style="width:0%"></div></div><div class="bpct" id="bp-s2">—</div></div>
+    <div class="brow"><div class="bname">Holding + SCI</div><div class="btrack"><div class="bfill bf3" id="bar-s3" style="width:0%"></div></div><div class="bpct" id="bp-s3">—</div></div>
+  </div>
+  <div class="psec">
+    <div class="phdr">
+      <div class="ptitle">Effort économique cumulé de la société</div>
+      <div class="swrap">
+        <label>Horizon</label>
+        <input type="range" id="slider" min="1" max="20" value="10" step="1" oninput="updateSlider()">
+        <span class="sval" id="sval">10 ans</span>
+      </div>
+    </div>
+    <table class="ptable">
+      <thead><tr><th>Année</th><th id="th1">Salaire</th><th id="th2">Dividendes</th><th>Holding</th><th>Économie avec holding</th></tr></thead>
+      <tbody id="ptbody"></tbody>
+    </table>
+  </div>
+  <div class="wsec">
+    <div class="wtitle">Décomposition Holding + SCI — flux pas à pas</div>
+    <div class="wrow"><span class="wkey">Bénéfice nécessaire avant IS</span><span class="wval neu" id="w0">—</span></div>
+    <div class="wrow"><span class="wkey">IS exploitation</span><span class="wval neg" id="w1">—</span></div>
+    <div class="wrow"><span class="wkey">Dividende remontant à la holding</span><span class="wval neu" id="w2">—</span></div>
+    <div class="wrow"><span class="wkey">IS holding (quote-part × taux IS)</span><span class="wval neg" id="w3">—</span></div>
+    <div class="wrow"><span class="wkey">Disponible avant frais de structure</span><span class="wval neu" id="w4">—</span></div>
+    <div class="wrow"><span class="wkey">Frais annuels holding</span><span class="wval neg" id="w5">—</span></div>
+    <div class="wrow"><span class="wkey">Frais annuels SCI</span><span class="wval neg" id="w6">—</span></div>
+    <div class="wrow"><span class="wkey">Amortissement frais de création</span><span class="wval neg" id="w7">—</span></div>
+    <div class="wrow tot"><span class="wkey">Net disponible pour investir</span><span class="wval pos" id="w8">—</span></div>
+  </div>
+  <div class="wsec">
+    <div class="wtitle">Décomposition dividendes — flux pas à pas</div>
+    <div id="wf-div-rows"></div>
+    <span class="detail-toggle" onclick="toggleDetail('div-detail')">▶ Voir le calcul détaillé</span>
+    <div class="detail-content" id="div-detail"></div>
+  </div>
+  <div class="patsec">
+    <div class="pattitle">Avantages patrimoniaux non chiffrés</div>
+    <ul class="patlist">
+      <li>Donation de la nue-propriété des parts de holding aux enfants (art. 669 CGI)</li>
+      <li>Absence de fiscalité personnelle tant que les fonds restent investis dans le groupe</li>
+      <li>Effet de capitalisation renforcé sur le long terme</li>
+      <li>Centralisation du pilotage des investissements au sein d'une structure unique</li>
+      <li>Protection du patrimoine d'exploitation par séparation exploitation / immobilier</li>
+      <li>Quasi-exonération des plus-values sur cession de participations (régime titres de participation)</li>
+      <li>Transmission simplifiée des actifs via la donation progressive des titres de holding</li>
+      <li>Réinvestissement facilité de la trésorerie dans de nouveaux projets</li>
+      <li>Diversification possible vers d'autres classes d'actifs sans fiscalité personnelle immédiate</li>
+    </ul>
+  </div>
+</main>
+</div>
+<footer>Simulateur indicatif — Taux 2026 — Ne constitue pas un conseil fiscal personnalisé</footer>
+<script>
+var forme = 'SAS';
+var _c1=0,_c2=0,_c3=0,_cible=50000;
+
+function setForme(f){
+  forme=f;
+  document.getElementById('btn-sas').classList.toggle('active',f==='SAS');
+  document.getElementById('btn-sarl').classList.toggle('active',f==='SARL');
+  document.getElementById('grp-capital').style.display=f==='SARL'?'block':'none';
+  document.getElementById('grp-cca').style.display=f==='SARL'?'block':'none';
+  simulate();
+}
+
+function g(id){return parseFloat(document.getElementById(id).value)||0;}
+
+function calcIS(b){
+  if(b<=0)return 0;
+  var r=g('is_r')/100, n=g('is_n')/100, s=42500;
+  return b<=s ? b*r : s*r+(b-s)*n;
+}
+
+function fmt(n){
+  return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+}
+
+function simulate(){
+  var cible=g('cible'); _cible=cible;
+  var tmi=parseFloat(document.getElementById('tmi').value)||0;
+  var pfu=(g('ps')+g('ir'))/100;
+  var ir_pfu=g('ir')/100;
+  var cs_pat=g('cs_pat')/100;
+  var cs_sal=g('cs_sal')/100;
+  var cs_tns_r=g('cs_tns_r')/100;
+  var cs_tns_d=g('cs_tns_d')/100;
+  var capital=g('capital');
+  var qp=g('qp')/100;
+  var is_n=g('is_n')/100;
+  var cpt_h=g('cpt_h'), cpt_s=g('cpt_s');
+  var amort=(g('cr_h')+g('cr_s'))/Math.max(g('amort'),1);
+  var frais=cpt_h+cpt_s+amort;
+
+  // SCENARIO A — Salaire
+  var brut, cout_emp, net_av_ir;
+  if(forme==='SAS'){
+    brut = cible/(1-tmi)/(1-cs_sal);
+    cout_emp = brut*(1+cs_pat);
+    net_av_ir = brut*(1-cs_sal);
+  } else {
+    // SARL TNS : cotisations sur rémunération nette, déductibles IS
+    var rem_nette = cible/(1-tmi);
+    cout_emp = rem_nette*(1+cs_tns_r);
+    net_av_ir = rem_nette;
+    brut = rem_nette;
+  }
+
+  // SCENARIO B — Dividendes
+  var sub2, note2, tt2, beneB;
+  if(forme==='SAS'){
+    var div_brut = cible/(1-pfu);
+    var B2=div_brut*1.4;
+    for(var i=0;i<25;i++) B2=div_brut+calcIS(B2);
+    beneB=B2;
+    sub2='Flat tax PFU 31,4 %';
+    note2='Pas d\'économie IS (dividende non déductible)';
+    tt2='<b>Calcul à l\'envers</b><br>'+
+        'Net cible : <span class="tp">'+fmt(cible)+'</span><br>'+
+        '÷ (1 - '+((pfu)*100).toFixed(1)+'% PFU) = Div. brut : '+fmt(div_brut)+'<br>'+
+        'IS exploitation : <span class="tn">− '+fmt(calcIS(B2))+'</span><br>'+
+        '<b>Bénéfice nécessaire : '+fmt(B2)+'</b>';
+  } else {
+    var cca=g('cca');
+    var seuil=(capital+cca)*0.10;
+    var dt=cible/(1-pfu)*1.3;
+    for(var i=0;i<30;i++){
+      var dp=Math.min(dt,seuil), dtn=Math.max(0,dt-seuil);
+      var net_c=dp*(1-pfu)+dtn*(1-cs_tns_d)*(1-ir_pfu);
+      dt=dt*(cible/net_c);
+    }
+    var dp2=Math.min(dt,seuil), dtn2=Math.max(0,dt-seuil);
+    var cotis=dtn2*cs_tns_d;
+    var cotis2=dtn2*cs_tns_d;
+    if(dtn2 <= 0){
+      var div_brut2 = cible/(1-pfu);
+      var B2b2 = div_brut2*1.4;
+      for(var i=0;i<25;i++) B2b2 = div_brut2 + calcIS(B2b2);
+      beneB = B2b2;
+    } else {
+      beneB=dt+calcIS(dt-cotis2);
+    }
+    sub2='TNS + PFU selon seuil 10%';
+    note2='Économie IS sur cotisations TNS déductibles';
+    if(dtn2 <= 0){
+      tt2 = '<b>Dividendes SARL (tout en PFU)</b><br>'+
+        'Net cible : <span class="tp">'+fmt(cible)+'</span><br>'+
+        '÷ (1 - '+((pfu)*100).toFixed(1)+'% PFU) = Div. brut : '+fmt(cible/(1-pfu))+'<br>'+
+        'IS exploitation : <span class="tn">− '+fmt(calcIS(beneB))+'</span><br>'+
+        '<b>Bénéfice nécessaire : '+fmt(beneB)+'</b>';
+    } else {
+      tt2='<b>Dividendes SARL</b><br>'+
+        'Net cible : <span class="tp">'+fmt(cible)+'</span><br>'+
+        'Dont PFU (≤ 10% cap.) : '+fmt(dp2)+'<br>'+
+        'Dont TNS (> 10% cap.) : '+fmt(dtn2)+'<br>'+
+        'Cotis. TNS déductibles : <span class="tn">− '+fmt(cotis)+'</span><br>'+
+        'IR '+(ir_pfu*100).toFixed(1)+'% sur part TNS : <span class="tn">− '+fmt(dtn2*(1-cs_tns_d)*ir_pfu)+'</span><br>'+
+        '<b>Bénéfice nécessaire : '+fmt(beneB)+'</b>';
+    }
+  }
+
+  // SCENARIO C — Holding
+  var fric=qp*is_n;
+  var div_need=(cible+frais)/(1-fric);
+  var B3=div_need*1.4;
+  for(var i=0;i<25;i++) B3=div_need+calcIS(B3);
+  var is_expl=calcIS(B3);
+  var div_h=B3-is_expl;
+  var is_h=div_h*qp*is_n;
+  var dispo=div_h-is_h;
+  var net_h=dispo-frais;
+  var s3=B3;
+
+  _c1=cout_emp; _c2=beneB; _c3=B3;
+
+  // Cards
+  var mn=Math.min(cout_emp,beneB,B3), mx=Math.max(cout_emp,beneB,B3);
+  function setCard(id,cout,sub,note){
+    var a=document.getElementById('amt-'+id);
+    var s=document.getElementById('sub-'+id);
+    var n=document.getElementById('note-'+id);
+    var c=document.getElementById('card-'+id);
+    if(a) a.textContent=fmt(cout);
+    if(s) s.textContent=sub;
+    if(n) n.textContent=note||'';
+    if(c){
+      c.classList.remove('best','worst');
+      if(cout===mn) c.classList.add('best');
+      else if(cout===mx) c.classList.add('worst');
+    }
+  }
+  setCard('s1',cout_emp,forme==='SAS'?'Assimilé-salarié SAS':'Gérant TNS SARL','');
+  setCard('s2',beneB,sub2,forme==='SARL'?'':note2);
+  setCard('s3',s3,'Régime mère-fille · IS','');
+
+  // Tooltips
+  document.getElementById('tt-s1').innerHTML=
+    '<b>Calcul à l\'envers</b><br>'+
+    'Net cible : <span class="tp">'+fmt(cible)+'</span><br>'+
+    (forme==='SAS' ?
+      '÷ (1 − '+(tmi*100).toFixed(0)+'% TMI) = Net av. IR : '+fmt(net_av_ir)+'<br>'+
+      '÷ (1 − '+(cs_sal*100).toFixed(0)+'% salarial) = Brut : '+fmt(brut)+'<br>'+
+      '× (1 + '+(cs_pat*100).toFixed(0)+'% patronal) = Coût emp. : '+fmt(cout_emp)+'<br>'
+    :
+      '÷ (1 − '+(tmi*100).toFixed(0)+'% TMI) = Rém. nette : '+fmt(net_av_ir)+'<br>'+
+      '× (1 + '+(cs_tns_r*100).toFixed(0)+'% cotis. TNS) = Coût : '+fmt(cout_emp)+'<br>'
+    )+
+    'Base IS = 0 € (salaire déduit du résultat)<br>'+
+    '<b>Bénéfice nécessaire : <span class="tp">'+fmt(cout_emp)+'</span></b>';
+
+  document.getElementById('tt-s2').innerHTML=tt2;
+
+  document.getElementById('tt-s3').innerHTML=
+    '<b>Holding + SCI</b><br>'+
+    'Bénéfice nécessaire : '+fmt(B3)+'<br>'+
+    'IS exploitation : <span class="tn">− '+fmt(is_expl)+'</span><br>'+
+    'Dividende holding : '+fmt(div_h)+'<br>'+
+    'IS mère-fille : <span class="tn">− '+fmt(is_h)+'</span><br>'+
+    'Frais structure : <span class="tn">− '+fmt(frais)+'</span><br>'+
+    '<b>Net disponible : <span class="tp">'+fmt(net_h)+'</span></b>';
+
+  // Barres
+  var maxB=Math.max(cout_emp,beneB,B3);
+  document.getElementById('bar-s1').style.width=(cout_emp/maxB*100)+'%';
+  document.getElementById('bar-s2').style.width=(beneB/maxB*100)+'%';
+  document.getElementById('bar-s3').style.width=(B3/maxB*100)+'%';
+  document.getElementById('bp-s1').textContent=fmt(cout_emp);
+  document.getElementById('bp-s2').textContent=fmt(beneB);
+  document.getElementById('bp-s3').textContent=fmt(B3);
+  document.getElementById('bl-s1').textContent=forme==='SAS'?'Salaire SAS':'Salaire SARL';
+  document.getElementById('bl-s2').textContent=forme==='SAS'?'Dividendes SAS':'Dividendes SARL';
+
+  // Decision bar
+  var db=document.getElementById('dbar');
+  var best_direct = Math.min(cout_emp, beneB);
+  var gain_div = beneB - s3;
+  var gain_sal = cout_emp - s3;
+
+  if(gain_div > 0){
+    db.className='dbar fav';
+    db.innerHTML=
+      'Pour disposer de <span>'+fmt(cible)+'</span> par an à investir dans l\'immobilier :<br><br>'+
+      '→ votre société doit générer <span>'+fmt(cout_emp)+'</span> en rémunération,<br>'+
+      '→ <span>'+fmt(beneB)+'</span> en dividendes,<br>'+
+      '→ seulement <span>'+fmt(s3)+'</span> via une holding.<br><br>'+
+      'Soit une économie de <span>'+fmt(gain_div)+'</span> / an vs dividendes '+
+      'et <span>'+fmt(gain_sal)+'</span> / an vs salaire.';
+  } else {
+    db.className='dbar neu';
+    db.innerHTML='À ce niveau, les frais de structure (<span>'+fmt(frais)+'/an</span>) absorbent l\'avantage fiscal. Augmentez le montant à investir pour rentabiliser le montage.';
+  }
+
+  // Waterfall
+  document.getElementById('w0').textContent=fmt(B3);
+  document.getElementById('w1').textContent='− '+fmt(is_expl);
+  document.getElementById('w2').textContent=fmt(div_h);
+  document.getElementById('w3').textContent='− '+fmt(is_h);
+  document.getElementById('w4').textContent=fmt(dispo);
+  document.getElementById('w5').textContent='− '+fmt(cpt_h);
+  document.getElementById('w6').textContent='− '+fmt(cpt_s);
+  document.getElementById('w7').textContent='− '+fmt(amort);
+  document.getElementById('w8').textContent=fmt(net_h);
+
+  updateProjection();
+
+  var seuil_aff = (g('capital')+g('cca'))*0.10;
+  var detail_div = document.getElementById('div-detail');
+  if(detail_div && forme==='SARL' && dtn2>0){
+    detail_div.innerHTML =
+      'Seuil TNS = 10% × '+fmt(g('capital')+g('cca'))+' = '+fmt(seuil_aff)+'<br>'+
+      'Fraction PFU (≤ '+fmt(seuil_aff)+') :<br>'+
+      'Net = '+fmt(Math.min(dt,seuil_aff))+' × (1 - '+(pfu*100).toFixed(1)+'%) = '+fmt(Math.min(dt,seuil_aff)*(1-pfu))+'<br>'+
+      '<br>'+
+      'Fraction TNS (> '+fmt(seuil_aff)+') :<br>'+
+      'Reste = '+fmt(cible)+' - '+fmt(Math.min(dt,seuil_aff)*(1-pfu))+' = '+fmt(cible - Math.min(dt,seuil_aff)*(1-pfu))+'<br>'+
+      'Net = dtn × (1 - '+(cs_tns_d*100).toFixed(0)+'%) × (1 - '+(ir_pfu*100).toFixed(1)+'%) = dtn × '+(1-cs_tns_d).toFixed(2)+' × '+(1-ir_pfu).toFixed(3)+'<br>'+
+      'dtn = '+fmt(cible - Math.min(dt,seuil_aff)*(1-pfu))+' / '+((1-cs_tns_d)*(1-ir_pfu)).toFixed(4)+' = '+fmt(dtn2)+'<br>'+
+      '<br>'+
+      'Dividende total : '+fmt(Math.min(dt,seuil_aff))+' + '+fmt(dtn2)+' = '+fmt(dt)+'<br>'+
+      'Cotisations TNS déductibles : '+fmt(dtn2)+' × '+(cs_tns_d*100).toFixed(0)+'% = '+fmt(dtn2*cs_tns_d)+'<br>'+
+      'Base IS : '+fmt(dt)+' - '+fmt(dtn2*cs_tns_d)+' = '+fmt(dt-dtn2*cs_tns_d)+'<br>'+
+      '<br>'+
+      'IS payé :<br>'+
+      (g('is_r'))+'% × 42 500 = '+fmt(Math.min(dt-dtn2*cs_tns_d,42500)*g('is_r')/100)+'<br>'+
+      '25% × '+fmt(Math.max(0,dt-dtn2*cs_tns_d-42500))+' = '+fmt(Math.max(0,dt-dtn2*cs_tns_d-42500)*g('is_n')/100)+'<br>'+
+      'Total IS = '+fmt(calcIS(dt-dtn2*cs_tns_d))+'<br>'+
+      '<br>'+
+      '<b>Bénéfice nécessaire : '+fmt(dt)+' + '+fmt(calcIS(dt-dtn2*cs_tns_d))+' = '+fmt(beneB)+'</b>';
+  }
+  if(detail_div && (forme==='SAS' || dtn2<=0)){
+    detail_div.innerHTML =
+      'Dividende brut = cible / (1-PFU) = '+fmt(cible/(1-pfu))+'<br>'+
+      'IS payé : - '+fmt(calcIS(beneB))+'<br>'+
+      '<b>Bénéfice nécessaire : '+fmt(beneB)+'</b>';
+  }
+  if(!window.toggleDetail){
+    window.toggleDetail = function(id){
+      var el=document.getElementById(id);
+      el.classList.toggle('open');
+      var tog=el.previousElementSibling;
+      tog.textContent=el.classList.contains('open')?'▼ Masquer':'▶ Voir le calcul détaillé';
+    };
+  }
+}
+
+function updateSlider(){
+  var v=document.getElementById('slider').value;
+  document.getElementById('sval').textContent=v+' an'+(v>1?'s':'');
+  updateProjection();
+}
+
+function updateProjection(){
+  var maxA=parseInt(document.getElementById('slider').value);
+  var all=[1,2,3,5,10,15,20].filter(function(a){return a<=maxA;});
+  if(all.indexOf(maxA)<0) all.push(maxA);
+  all.sort(function(a,b){return a-b;});
+  document.getElementById('th1').textContent=forme==='SAS'?'Salaire SAS':'Salaire SARL';
+  document.getElementById('th2').textContent=forme==='SAS'?'Dividendes SAS':'Dividendes SARL';
+  var tb=document.getElementById('ptbody');
+  tb.innerHTML='';
+  all.forEach(function(n){
+    var c1=_c1*n, c2=_c2*n, c3=_c3*n;
+    var mn=Math.min(c1,c2,c3), mx=Math.max(c1,c2,c3);
+    var eco=Math.min(c1,c2)-c3;
+    var tr=document.createElement('tr');
+    if(n===maxA) tr.classList.add('hl');
+    function cls(c){return c===mn?'vb':c===mx?'vw':'';}
+    tr.innerHTML='<td>'+n+' an'+(n>1?'s':'')+'</td>'+
+      '<td class="'+cls(c1)+'">'+fmt(c1)+'</td>'+
+      '<td class="'+cls(c2)+'">'+fmt(c2)+'</td>'+
+      '<td class="'+cls(c3)+'">'+fmt(c3)+'</td>'+
+      '<td class="'+(eco>0?'vb':'vw')+'">'+(eco>0?'− '+fmt(eco):'+'+fmt(Math.abs(eco)))+'</td>';
+    tb.appendChild(tr);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  simulate();
+  document.querySelectorAll('input[type=number], select').forEach(function(el){
+    el.addEventListener('input', simulate);
+    el.addEventListener('change', simulate);
+  });
+  document.getElementById('cible').addEventListener('input', simulate);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1735 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>Simulateur plus-values pro</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap">
+<style>
+/* Concept : poste de travail d'expert-comptable. Colonne de saisie guidée à gauche, verdict et comparatif chiffré à droite, feuille de calcul détaillée sur une seconde page. */
+:root{
+  --bg:#EDF1F0; --surface:#FFFFFF; --surface-2:#F4F7F7; --ink:#0E1B1F; --ink-2:#38494F; --muted:#64767C;
+  --line:#D2DBDC; --line-2:#E4EAEA;
+  --accent:#0B5F7A; --accent-ink:#FFFFFF; --accent-soft:#DAEAF0;
+  --ok:#17794A; --ok-soft:#DDF1E5; --warn:#935706; --warn-soft:#FAEBD0; --bad:#B0322A; --bad-soft:#F8E0DD;
+  --c-ir:#0B5F7A; --c-ps:#D08A2E;
+  --hero-bg:#0C3A4A; --hero-ink:#EAF4F7; --hero-mute:#A8C5CE; --hero-line:rgba(234,244,247,.18); --hero-ir:#7FD0E6; --hero-ps:#F0BD6A;
+  --shadow:0 1px 2px rgba(14,27,31,.05),0 8px 24px rgba(14,27,31,.06);
+  --f-display:'Newsreader',Georgia,'Times New Roman',serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --hdr-h:68px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A1215; --surface:#111B1F; --surface-2:#16242A; --ink:#E6EEF0; --ink-2:#B7C6CA; --muted:#8CA0A6;
+    --line:#243238; --line-2:#1B292E;
+    --accent:#5CC3E0; --accent-ink:#06222B; --accent-soft:#12343F;
+    --ok:#5FD08F; --ok-soft:#12301F; --warn:#E8B25D; --warn-soft:#3A2A0F; --bad:#F08A80; --bad-soft:#3B1814;
+    --c-ir:#5CC3E0; --c-ps:#E3A94F;
+    --hero-bg:#0F2F3B; --hero-ink:#EAF4F7; --hero-mute:#9DBBC4; --hero-line:rgba(234,244,247,.16);
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0A1215; --surface:#111B1F; --surface-2:#16242A; --ink:#E6EEF0; --ink-2:#B7C6CA; --muted:#8CA0A6;
+  --line:#243238; --line-2:#1B292E;
+  --accent:#5CC3E0; --accent-ink:#06222B; --accent-soft:#12343F;
+  --ok:#5FD08F; --ok-soft:#12301F; --warn:#E8B25D; --warn-soft:#3A2A0F; --bad:#F08A80; --bad-soft:#3B1814;
+  --c-ir:#5CC3E0; --c-ps:#E3A94F;
+  --hero-bg:#0F2F3B; --hero-ink:#EAF4F7; --hero-mute:#9DBBC4; --hero-line:rgba(234,244,247,.16);
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:15px; line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0 40px; min-height:100%;
+}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:30; background:var(--bg)}
+button,input,select{font:inherit; color:inherit}
+h1,h2,h3{margin:0; font-weight:600; text-wrap:balance}
+p{margin:0}
+.wrap{max-width:1280px; margin:0 auto}
+
+/* En-tête */
+.hdr{position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:var(--bg); border-bottom:1px solid var(--line)}
+.hdr .wrap{display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:var(--hdr-h); flex-wrap:wrap; padding-block:10px}
+.brand{display:flex; align-items:center; gap:12px; min-width:0}
+.mark{width:36px; height:36px; flex:none; border-radius:9px; background:var(--accent); color:var(--accent-ink); display:grid; place-items:center; font-family:var(--f-display); font-size:22px; font-weight:600}
+.brand-t{font-family:var(--f-display); font-size:19px; font-weight:600; line-height:1.15}
+.brand-s{font-size:12.5px; color:var(--muted)}
+.tabs{display:flex; gap:4px; padding:4px; background:var(--surface-2); border:1px solid var(--line); border-radius:11px}
+.tab{border:0; background:transparent; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:500; font-size:14px; color:var(--ink-2)}
+.tab[aria-selected="true"]{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.tab:focus-visible,.btn:focus-visible,.seg input:focus-visible+span,.sw input:focus-visible+.track,.inp input:focus-visible,select:focus-visible,.navchip:focus-visible,summary:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+/* Mise en page */
+.intro{padding:28px 0 20px}
+.intro h1{font-family:var(--f-display); font-size:clamp(26px,3.4vw,36px); line-height:1.12; letter-spacing:-.01em}
+.intro p{margin-top:8px; color:var(--ink-2); max-width:64ch}
+.layout{display:grid; gap:24px; grid-template-columns:minmax(0,1fr); align-items:start}
+@media (min-width:1040px){
+  .layout{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+  .results{position:sticky; top:calc(var(--hdr-h) + 14px + env(safe-area-inset-top,0px)); max-height:calc(100vh - var(--hdr-h) - 32px - env(safe-area-inset-top,0px)); overflow:auto; padding-right:4px; scrollbar-width:thin}
+}
+.form{display:grid; gap:16px; min-width:0}
+.results{display:grid; gap:16px; min-width:0; align-content:start}
+
+/* Cartes de saisie */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px; min-width:0}
+.sec-h{display:flex; align-items:flex-start; gap:12px; margin-bottom:16px}
+.num{flex:none; width:26px; height:26px; border-radius:50%; background:var(--accent-soft); color:var(--accent); display:grid; place-items:center; font-size:13px; font-weight:600; font-family:var(--f-mono)}
+.sec-t{font-size:16px; font-weight:600; line-height:1.3}
+.sec-s{font-size:13px; color:var(--muted); margin-top:2px}
+.stack{display:grid; gap:14px}
+.grid2{display:grid; gap:12px; grid-template-columns:repeat(2,minmax(0,1fr))}
+.fld{display:grid; gap:6px; min-width:0; align-content:start}
+.lbl{font-size:13px; font-weight:500; color:var(--ink-2)}
+.hint{font-size:12.5px; color:var(--muted)}
+.inp{display:flex; align-items:center; border:1px solid var(--line); background:var(--surface-2); border-radius:9px; padding:0 12px; min-height:42px; transition:border-color .15s, background .15s}
+.inp:hover{border-color:var(--muted)}
+.inp:focus-within{border-color:var(--accent); background:var(--surface)}
+.inp input{flex:1; min-width:0; border:0; background:transparent; outline:0; padding:9px 0; color:var(--fg); caret-color:var(--accent); -webkit-text-fill-color:var(--fg); font-family:var(--f-mono); font-size:14.5px; text-align:right; font-variant-numeric:tabular-nums}
+.inp .sfx{margin-left:8px; color:var(--muted); font-size:13px; font-family:var(--f-mono)}
+select{width:100%; min-height:42px; border:1px solid var(--line); background:var(--surface-2); border-radius:9px; padding:8px 10px}
+.seg{display:grid; gap:6px; grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.seg label{display:block; cursor:pointer; min-width:0}
+.seg input{position:absolute; opacity:0; pointer-events:none}
+.seg span{display:flex; align-items:center; justify-content:center; text-align:center; min-height:44px; padding:8px 10px; border:1px solid var(--line); border-radius:9px; background:var(--surface-2); font-size:13.5px; font-weight:500; line-height:1.25; transition:all .15s}
+.seg i{font-style:normal}
+.seg label:hover span{border-color:var(--muted)}
+.seg input:checked+span{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.sw{display:flex; align-items:flex-start; gap:12px; cursor:pointer; padding:2px 0}
+.sw input{position:absolute; opacity:0; pointer-events:none}
+.track{flex:none; width:40px; height:24px; border-radius:12px; background:var(--line); position:relative; transition:background .15s; margin-top:1px}
+.track::after{content:""; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.3); transition:transform .15s}
+.sw input:checked+.track{background:var(--accent)}
+.sw input:checked+.track::after{transform:translateX(16px)}
+.sw .txt{font-size:14px; line-height:1.4; min-width:0}
+.sw .txt small{display:block; color:var(--muted); font-size:12.5px; margin-top:1px}
+.divider{height:1px; background:var(--line-2); margin:2px 0}
+.acts{display:grid; gap:10px}
+.act{display:grid; gap:10px; grid-template-columns:repeat(3,minmax(0,1fr)); align-items:end; padding:12px; border:1px solid var(--line-2); border-radius:11px; background:var(--surface-2)}
+.act .cedee{grid-column:span 2; display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); cursor:pointer; min-height:42px}
+.act .cedee input{accent-color:var(--accent); margin:0}
+.act .cedee:has(input:checked){color:var(--fg); font-weight:500}
+.act .fld{min-width:0}
+.act .fld:first-child{grid-column:1 / -1}
+.act .inp{width:100%; min-width:0; box-sizing:border-box}
+.act .rm{justify-self:end; border:0; background:transparent; color:var(--muted); cursor:pointer; width:36px; height:42px; border-radius:8px; font-size:18px; line-height:1}
+.act .rm:hover{background:var(--bad-soft); color:var(--bad)}
+@media (max-width:620px){
+  .act{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .act .cedee{grid-column:1 / -1}
+  .act .rm{grid-column:1 / -1; width:100%; height:34px; font-size:13px}
+}
+.fld{min-width:0}
+.inp{min-width:0; box-sizing:border-box; max-width:100%}
+.grid2>*{min-width:0}
+.form{counter-reset:sec}
+.form .num{counter-increment:sec}
+.form .num::before{content:counter(sec)}
+body[data-regime="is"] .ir-only{display:none!important}
+body:not([data-regime="is"]) .is-only{display:none!important}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:40px; padding:8px 14px; border-radius:9px; border:1px solid var(--line); background:var(--surface); cursor:pointer; font-weight:500; font-size:14px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between}
+.toolbar select{width:auto; min-width:0; max-width:100%}
+.pvgrid{display:grid; gap:10px; grid-template-columns:minmax(80px,.9fr) minmax(0,1fr) minmax(0,1fr); align-items:center}
+.pvgrid .h{font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); text-align:right}
+.pvgrid .h:first-child{text-align:left}
+.pvgrid .rowl{font-size:13.5px; font-weight:500}
+.pvgrid .rowl small{display:block; color:var(--muted); font-weight:400; font-size:12px}
+.retenue{display:flex; justify-content:space-between; gap:12px; align-items:baseline; padding:10px 12px; border-radius:9px; background:var(--accent-soft); font-size:13.5px}
+.retenue b{font-family:var(--f-mono); font-variant-numeric:tabular-nums; font-weight:500}
+details.hyp summary{cursor:pointer; font-weight:600; font-size:15px; list-style:none; display:flex; align-items:center; justify-content:space-between; gap:10px}
+details.hyp summary::-webkit-details-marker{display:none}
+details.hyp summary::after{content:"+"; font-family:var(--f-mono); color:var(--muted); font-size:18px}
+details.hyp[open] summary::after{content:"−"}
+details.hyp .body{margin-top:14px}
+
+/* Chips */
+.chip{display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:99px; font-size:12.5px; font-weight:500; white-space:nowrap; background:var(--surface-2); color:var(--ink-2); border:1px solid var(--line)}
+.chip.ok{background:var(--ok-soft); color:var(--ok); border-color:transparent}
+.chip.warn{background:var(--warn-soft); color:var(--warn); border-color:transparent}
+.chip.bad{background:var(--bad-soft); color:var(--bad); border-color:transparent}
+.chip.acc{background:var(--accent-soft); color:var(--accent); border-color:transparent}
+
+/* Résultats : verdict */
+.hero{background:var(--hero-bg); color:var(--hero-ink); border-radius:16px; padding:24px; box-shadow:var(--shadow); min-width:0}
+.eyebrow{font-size:12px; letter-spacing:.09em; text-transform:uppercase; color:var(--hero-mute); font-weight:500}
+.hero-name{font-family:var(--f-display); font-size:clamp(26px,3vw,34px); line-height:1.1; margin-top:6px; letter-spacing:-.01em}
+.hero-sub{margin-top:6px; color:var(--hero-mute); font-size:13.5px}
+.hero-figs{display:grid; gap:16px 28px; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); margin-top:20px}
+.big{font-family:var(--f-mono); font-size:clamp(26px,3vw,34px); font-weight:500; font-variant-numeric:tabular-nums; line-height:1.1; letter-spacing:-.02em}
+.cap{font-size:13px; color:var(--hero-mute); margin-top:4px}
+.split{display:flex; height:10px; border-radius:6px; overflow:hidden; background:var(--hero-line); margin-top:22px}
+.split i{display:block; height:100%; min-width:0; transition:width .35s ease}
+.split .ir{background:var(--hero-ir)}
+.split .ps{background:var(--hero-ps)}
+.legend{display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:10px; font-size:13px; color:var(--hero-mute)}
+.legend b{color:var(--hero-ink); font-family:var(--f-mono); font-weight:500; font-variant-numeric:tabular-nums}
+.dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px}
+.hero .btn{margin-top:20px; background:transparent; color:var(--hero-ink); border-color:var(--hero-line)}
+.hero .btn:hover{border-color:var(--hero-ink)}
+.tie{margin-top:12px; font-size:13px; color:var(--hero-mute)}
+
+/* Comparatif */
+.cmp-h{display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:6px; flex-wrap:wrap}
+.cmp-h h2{font-size:16px}
+.cmp-h .leg{display:flex; gap:14px; font-size:12.5px; color:var(--muted)}
+.leg .dot{margin-right:5px}
+.row{padding:14px 0; border-top:1px solid var(--line-2); display:grid; gap:8px}
+.row:first-of-type{border-top:0}
+.row-top{display:flex; align-items:baseline; gap:10px; min-width:0}
+.rk{flex:none; width:22px; height:22px; border-radius:50%; background:var(--surface-2); border:1px solid var(--line); font-size:12px; display:grid; place-items:center; font-family:var(--f-mono); color:var(--muted)}
+.row.best .rk{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.nm{flex:1; min-width:0; font-weight:500}
+.amt{font-family:var(--f-mono); font-variant-numeric:tabular-nums; font-weight:500; white-space:nowrap}
+.bars{display:flex; height:8px; border-radius:5px; background:var(--surface-2); overflow:hidden}
+.bars i{display:block; height:100%; transition:width .35s ease}
+.bars .ir{background:var(--c-ir)}
+.bars .ps{background:var(--c-ps)}
+.meta{display:flex; flex-wrap:wrap; gap:4px 16px; font-size:12.5px; color:var(--muted)}
+.meta b{color:var(--ink-2); font-weight:500; font-family:var(--f-mono); font-variant-numeric:tabular-nums}
+details.na{margin-top:8px; border-top:1px solid var(--line-2); padding-top:12px}
+details.na summary{cursor:pointer; font-size:13.5px; color:var(--ink-2); font-weight:500}
+.na-item{margin-top:10px; font-size:13px}
+.na-item b{font-weight:600}
+.na-item ul{margin:4px 0 0; padding-left:18px; color:var(--muted)}
+
+/* Conditions */
+.regimes{display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.reg{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px; min-width:0; display:grid; gap:10px; align-content:start}
+.reg-h{display:flex; justify-content:space-between; gap:8px; align-items:flex-start; flex-wrap:wrap}
+.reg-h h3{font-size:15px}
+.reg-p{font-size:12.5px; color:var(--muted)}
+.conds{list-style:none; margin:0; padding:0; display:grid; gap:8px}
+.conds li{display:flex; gap:9px; font-size:13px; line-height:1.4}
+.conds .ic{flex:none; width:18px; height:18px; border-radius:50%; display:grid; place-items:center; font-size:11px; font-weight:700; margin-top:1px}
+.conds .ok .ic{background:var(--ok-soft); color:var(--ok)}
+.conds .ko .ic{background:var(--bad-soft); color:var(--bad)}
+.conds .cd{display:block; color:var(--muted); font-size:12.5px}
+.notes{display:grid; gap:8px; padding:0; margin:0; list-style:none}
+.notes li{font-size:13px; padding:10px 12px; border-radius:9px; background:var(--surface-2); color:var(--ink-2); line-height:1.45}
+.notes li.warn{background:var(--warn-soft); color:var(--warn)}
+.notes li.muted{background:transparent; color:var(--muted); padding-left:0; padding-right:0; font-size:12.5px}
+.sec-label{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:500; margin-bottom:10px}
+
+/* Barre mobile */
+.mini{display:none}
+@media (max-width:1039px){
+  body[data-view="sim"] .mini{display:flex}
+  body{padding-block:0 96px}
+}
+.mini{position:fixed; left:0; right:0; bottom:0; z-index:25; background:var(--hero-bg); color:var(--hero-ink); padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px)); align-items:center; justify-content:space-between; gap:12px; border:0; width:100%; text-align:left; cursor:pointer}
+.mini .t{font-size:12px; color:var(--hero-mute); letter-spacing:.05em; text-transform:uppercase}
+.mini .n{font-weight:600; font-size:14.5px}
+.mini .a{font-family:var(--f-mono); font-size:17px; font-weight:500; white-space:nowrap; font-variant-numeric:tabular-nums}
+
+/* Page détail */
+.dlayout{display:grid; gap:24px; grid-template-columns:minmax(0,1fr)}
+@media (min-width:1040px){.dlayout{grid-template-columns:220px minmax(0,1fr)}.dnav{position:sticky; top:calc(var(--hdr-h) + 14px + env(safe-area-inset-top,0px))}}
+.dnav{display:flex; gap:8px; flex-wrap:wrap; align-content:flex-start; min-width:0}
+@media (min-width:1040px){.dnav{flex-direction:column; flex-wrap:nowrap}}
+.navchip{border:1px solid var(--line); background:var(--surface); border-radius:9px; padding:8px 12px; cursor:pointer; text-align:left; font-size:13.5px; font-weight:500; display:flex; align-items:center; justify-content:space-between; gap:8px}
+.navchip:hover{border-color:var(--muted)}
+.navchip.off{color:var(--muted); font-weight:400}
+.navchip .sub{font-size:11.5px; color:var(--muted); font-family:var(--f-mono)}
+.dcontent{display:grid; gap:18px; min-width:0}
+.dsec{scroll-margin-top:calc(var(--hdr-h) + 16px + env(safe-area-inset-top,0px))}
+.dsec h2{font-family:var(--f-display); font-size:24px; letter-spacing:-.01em}
+.dsec .lead{color:var(--ink-2); font-size:14px; margin-top:4px; margin-bottom:14px}
+.dhead{display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap}
+.tbl{overflow-x:auto; border:1px solid var(--line-2); border-radius:11px}
+table.calc{border-collapse:collapse; width:100%; min-width:560px; font-size:13.5px}
+.calc th{font-size:11.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); font-weight:500; text-align:left; padding:10px 12px; background:var(--surface-2); border-bottom:1px solid var(--line)}
+.calc td{padding:10px 12px; border-bottom:1px solid var(--line-2); vertical-align:top}
+.calc tr:last-child td{border-bottom:0}
+.calc .r{text-align:right}
+.calc .v{font-family:var(--f-mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+.calc .f{color:var(--ink-2); font-size:13px}
+.calc .l{display:block; font-weight:500}
+.calc .ref{display:block; font-size:12px; color:var(--muted); margin-top:1px}
+.calc tr.strong td{background:var(--accent-soft)}
+.calc tr.strong .l,.calc tr.strong .v{font-weight:600}
+.two{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.kv{display:grid; gap:0}
+.kv div{display:flex; justify-content:space-between; gap:14px; padding:9px 0; border-bottom:1px solid var(--line-2); font-size:13.5px}
+.kv div:last-child{border-bottom:0}
+.kv b{font-family:var(--f-mono); font-weight:500; font-variant-numeric:tabular-nums; text-align:right}
+.scen-total{display:flex; flex-wrap:wrap; gap:6px 24px; margin-top:12px; font-size:13.5px; color:var(--ink-2)}
+.scen-total b{font-family:var(--f-mono); font-weight:500; color:var(--ink); font-variant-numeric:tabular-nums}
+.src{font-size:12.5px; color:var(--muted); margin-top:4px}
+
+.inp.ro{background:transparent; border-style:dashed}
+.inp.ro input{color:var(--muted); -webkit-text-fill-color:var(--muted); cursor:default}
+.inp input::placeholder{color:var(--muted); opacity:.55; -webkit-text-fill-color:var(--muted)}
+input,select,textarea{color:var(--fg); font-family:inherit}
+select{background-color:var(--surface-2); border-color:var(--line)}
+.inp input:focus-visible{outline:0}
+.imm .imm-chip{grid-column:1 / -1; justify-self:start; white-space:normal; line-height:1.35; padding:4px 10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important; scroll-behavior:auto!important}}
+@media (max-width:520px){
+  .card{padding:16px}
+  .hero{padding:20px}
+  .pvgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .pvgrid .rowl{grid-column:1 / -1; margin-top:6px}
+  .pvgrid .h:first-child{display:none}
+  .tabs{width:100%}
+  .tab{flex:1}
+}
+/* Questionnaire d'accueil */
+.qwrap{max-width:760px; margin:0 auto; padding-bottom:40px}
+.qprog{height:6px; border-radius:6px; background:var(--surface-2); overflow:hidden; border:1px solid var(--line)}
+.qprog i{display:block; height:100%; background:var(--accent); transition:width .2s}
+.qmeta{display:flex; justify-content:space-between; gap:12px; margin:10px 0 18px; font-size:13px; color:var(--muted)}
+.qtitle{font-family:var(--f-display); font-size:clamp(22px,3vw,28px); line-height:1.2; text-wrap:balance}
+.qhelp{margin-top:8px; color:var(--ink-2); font-size:14px; max-width:62ch}
+.qopts{display:grid; gap:10px; margin-top:20px}
+.qopt{text-align:left; padding:14px 16px; border:1px solid var(--line); border-radius:11px; background:var(--surface-2); cursor:pointer; font:inherit; color:var(--fg); min-height:52px}
+.qopt:hover{border-color:var(--muted)}
+.qopt[aria-pressed="true"]{border-color:var(--accent); background:var(--accent-soft)}
+.qopt b{display:block; font-weight:600; font-size:15px}
+.qopt small{display:block; margin-top:3px; color:var(--muted); font-size:13px; line-height:1.35}
+.qnav{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:22px; flex-wrap:wrap}
+.qsum{display:grid; margin-top:16px}
+.qsum div{display:flex; justify-content:space-between; gap:16px; padding:10px 0; border-top:1px solid var(--line-2); font-size:14px}
+.qsum div:first-child{border-top:0}
+.qsum span{color:var(--ink-2)}
+.qsum b{text-align:right; font-weight:500}
+.sitbar{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-top:12px}
+[hidden]{display:none!important}
+</style>
+
+<header class="hdr">
+  <div class="wrap">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">§</div>
+      <div>
+        <div class="brand-t">Plus-values professionnelles</div>
+        <div class="brand-s">151 septies · 151 septies A · 151 septies B · 238 quindecies</div>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Pages">
+      <button class="tab" role="tab" id="tab-quest" aria-selected="true" data-view="quest">Questionnaire</button>
+      <button class="tab" role="tab" id="tab-sim" aria-selected="false" data-view="sim">Simulation</button>
+      <button class="tab" role="tab" id="tab-detail" aria-selected="false" data-view="detail">Détail des calculs</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="view-quest">
+    <div class="intro">
+      <h1>Quelle est la situation du client&nbsp;?</h1>
+      <p>Répondez aux questions : le simulateur n'ouvre ensuite que les champs utiles à ce dossier.</p>
+    </div>
+    <div class="qwrap"><div class="card" id="qcard"></div></div>
+  </section>
+
+  <section id="view-sim" hidden>
+    <div class="intro">
+      <h1>Quel régime d'exonération retenir pour cette cession&nbsp;?</h1>
+      <p>Saisissez les montants. Le simulateur teste les régimes applicables et leurs cumuls autorisés, puis classe les résultats.</p>
+      <div class="sitbar"><span id="sitline" class="chip acc"></span><button type="button" class="btn ghost" id="editQ">Modifier le questionnaire</button></div>
+    </div>
+    <div class="layout">
+      <form class="form" id="form" autocomplete="off" onsubmit="return false">
+
+        <div class="card toolbar">
+          <span class="lbl" style="flex:1; min-width:220px">Dossier en cours de saisie</span>
+          <button type="button" class="btn ghost" id="blank">Vider le dossier</button>
+        </div>
+
+        <div class="card" id="card-regime">
+          <div class="sec-h"><span class="num"></span><div><div class="sec-t">Régime d'imposition du cédant</div><div class="sec-s">Entreprise individuelle ou société de personnes à l'IR, ou société soumise à l'impôt sur les sociétés.</div></div></div>
+          <div class="stack">
+            <div class="seg" role="radiogroup" aria-label="Régime d'imposition du cédant">
+              <label><input type="radio" name="regime" data-k="regime" value="ir"><span>Impôt sur le revenu (IR)</span></label>
+              <label><input type="radio" name="regime" data-k="regime" value="is"><span>Société à l'impôt sur les sociétés (IS)</span></label>
+            </div>
+            <p class="hint" id="hint-elements" hidden>Éléments isolés : le 238 quindecies et le 151 septies A ne s'appliquent pas. Les champs qui ne servent qu'à ces régimes sont masqués.</p>
+              <p class="hint is-only">Pour une société à l'IS, seul le 238 quindecies peut s'appliquer (art. 238 quindecies II-2-d). Les régimes 151 septies, 151 septies A et 151 septies B sont réservés aux entreprises à l'IR.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="sec-h"><span class="num"></span><div><div class="sec-t"><span class="ir-only">Activité et recettes</span><span class="is-only">Année et ancienneté</span></div><div class="sec-s"><span class="ir-only">Base de calcul du 151 septies : moyenne des deux années civiles précédant la cession. Associé d'une société de personnes : ajoutez votre quote-part des recettes de la société.</span><span class="is-only">Année de la cession et ancienneté de la branche d'activité cédée (5 ans minimum).</span></div></div></div>
+          <div class="stack">
+            <div class="grid2">
+              <label class="fld"><span class="lbl">Année de cession</span><span class="inp"><input data-k="annee" data-int inputmode="numeric" id="annee"></span></label>
+              <label class="fld is-only" id="row-anc-is"><span class="lbl">Branche exercée depuis</span><span class="inp"><input data-k="anciennete" data-int inputmode="numeric" id="anciennete"><span class="sfx">ans</span></span></label>
+            </div>
+            <label class="sw ir-only" id="row-exprop" hidden><input type="checkbox" data-k="exprop"><span class="track"></span><span class="txt">Plus-value consécutive à une expropriation ou à une indemnité d'assurance<small>Le 151 septies n'exige alors plus les 5 ans d'activité (art. 151 septies V). Le 238 quindecies et le 151 septies A les exigent toujours.</small></span></label>
+            <div class="acts ir-only" id="acts"></div>
+            <p class="hint ir-only" id="hint-cedee" hidden>Cochez la ou les activités cédées. Le 151 septies retient les recettes de toutes les activités (art. 151 septies IV), cédées ou non. Le délai de 5 ans s'apprécie pour chaque activité cédée : le simulateur retient la plus récente.</p>
+            <div class="ir-only"><button type="button" class="btn ghost" id="addAct">+ Ajouter une activité</button></div>
+          </div>
+        </div>
+
+        <div class="card" id="card-op">
+          <div class="sec-h"><span class="num"></span><div><div class="sec-t">Opération</div><div class="sec-s">Ce qui est cédé, et à qui. Le simulateur traite la vente.</div></div></div>
+          <div class="stack">
+            <div class="fld" id="row-cession"><span class="lbl">Ce qui est transmis</span>
+              <div class="seg" role="radiogroup" aria-label="Ce qui est transmis">
+                <label class="ir-only"><input type="radio" name="cession" data-k="cession" value="ei"><span>Entreprise individuelle entière (cession du fonds de commerce, de la clientèle ou de l'ensemble de l'exploitation)</span></label>
+                <label><input type="radio" name="cession" data-k="cession" value="branche"><span><i class="ir-only">Branche complète d'activité (exploitation autonome)</i><i class="is-only">Fonds de commerce avec ses moyens d'exploitation et son personnel (branche complète d'activité)</i></span></label>
+                <label class="ir-only"><input type="radio" name="cession" data-k="cession" value="parts"><span>Cession de parts de société de personnes à l'IR (hors IS)</span></label>
+                <label><input type="radio" name="cession" data-k="cession" value="elements"><span><i>Éléments isolés<i class="is-only"> (fonds ou clientèle seuls, matériel, droit au bail)</i></i></span></label>
+              </div>
+              <p class="hint is-only">Pour une société à l'IS, l'exonération des plus-values du 238 quindecies n'est possible que si la société cède une <b>branche complète d'activité</b> : un ensemble d'éléments d'actif et de passif formant une exploitation autonome, personnel compris. La vente de l'ensemble du fonds avec ses moyens d'exploitation et son personnel peut en constituer une. La cession du seul fonds ou de la seule clientèle, du seul droit au bail ou du matériel n'en est pas une : choisissez alors « Éléments isolés », sans exonération (BOI-BIC-PVMV-40-20-50 § 110).</p>
+              <p class="hint ir-only">Entreprise individuelle : vente du fonds de commerce (ou de la clientèle) avec les éléments qui permettent de poursuivre l'activité. « Éléments isolés » : vente d'un ou plusieurs biens sans transmettre l'exploitation (un véhicule, un local, du matériel seul). Si le cédant conserve un élément nécessaire à l'exploitation (l'immeuble loué au repreneur, par exemple), l'analyse se fait au cas par cas : le simulateur ne la contrôle pas.</p>
+              <p class="hint ir-only">Les parts de sociétés soumises à l'IS (SAS, SA, SARL à l'IS, etc.) ne relèvent pas de ces régimes : elles suivent le régime des plus-values sur valeurs mobilières (art. 150-0 A et s., 150-0 D ter) ou, pour une société, le régime de l'IS. Choisissez « parts » uniquement pour une société de personnes à l'IR (SNC, SCP, société civile exploitante, EURL ou SARL de famille ayant opté pour l'IR…).</p>
+            </div>
+            <label class="sw" id="row-lien"><input type="checkbox" data-k="sansLien" id="sansLien"><span class="track"></span><span class="txt">Le cédant ne contrôle pas le repreneur<small>Pas plus de 50 % des droits de vote ou des bénéfices, aucune fonction de direction, à la cession et pendant 3 ans.</small></span></label>
+            <label class="sw" id="row-ja" hidden><input type="checkbox" data-k="jeuneAgri"><span class="track"></span><span class="txt">Repreneur jeune agriculteur ayant obtenu les aides à l'installation<small>Relève les plafonds agricoles du 151 septies (450 000 € / 550 000 €) et du 238 quindecies (700 000 € / 1 200 000 €).</small></span></label>
+            <label class="sw" id="row-pimmo" hidden><input type="checkbox" data-k="partsImmo"><span class="track"></span><span class="txt">L'actif de la société est principalement constitué d'immeubles non affectés à son exploitation<small>Les plus-values sur ces parts sont exclues du 151 septies A et du 238 quindecies.</small></span></label>
+          </div>
+        </div>
+
+        <div class="card ir-only" id="card-retraite">
+          <div class="sec-h"><span class="num"></span><div><div class="sec-t">Départ en retraite</div><div class="sec-s">Conditions propres au 151 septies A.</div></div></div>
+          <div class="stack">
+            <label class="sw"><input type="checkbox" data-k="retraite"><span class="track"></span><span class="txt">Le cédant cesse toute fonction et fait valoir ses droits à la retraite<small>Dans les 2 ans précédant ou suivant la cession.</small></span></label>
+            <label class="sw"><input type="checkbox" data-k="pme"><span class="track"></span><span class="txt">Moins de 250 salariés, et chiffre d'affaires inférieur à 50 M€ ou total de bilan inférieur à 43 M€<small>Pour une cession de parts : capital non détenu à 25 % ou plus par une entreprise qui dépasse ces seuils (art. 151 septies A I-6°).</small></span></label>
+          </div>
+        </div>
+
+        <div class="card" id="card-valeur">
+          <div class="sec-h"><span class="num"></span><div><div class="sec-t">Valeur transmise</div><div class="sec-s">Seuil du 238 quindecies. N'y saisissez pas l'immobilier : il est exclu de la valeur retenue et ses plus-values restent imposées au droit commun.</div></div></div>
+          <div class="stack">
+            <label class="fld"><span class="lbl">Prix des éléments non immobiliers, net des emprunts repris</span><span class="inp"><input data-k="vNonImmo" data-money inputmode="numeric"><span class="sfx">€</span></span><span class="hint">Fonds de commerce, clientèle, matériel, stocks, créances : prix stipulé dans l'acte, sans compter les emprunts repris par le repreneur. Cession de parts : ajoutez les parts transmises au cours des 5 années précédentes.</span></label>
+            <label class="fld"><span class="lbl">Emprunts repris et autres charges en capital (capital restant dû)</span><span class="inp"><input data-k="charges" data-money inputmode="numeric"><span class="sfx">€</span></span><span class="hint">Ajoutés au prix pour le seuil. Exemple : prix de 330 000 € et emprunt de 120 000 € repris par l'acquéreur, soit 450 000 € retenus. Seul le capital compte, et seulement la part rattachée aux éléments non immobiliers. Indemnités stipulées au profit du cédant (primes d'assurance payées à sa place, par exemple) : à ajouter ici. Laissez vide si vous encaissez le prix en totalité.</span></label>
+            <div class="retenue"><span>Valeur retenue pour le seuil</span><b id="vRetenue">0 €</b></div>
+          </div>
+        </div>
+
+        <div class="card is-only" id="card-soc">
+          <div class="sec-h"><span class="num"></span><div><div class="sec-t">Société cédante</div><div class="sec-s">Conditions propres aux sociétés à l'IS (art. 238 quindecies II-2-d).</div></div></div>
+          <div class="stack">
+            <label class="sw"><input type="checkbox" data-k="isPme"><span class="track"></span><span class="txt">Moins de 250 salariés, et chiffre d'affaires inférieur à 50 M€ ou total de bilan inférieur à 43 M€<small>Apprécié sur l'exercice de la cession.</small></span></label>
+            <label class="sw"><input type="checkbox" data-k="isCap"><span class="track"></span><span class="txt">Capital et droits de vote non détenus à 25 % ou plus par des entreprises qui ne sont pas des PME<small>De manière continue au cours de l'exercice. Les fonds de capital-risque et assimilés sont écartés sous conditions.</small></span></label>
+            <label class="sw"><input type="checkbox" data-k="isMinimis"><span class="track"></span><span class="txt">Plafond des aides de minimis respecté<small>L'exonération est une aide de minimis : 300 000 € sur 3 exercices glissants (règlement (UE) 2023/2831), toutes aides confondues.</small></span></label>
+          </div>
+        </div>
+
+        <div class="card is-only">
+          <div class="sec-h"><span class="num"></span><div><div class="sec-t">Plus-values et résultat de la société</div><div class="sec-s">À l'IS, court terme et long terme ne se distinguent pas pour un fonds de commerce : la plus-value est taxée comme le résultat.</div></div></div>
+          <div class="stack">
+            <label class="fld"><span class="lbl">Plus-values sur éléments non immobiliers</span><span class="inp"><input data-k="isPvNi" data-money inputmode="numeric"><span class="sfx">€</span></span><span class="hint">Fonds de commerce, clientèle, matériel, amortissements réintégrés compris, nettes de moins-values. Sans les profits sur stocks.</span></label>
+            <label class="fld" id="row-isPvIm"><span class="lbl">Plus-values sur immeubles et parts à prépondérance immobilière</span><span class="inp"><input data-k="isPvIm" data-money inputmode="numeric"><span class="sfx">€</span></span><span class="hint">Exclues du 238 quindecies : imposées à l'IS au droit commun.</span></label>
+            <label class="fld"><span class="lbl">Résultat fiscal de l'exercice, avant ces plus-values</span><span class="inp"><input data-k="isRes" data-money data-signed inputmode="text"><span class="sfx">€</span></span><span class="hint">Bénéfice, ou déficit précédé du signe moins.</span></label>
+            <label class="fld" id="row-isDef"><span class="lbl">Déficits antérieurs reportables</span><span class="inp"><input data-k="isDef" data-money inputmode="numeric"><span class="sfx">€</span></span><span class="hint">Imputables dans la limite de 1 000 000 € plus 50 % de la fraction du bénéfice au-delà (art. 209 I).</span></label>
+            <label class="sw" id="row-isReduit"><input type="checkbox" data-k="isReduit"><span class="track"></span><span class="txt">Taux réduit de 15 % jusqu'à 42 500 € de bénéfice<small>Chiffre d'affaires inférieur à 10 M€, capital entièrement libéré et détenu à 75 % au moins par des personnes physiques (art. 219 I-b). Sinon, taux normal de 25 %.</small></span></label>
+            <div id="blk-dist" class="stack"><div class="divider"></div>
+            <div class="grid2">
+              <label class="fld"><span class="lbl">Part du produit net distribuée aux associés</span><span class="inp"><input data-k="isDistrib" data-int inputmode="numeric"><span class="sfx">%</span></span></label>
+              <label class="fld"><span class="lbl">Prélèvement sur les distributions</span><span class="inp"><input data-k="isTauxDiv" data-dec inputmode="decimal"><span class="sfx">%</span></span></label>
+            </div>
+            <p class="hint">Facultatif. 31,4 % : prélèvement forfaitaire unique 2026 (12,8 % plus 18,6 % de prélèvements sociaux) pour des associés personnes physiques. Laissez 0 % pour ne chiffrer que l'IS de la société.</p></div>
+          </div>
+        </div>
+
+        <div class="card ir-only">
+          <div class="sec-h"><span class="num"></span><div><div class="sec-t">Plus-values de la cession</div><div class="sec-s">Court terme : en pratique la récupération des amortissements. Long terme : fonds, clientèle, immeubles détenus depuis plus de 2 ans.</div></div></div>
+          <div class="stack">
+            <div class="pvgrid">
+              <span class="h">Nature</span><span class="h">Court terme</span><span class="h">Long terme</span>
+              <div class="rowl">Non immobilier<small>Fonds, matériel, clientèle</small></div>
+              <span class="inp"><input data-k="pvNiCT" data-money inputmode="numeric" aria-label="Plus-value court terme non immobilière"><span class="sfx">€</span></span>
+              <span class="inp"><input data-k="pvNiLT" data-money inputmode="numeric" aria-label="Plus-value long terme non immobilière"><span class="sfx">€</span></span>
+              <div class="rowl imm-only">Immobilier<small>Long terme : détail ci-dessous</small></div>
+              <span class="inp imm-only"><input data-k="pvImCT" data-money inputmode="numeric" aria-label="Plus-value court terme immobilière"><span class="sfx">€</span></span>
+              <span class="inp ro imm-only"><input id="imLTsum" readonly tabindex="-1" aria-label="Plus-value long terme immobilière après abattement, calculée ci-dessous"><span class="sfx">€</span></span>
+              <div class="rowl">Moins-values<small>Compensées par nature</small></div>
+              <span class="inp"><input data-k="mvCT" data-money inputmode="numeric" aria-label="Moins-values court terme"><span class="sfx">€</span></span>
+              <span class="inp"><input data-k="mvLT" data-money inputmode="numeric" aria-label="Moins-values long terme"><span class="sfx">€</span></span>
+            </div>
+            <div id="blk-imm" class="stack imm-only"><div class="divider"></div>
+            <div>
+              <div class="lbl">Immeubles cédés : plus-values à long terme</div>
+              <p class="hint" style="margin-top:2px">151 septies B : 10 % d'abattement par année de détention révolue au-delà de la 5e, exonération totale après 15 ans. Il s'applique quels que soient les recettes et les autres régimes, et réduit aussi les prélèvements sociaux.</p>
+            </div>
+            <div class="acts" id="imms"></div>
+            <div><button type="button" class="btn ghost" id="addImm">+ Ajouter un immeuble</button></div></div>
+          </div>
+        </div>
+
+        <div class="card ir-only" id="card-social">
+          <div class="sec-h"><span class="num"></span><div><div class="sec-t">Cotisations sociales du dirigeant</div><div class="sec-s">Le court terme est un revenu d'activité : il supporte la CSG-CRDS d'activité et les cotisations des indépendants, au barème 2026.</div></div></div>
+          <div class="stack">
+            <label class="fld" id="row-statut"><span class="lbl">Régime social</span>
+              <select data-k="statutSocial">
+                <option value="ssi">Artisan ou commerçant (SSI) : cotisations et CSG-CRDS</option>
+                <option value="msa">Exploitant agricole (MSA) : cotisations et CSG-CRDS</option>
+                <option value="csg">Autre indépendant : CSG-CRDS seule</option>
+                <option value="aucune">Ne pas chiffrer</option>
+              </select>
+            </label>
+            <label class="fld" id="row-benef"><span class="lbl">Bénéfice de l'exercice de cession, avant plus-values et avant cotisations</span><span class="inp"><input data-k="benef" data-money inputmode="numeric"><span class="sfx">€</span></span><span class="hint">Le barème est progressif et plafonné : le coût social du court terme dépend de ce bénéfice courant (PASS 2026 : 48 060 €).</span></label>
+            <p class="hint" id="hint-soc">Les plus-values à court terme (éléments amortissables) restent dans l'assiette sociale même lorsqu'elles sont exonérées d'impôt (art. L136-3 et L131-6 du Code de la sécurité sociale).</p>
+          </div>
+        </div>
+
+        <div class="card ir-only">
+          <details class="hyp">
+            <summary>Hypothèses d'imposition</summary>
+            <div class="body stack">
+              <div class="grid2">
+                <label class="fld"><span class="lbl">Tranche marginale, court terme</span>
+                  <select data-k="tmi" data-int>
+                    <option value="0">0 %</option><option value="11">11 %</option><option value="30">30 %</option><option value="41">41 %</option><option value="45">45 %</option>
+                  </select>
+                </label>
+                <label class="fld"><span class="lbl">Taux sur le long terme</span><span class="inp"><input data-k="tauxLT" data-dec inputmode="decimal"><span class="sfx">%</span></span></label>
+              </div>
+              <label class="fld"><span class="lbl">Taux des prélèvements sociaux, long terme</span><span class="inp"><input data-k="tauxPS" data-dec inputmode="decimal"><span class="sfx">%</span></span></label>
+              <p class="hint">12,8 % : taux de l'article 39 quindecies (BOFiP ACTU-2018-00099). Prélèvements sociaux sur le long terme : 17,2 % jusqu'en 2024, 18,6 % (CSG 10,6 %) à compter de 2025 sur les revenus du patrimoine, plus-values professionnelles à long terme comprises. Ce taux 18,6 % provient de sources secondaires (hausse de CSG de la LFSS 2026) : à valider avant de chiffrer un dossier. Le taux est modifiable.</p>
+            </div>
+          </details>
+        </div>
+      </form>
+
+      <aside class="results" id="results" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <section id="view-detail" hidden>
+    <div class="intro">
+      <h1>Détail des calculs</h1>
+      <p id="detail-intro"></p>
+    </div>
+    <div class="dlayout">
+      <nav class="dnav" id="dnav" aria-label="Sections"></nav>
+      <div class="dcontent" id="dcontent"></div>
+    </div>
+  </section>
+</main>
+
+<button class="mini" id="mini" type="button" aria-label="Aller au résultat">
+  <span><span class="t" id="mini-t">Meilleur régime</span><br><span class="n" id="mini-n"></span></span>
+  <span class="a" id="mini-a"></span>
+</button>
+
+<script>
+/* Moteur de calcul : 151 septies, 151 septies A, 151 septies B, 238 quindecies (CGI)
+   Sources : art. 151 septies, 151 septies A, 151 septies B et 238 quindecies (Légifrance, versions en vigueur
+   relues le 22/10/2026), BOI-BIC-PVMV-40-10-10-20 / -30, BOI-BIC-PVMV-40-20-20-10 / -40 / -50, BOI-BIC-PVMV-40-20-50. */
+const Engine = (function () {
+  const SEUILS = {
+    a: { bas: 250000, haut: 350000, label: 'Ventes, hôtels, cafés, restaurants', short: 'Vente, hôtellerie, restauration' },
+    b: { bas: 90000, haut: 126000, label: 'Prestations de services, BNC, location meublée professionnelle, autres activités non agricoles', short: 'Services, BNC' },
+    c: { bas: 350000, haut: 450000, label: 'Activité agricole', short: 'Agricole' },
+    d: { bas: 450000, haut: 550000, label: 'Activité agricole, cession à un jeune agriculteur aidé', short: 'Agricole, jeune agriculteur' }
+  };
+  /* ---------- Cotisations des travailleurs indépendants non agricoles, barème 2026 ----------
+     Assiette : revenu avant cotisations, abattu de 26 % (plancher 1,76 % du PASS, plafond 130 % du PASS), CSS L131-6 et L136-3.
+     Taux : Urssaf / décret ; recoupés sur Weblex, Lefebvre Dalloz et lecoindesentrepreneurs.fr (PASS 2026 = 48 060 €). */
+  const PASS = 48060;
+  const MAL = [[0.2, 0], [0.4, 0.015], [0.6, 0.04], [1.1, 0.065], [2, 0.077], [3, 0.085]];
+  function rateMaladie(A) {
+    const x = A / PASS;
+    if (x <= MAL[0][0]) return 0;
+    if (x >= 3) return 0.085;
+    for (let i = 1; i < MAL.length; i++) {
+      if (x <= MAL[i][0]) { const a = MAL[i - 1], b = MAL[i]; return a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0]); }
+    }
+    return 0.085;
+  }
+  function socCalc(Bv, statut) {
+    const B = Math.max(0, num(Bv));
+    const abat = Math.min(Math.max(0.26 * B, 0.0176 * PASS), 1.3 * PASS);
+    const A = Math.max(0, B - abat);
+    const lines = [];
+    const L = (k, l, f, v) => { lines.push({ k, l, f, v }); return v; };
+    const csg = L('csg', 'CSG-CRDS', '9,7 % × assiette', 0.097 * A);
+    if (statut !== 'ssi') return { B, abat, A, lines, cotis: 0, csg, total: csg, ded: 0.068 * A };
+    const mal = A <= 3 * PASS ? A * rateMaladie(A) : 0.085 * 3 * PASS + 0.065 * (A - 3 * PASS);
+    L('mal', 'Maladie-maternité', A <= 3 * PASS ? 'taux progressif ' + (rateMaladie(A) * 100).toFixed(2).replace('.', ',') + ' % × assiette' : '8,5 % jusqu\'à 3 PASS puis 6,5 %', mal);
+    const ij = 0.005 * Math.min(Math.max(A, 0.4 * PASS), 5 * PASS);
+    L('ij', 'Indemnités journalières', '0,5 % (base minimale 40 % du PASS, plafond 5 PASS)', ij);
+    const rb = 0.1787 * Math.min(Math.max(A, 5409), PASS) + 0.0072 * Math.max(0, A - PASS);
+    L('rb', 'Retraite de base', '17,87 % jusqu\'à 1 PASS (base minimale 5 409 €), 0,72 % au-delà', rb);
+    const rc = 0.081 * Math.min(A, PASS) + 0.091 * Math.max(0, Math.min(A, 4 * PASS) - PASS);
+    L('rc', 'Retraite complémentaire', '8,1 % jusqu\'à 1 PASS, 9,1 % de 1 à 4 PASS', rc);
+    const id = 0.013 * Math.min(Math.max(A, 0.115 * PASS), PASS);
+    L('id', 'Invalidité-décès', '1,3 % jusqu\'à 1 PASS (base minimale 11,5 % du PASS)', id);
+    const x = A / PASS;
+    const tAF = x <= 1.1 ? 0 : x >= 1.4 ? 0.031 : 0.031 * (x - 1.1) / 0.3;
+    const af = A * tAF;
+    L('af', 'Allocations familiales', 'taux progressif de 0 à 3,1 % entre 110 % et 140 % du PASS', af);
+    const cotis = mal + ij + rb + rc + id + af;
+    return { B, abat, A, lines, cotis, csg, total: cotis + csg, ded: cotis + 0.068 * A };
+  }
+
+  /* ---------- Exploitant agricole (MSA), chef d'exploitation à titre exclusif ou principal, barème 2026 ----------
+     Source : « Barème des cotisations et contributions sociales des non-salariés agricoles pour 2026 » (MSA), document fourni par l'utilisateur.
+     Assiette : art. L136-4 CSS (renvoyé par L731-14 CRPM), abattue selon le III de L136-3 (26 %, plancher 1,76 % et plafond 130 % du PASS).
+     Les forfaits (IJ 250 €, ATEXA, VIVEA, FMSE, etc.) ne varient pas avec la plus-value : ils sont sans effet sur la variation calculée et ne sont pas repris. */
+  const SMIC_H = 12.02, SMIC600 = 600 * SMIC_H, SMIC1820 = 1820 * SMIC_H; /* 7 212 € et 21 876 € */
+  function rateRCC(A) {
+    const x = A / PASS;
+    if (x < 0.4) return 0.01 * x / 0.4;
+    if (x < 0.6) return 0.01 + 0.003 * (x - 0.4) / 0.2;
+    if (x < 1) return 0.013 + 0.005 * (x - 0.6) / 0.4;
+    if (x < 2) return 0.018 + 0.012 * (x - 1);
+    return 0.03;
+  }
+  function msaCalc(Bv) {
+    const B = Math.max(0, num(Bv));
+    const abat = Math.min(Math.max(0.26 * B, 0.0176 * PASS), 1.3 * PASS);
+    const A = Math.max(0, B - abat);
+    const lines = [];
+    const L = (k, l, f, v) => { lines.push({ k, l, f, v }); return v; };
+    const csg = L('csg', 'CSG-CRDS', '9,7 % × assiette', 0.097 * A);
+    const mal = A <= 3 * PASS ? A * rateMaladie(A) : 0.085 * 3 * PASS + 0.065 * (A - 3 * PASS);
+    L('mal', 'AMEXA (maladie-maternité)', A <= 3 * PASS ? 'taux progressif ' + (rateMaladie(A) * 100).toFixed(2).replace('.', ',') + ' % × assiette (0 sous 20 % du PASS)' : '8,5 % jusqu\'à 3 PASS puis 6,5 %', mal);
+    const inv = 0.011 * Math.max(A, 0.115 * PASS);
+    L('inv', 'Invalidité', '1,1 % (assiette minimale 11,5 % du PASS)', inv);
+    const rbp = 0.1715 * Math.min(Math.max(A, SMIC600), PASS);
+    L('rbp', 'Retraite de base plafonnée', '17,15 % jusqu\'à 1 PASS (assiette minimale 600 SMIC, soit 7 212 €)', rbp);
+    const rbd = 0.0072 * Math.max(A, SMIC600);
+    L('rbd', 'Retraite de base déplafonnée', '0,72 % (assiette minimale 600 SMIC)', rbd);
+    const x = A / PASS;
+    const tAF = x <= 1.1 ? 0 : x >= 1.4 ? 0.031 : 0.031 * (x - 1.1) / 0.3;
+    const pfa = A * tAF;
+    L('pfa', 'Prestations familiales', 'taux progressif de 0 à 3,1 % entre 110 % et 140 % du PASS', pfa);
+    const rco = 0.04 * Math.max(A, SMIC1820);
+    L('rco', 'Retraite complémentaire obligatoire', '4 % (assiette minimale 1 820 SMIC, soit 21 876 €)', rco);
+    const rcc = A * rateRCC(A);
+    L('rcc', 'RCO complémentaire', 'taux progressif ' + (rateRCC(A) * 100).toFixed(2).replace('.', ',') + ' % × assiette (de 0 à 3 %)', rcc);
+    const cotis = mal + inv + rbp + rbd + pfa + rco + rcc;
+    return { B, abat, A, lines, cotis, csg, total: cotis + csg, ded: cotis + 0.068 * A };
+  }
+
+  const num = (x) => { const n = Number(x); return isFinite(n) ? n : 0; };
+  const pos = (x) => Math.max(0, x);
+  const step = (l, f, v, t, ref, strong) => ({ l, f: f || '', v, t: t || 'eur', ref: ref || '', strong: !!strong });
+
+  /* ---------- Recettes moyennes (IV de l'art. 151 septies) ---------- */
+  function analyseRecettes(inp) {
+    const yr0 = num(inp.annee) || 2026;
+    const jaD = !!inp.jeuneAgri && yr0 >= 2025 && inp.mode === 'onereux' && ['ei', 'branche', 'parts'].includes(inp.cession);
+    const acts = inp.activites.map((a, i) => {
+      const cat = a.cat === 'c' && jaD ? 'd' : a.cat;
+      const s = SEUILS[cat];
+      const r1 = num(a.r1), r2 = num(a.r2);
+      return { i, cat, label: s.label, short: s.short, bas: s.bas, haut: s.haut, r1, r2, avg: (r1 + r2) / 2 };
+    });
+    const global = acts.reduce((s, a) => s + a.avg, 0);
+    const yr = num(inp.annee);
+    const steps = acts.map((a) =>
+      step('Recettes moyennes, ' + a.short, '(' + a.r1 + ' + ' + a.r2 + ') / 2', a.avg, 'eur', 'CGI art. 151 septies IV')
+    );
+    if (acts.length > 1) steps.push(step('Recettes globales, toutes activités', 'somme des moyennes', global, 'eur', 'CGI art. 151 septies IV', true));
+    return { acts, global, jaD, yr, steps, hasAgri: inp.activites.some((a) => a.cat === 'c') };
+  }
+
+  /* ---------- 151 septies ---------- */
+  function calc151(inp, rec) {
+    const conds = [], steps = [];
+    const anc5 = num(inp.anciennete) >= 5;
+    const anc = anc5 || !!inp.exprop;
+    conds.push({ ok: true, text: "Cédant imposé à l'impôt sur le revenu, activité exercée à titre professionnel", detail: 'Hypothèse du simulateur (cédant à l\'IR)', ref: 'CGI art. 151 septies I' });
+    conds.push({ ok: anc, text: 'Activité exercée depuis au moins 5 ans', detail: anc5 ? num(inp.anciennete) + ' an(s) saisi(s)' : inp.exprop ? 'Condition levée : plus-value consécutive à une expropriation ou à une indemnité d\'assurance' : num(inp.anciennete) + ' an(s) saisi(s)', ref: 'CGI art. 151 septies II et V ; BOI-BIC-PVMV-40-10-10-30 § 30' });
+
+    const acts = rec.acts, G = rec.global;
+    const maxBas = Math.max(...acts.map((a) => a.bas));
+    const maxHaut = Math.max(...acts.map((a) => a.haut));
+    const allBas = acts.every((a) => a.avg <= a.bas);
+    let taux = 0, statut = 'non';
+
+    acts.forEach((a) => {
+      steps.push(step('Seuils, ' + a.short, 'exonération totale ≤ ' + a.bas + ' € ; partielle jusqu\'à ' + a.haut + ' €', a.avg, 'eur', 'CGI art. 151 septies II-1° et 2°'));
+    });
+    steps.push(step('Recettes retenues', acts.length > 1 ? 'globales et par activité' : 'moyenne N-1 / N-2', G, 'eur', 'CGI art. 151 septies IV', true));
+
+    if (G <= maxBas && allBas) {
+      taux = 1; statut = 'total';
+      steps.push(step('Exonération totale', 'recettes ≤ plafond de chaque activité' + (acts.length > 1 ? ' et ≤ plus élevé des plafonds (' + maxBas + ' €)' : ''), 1, 'pct', 'CGI art. 151 septies II-1°', true));
+    } else if (G < maxHaut && acts.every((a) => a.avg < a.haut)) {
+      const k = acts.reduce((m, a) => (a.haut > m.haut ? a : m), acts[0]);
+      const cands = [];
+      const tk = (k.haut - G) / (k.haut - k.bas);
+      cands.push(tk);
+      steps.push(step('Taux sur l\'activité au plafond le plus élevé (' + k.short + ')', '(' + k.haut + ' − ' + Math.round(G) + ') / ' + (k.haut - k.bas), tk, 'pct', 'CGI art. 151 septies II-2°'));
+      acts.forEach((a) => {
+        if (a !== k) {
+          const ta = Math.min(1, (a.haut - a.avg) / (a.haut - a.bas));
+          cands.push(ta);
+          steps.push(step('Taux si seule l\'activité « ' + a.short + ' » était exercée', '(' + a.haut + ' − ' + Math.round(a.avg) + ') / ' + (a.haut - a.bas), ta, 'pct', 'BOI-BIC-PVMV-40-10-10-30 § 110'));
+        }
+      });
+      taux = Math.max(0, Math.min(1, ...cands));
+      statut = taux >= 1 ? 'total' : taux > 0 ? 'partiel' : 'non';
+      steps.push(step('Taux d\'exonération retenu', cands.length > 1 ? 'le moins élevé des taux' : 'rapport (plafond haut − recettes) / amplitude', taux, 'pct', 'CGI art. 151 septies II-2°', true));
+    } else {
+      steps.push(step('Recettes au-dessus des plafonds', 'aucune exonération', 0, 'pct', 'CGI art. 151 septies II-2°', true));
+    }
+    conds.push({
+      ok: taux > 0,
+      text: 'Recettes moyennes sous les plafonds',
+      detail: statut === 'total' ? 'Exonération totale' : statut === 'partiel' ? 'Exonération partielle de ' + (taux * 100).toFixed(2).replace('.', ',') + ' %' : 'Recettes ' + Math.round(G) + ' € : au-dessus des plafonds',
+      ref: 'CGI art. 151 septies II'
+    });
+    const eligible = anc && taux > 0;
+    return {
+      id: 'r151', nom: '151 septies', eligible, taux: eligible ? taux : 0, tauxBrut: taux, statut: eligible ? statut : 'non',
+      conds, steps, portee: 'Impôt sur le revenu et prélèvements sociaux, court et long terme. S\'applique à toute cession d\'éléments, immobilier d\'exploitation compris (hors terrains à bâtir et terres ou bâtiments agricoles à régime particulier).'
+    };
+  }
+
+  /* ---------- 238 quindecies ---------- */
+  function calc238(inp, rec) {
+    const conds = [], steps = [];
+    const anc = num(inp.anciennete) >= 5;
+    const ja = !!inp.jeuneAgri && rec.hasAgri && (num(inp.annee) || 2026) >= 2025;
+    const low = ja ? 700000 : 500000, high = ja ? 1200000 : 1000000;
+    const V = num(inp.vNonImmo) + num(inp.charges);
+    const natureOk = inp.cession !== 'elements';
+    const lienOk = inp.mode === 'gratuit' ? true : !!inp.sansLien;
+    const immoOk = !(inp.cession === 'parts' && inp.partsImmo);
+
+    conds.push({ ok: natureOk, text: 'Transmission d\'une entreprise individuelle, d\'une branche complète ou de l\'intégralité des parts d\'une société de personnes à l\'IR', detail: natureOk ? '' : 'Des éléments isolés ne sont pas éligibles', ref: 'BOI-BIC-PVMV-40-20-50 § 50 et 90' });
+    conds.push({ ok: anc, text: 'Activité exercée depuis au moins 5 ans', detail: num(inp.anciennete) + ' an(s) saisi(s)', ref: 'BOI-BIC-PVMV-40-20-50 § 210' });
+    conds.push({ ok: lienOk, text: 'Absence de lien de contrôle entre cédant et repreneur (à la cession et pendant 3 ans)', detail: inp.mode === 'gratuit' ? 'Non exigée pour une transmission à titre gratuit' : inp.cession === 'parts' ? 'Cession de parts : le cédant ne doit détenir aucun droit dans l\'entreprise cessionnaire (III, dernier alinéa)' : '', ref: 'CGI art. 238 quindecies II-3 et IV ; BOI-BIC-PVMV-40-20-50 § 260-270' });
+    conds.push({ ok: immoOk, text: 'Plus-values sur parts non exclues (société à prépondérance immobilière)', detail: immoOk ? '' : 'Les plus-values sur ces parts sont exclues', ref: 'CGI art. 238 quindecies V' });
+
+    steps.push(step('Éléments non immobiliers transmis', 'prix ou valeur vénale, stocks et créances compris', num(inp.vNonImmo), 'eur', 'BOI-BIC-PVMV-40-20-50 § 295'));
+    steps.push(step('Charges en capital et indemnités stipulées au profit du cédant', 'ajoutées au prix', num(inp.charges), 'eur', 'BOI-BIC-PVMV-40-20-50 § 295'));
+    steps.push(step('Valeur retenue pour les seuils', 'hors immeubles bâtis ou non bâtis et parts à prépondérance immobilière', V, 'eur', 'BOI-BIC-PVMV-40-20-50 § 293', true));
+    steps.push(step('Plafonds applicables', ja ? 'jeune agriculteur aidé : 700 000 € / 1 200 000 €' : 'général : 500 000 € / 1 000 000 €', high, 'eur', 'BOI-BIC-PVMV-40-20-50 § 290 et 285'));
+
+    let taux = 0, statut = 'non';
+    if (V <= low) {
+      taux = 1; statut = 'total';
+      steps.push(step('Exonération totale', 'valeur ≤ ' + low + ' €', 1, 'pct', 'BOI-BIC-PVMV-40-20-50 § 290', true));
+    } else if (V < high) {
+      taux = (high - V) / (high - low);
+      statut = 'partiel';
+      steps.push(step('Taux d\'exonération', '(' + high + ' − ' + V + ') / ' + (high - low), taux, 'pct', 'BOI-BIC-PVMV-40-20-50 § 360', true));
+    } else {
+      steps.push(step('Valeur au-dessus du plafond', 'aucune exonération', 0, 'pct', 'BOI-BIC-PVMV-40-20-50 § 290', true));
+    }
+    conds.push({
+      ok: taux > 0,
+      text: 'Valeur transmise (hors immobilier) sous les plafonds',
+      detail: statut === 'total' ? 'Exonération totale' : statut === 'partiel' ? 'Exonération partielle de ' + (taux * 100).toFixed(2).replace('.', ',') + ' %' : 'Valeur ' + Math.round(V) + ' € : au-dessus de ' + high + ' €',
+      ref: 'CGI art. 238 quindecies'
+    });
+    const eligible = natureOk && anc && lienOk && immoOk && taux > 0;
+    return {
+      id: 'r238', nom: '238 quindecies', eligible, taux: eligible ? taux : 0, tauxBrut: taux, statut: eligible ? statut : 'non', V, low, high,
+      conds, steps, portee: 'Impôt sur le revenu et prélèvements sociaux, court et long terme, sur les seuls éléments non immobiliers. L\'immobilier reste imposé au droit commun. Exclusif du 151 septies. Option sur papier libre.'
+    };
+  }
+
+  /* ---------- 151 septies A ---------- */
+  function calcA(inp) {
+    const conds = [], steps = [];
+    const anc = num(inp.anciennete) >= 5;
+    const onereux = inp.mode === 'onereux';
+    const natureOk = inp.cession === 'ei' || inp.cession === 'parts';
+    const immoOk = !(inp.cession === 'parts' && inp.partsImmo);
+    conds.push({ ok: onereux, text: 'Cession à titre onéreux', detail: onereux ? '' : 'Donation ou succession non éligible', ref: 'CGI art. 151 septies A I-2° ; BOI-BIC-PVMV-40-20-20-10 § 310' });
+    conds.push({ ok: natureOk, text: 'Cession de l\'entreprise individuelle ou de l\'intégralité des parts d\'une société de personnes à l\'IR', detail: natureOk ? '' : inp.cession === 'branche' ? 'Branche complète non visée par le I-2°, sauf cession d\'activité par une société de personnes dissoute en même temps, pour la plus-value de l\'associé (I ter)' : 'Des éléments isolés ne sont pas éligibles', ref: 'CGI art. 151 septies A I-2° et I ter' });
+    conds.push({ ok: anc, text: 'Activité exercée depuis au moins 5 ans', detail: num(inp.anciennete) + ' an(s) saisi(s)', ref: 'CGI art. 151 septies A I-1° ; BOI-BIC-PVMV-40-20-20-10 § 40' });
+    conds.push({ ok: !!inp.retraite, text: 'Cessation de toute fonction et départ en retraite dans les 2 ans avant ou après la cession', detail: '', ref: 'CGI art. 151 septies A I-3°' });
+    conds.push({ ok: !!inp.sansLien, text: 'Cédant sans contrôle du repreneur (pas plus de 50 % des droits, pendant 3 ans)', detail: '', ref: 'CGI art. 151 septies A I-4° et II' });
+    conds.push({ ok: !!inp.pme, text: 'Moins de 250 salariés et CA < 50 M€ ou total de bilan < 43 M€' + (inp.cession === 'parts' ? ', capital non détenu à 25 % ou plus par une entreprise qui ne répond pas à ces seuils' : ''), detail: '', ref: 'CGI art. 151 septies A I-5° et I-6°' });
+    conds.push({ ok: immoOk, text: 'Plus-values sur parts non exclues (société à prépondérance immobilière)', detail: immoOk ? '' : 'Les plus-values sur ces parts sont exclues', ref: 'CGI art. 151 septies A III-2°' });
+    const eligible = conds.every((c) => c.ok);
+    steps.push(step('Éligibilité', eligible ? 'toutes les conditions sont réunies' : 'au moins une condition n\'est pas remplie', eligible ? 'Oui' : 'Non', 'text', 'CGI art. 151 septies A I', true));
+    steps.push(step('Portée', 'exonération de 100 % des plus-values non immobilières (court et long terme) à l\'impôt sur le revenu', 1, 'pct', 'CGI art. 151 septies A I et III', false));
+    steps.push(step('Prélèvements sociaux', 'sans incidence sur les prélèvements sociaux assis sur les plus-values à long terme ; les plus-values à court terme exonérées restent dans l\'assiette de la CSG-CRDS d\'activité et des cotisations (art. L136-3 CSS)', 'maintenus', 'text', 'BOI-BIC-PVMV-40-20-20-40 § 230 ; BOI-BIC-PVMV-40-20-20-50 § 20', false));
+    return {
+      id: 'rA', nom: '151 septies A', eligible, taux: eligible ? 1 : 0, statut: eligible ? 'total' : 'non', conds, steps,
+      portee: 'Impôt sur le revenu uniquement : les prélèvements sociaux restent dus sur les plus-values à long terme, et le court terme exonéré reste dans l\'assiette des cotisations et de la CSG-CRDS d\'activité (BOI-BIC-PVMV-40-20-20-40 § 230). Hors immobilier.'
+    };
+  }
+
+  /* ---------- 151 septies B : abattement pour durée de détention ---------- */
+  const IMM_LABELS = {
+    exploit: 'Immeuble affecté à l\'exploitation',
+    parts: 'Parts de société à prépondérance immobilière d\'exploitation',
+    autre: 'Exclu des exonérations : terrain à bâtir, immeuble hors exploitation'
+  };
+  function calcB(inp) {
+    const src = Array.isArray(inp.immeubles) ? inp.immeubles : (num(inp.pvImLT) ? [{ nature: 'exploit', pv: num(inp.pvImLT), annees: 0 }] : []);
+    const lines = src.map((l, i) => {
+      const pv = pos(num(l.pv)), an = Math.max(0, Math.floor(num(l.annees)));
+      const elig = l.nature === 'exploit' || l.nature === 'parts';
+      const taux = elig ? Math.min(1, Math.max(0, (an - 5) * 0.1)) : 0;
+      return { i, nature: l.nature, label: IMM_LABELS[l.nature] || IMM_LABELS.autre, pv, annees: an, elig, taux, abat: pv * taux, reste: pv - pv * taux };
+    });
+    const totalPV = lines.reduce((s, l) => s + l.pv, 0);
+    const elPV = lines.reduce((s, l) => s + (l.elig ? l.pv : 0), 0);
+    const exclPV = totalPV - elPV;
+    const totalAbat = lines.reduce((s, l) => s + l.abat, 0);
+    const imLTapres = elPV - totalAbat;
+    const steps = [];
+    lines.forEach((l) => {
+      if (!l.elig) steps.push(step(l.label + ' (ligne ' + (l.i + 1) + ')', 'non éligible : aucun abattement', 0, 'eur', 'CGI art. 151 septies B II-2° ; BOI-BIC-PVMV-20-40-30 § 260'));
+      else steps.push(step(l.label + ' (ligne ' + (l.i + 1) + ')', '10 % × (' + l.annees + ' − 5) = ' + pct100(l.taux) + ' de ' + l.pv + ' €', l.abat, 'eur', 'CGI art. 151 septies B I ; BOI-BIC-PVMV-20-40-30 § 300 et 380'));
+    });
+    steps.push(step('Plus-values à long terme immobilières avant abattement', 'somme des lignes', totalPV, 'eur', '', false));
+    steps.push(step('Abattement total', '10 % par année de détention révolue au-delà de la 5e, exonération totale après 15 ans', totalAbat, 'eur', 'BOI-BIC-PVMV-20-40-30 § 300', false));
+    steps.push(step('Plus-values à long terme immobilières retenues', 'avant les autres régimes, sans compensation avec les moins-values', imLTapres, 'eur', 'BOI-BIC-PVMV-20-40-30 § 290', true));
+    if (exclPV > 0) steps.push(step('Plus-values hors champ de tous les régimes d\'exonération', 'terrain à bâtir ou immeuble hors exploitation : imposées en totalité', exclPV, 'eur', 'CGI art. 151 septies II ; 151 septies B II-2°', false));
+    const conds = [
+      { ok: true, text: 'Cédant imposé à l\'impôt sur le revenu (entreprise individuelle ou société de personnes)', detail: 'Hypothèse du simulateur', ref: 'BOI-BIC-PVMV-20-40-30 § 20' },
+      { ok: lines.some((l) => l.elig), text: 'Immeubles affectés à l\'exploitation, ou parts de sociétés à prépondérance immobilière d\'exploitation', detail: lines.length ? '' : 'Aucun immeuble saisi', ref: 'CGI art. 151 septies B I ; BOI-BIC-PVMV-20-40-30 § 130' },
+      { ok: lines.some((l) => l.elig && l.annees > 5), text: 'Plus de 5 années de détention révolues', detail: '', ref: 'BOI-BIC-PVMV-20-40-30 § 300 et 380' }
+    ];
+    const eligible = totalAbat > 0;
+    return {
+      id: 'rB', nom: '151 septies B', eligible, taux: elPV > 0 ? totalAbat / elPV : 0, statut: eligible ? 'total' : 'non',
+      lines, totalPV, elPV, exclPV, totalAbat, imLTapres, conds, steps,
+      portee: 'Abattement de 10 % par année de détention au-delà de la 5e sur les plus-values à long terme d\'immeubles d\'exploitation, exonération totale après 15 ans. Sans plafond de recettes, cumulable avec les autres régimes et appliqué en premier.'
+    };
+  }
+  const pct100 = (x) => (Math.round(x * 10000) / 100).toString().replace('.', ',') + ' %';
+
+  /* ---------- Scénarios chiffrés ---------- */
+  function buildScenario(inp, def, r151, r238, B, opts) {
+    opts = opts || {};
+    const niCT = num(inp.pvNiCT), niLT = num(inp.pvNiLT), imCT = num(inp.pvImCT);
+    const imLT = opts.noB ? B.elPV : B.imLTapres;
+    const ex = B.exclPV || 0; /* long terme hors champ de tous les régimes (terrain à bâtir, immeuble hors exploitation) */
+    const splitMV = (x) => (x >= 0 ? { exo: x, ex } : { exo: 0, ex: pos(ex + x) });
+    const mvCT = num(inp.mvCT), mvLT = num(inp.mvLT);
+    const st = [];
+    const add = (l, f, v, t, ref, strong) => st.push(step(l, f, v, t, ref, strong));
+    const t151 = def.use151 ? r151.taux : null;
+    const t238 = def.use238 ? r238.taux : null;
+    let irCT, irLT, psBase, psLT, notes = [];
+    if (!opts.noB && B.totalAbat > 0) add('Abattement 151 septies B sur le long terme immobilier', 'appliqué en premier : ' + B.totalPV + ' € − ' + Math.round(B.totalAbat) + ' € = ' + Math.round(B.imLTapres) + ' €', B.totalAbat, 'eur', 'BOI-BIC-PVMV-40-20-20-50 § 10');
+    const brutNet = niCT + niLT + imCT + imLT + ex - mvCT - mvLT;
+
+    if (!def.useA) {
+      const netCT = niCT + imCT - mvCT;
+      if (t238 === null) {
+        if (t151 !== null) {
+          const sp = splitMV(niLT + imLT - mvLT);
+          add('Plus-value nette à court terme', 'non immobilier + immobilier − moins-values', netCT, 'eur', 'BOI-BIC-PVMV-40-10-10-30 § 1');
+          add('Plus-value nette à long terme exonérable', 'non immobilier + immobilier − moins-values', sp.exo, 'eur', 'BOI-BIC-PVMV-40-10-10-30 § 1');
+          if (ex > 0) add('Long terme hors champ du 151 septies', 'terrain à bâtir ou immeuble hors exploitation : imposé en totalité', sp.ex, 'eur', 'CGI art. 151 septies II ; BOI-BIC-PVMV-40-10-10-30 § 20');
+          add('Taux d\'exonération 151 septies', 'appliqué à chaque plus-value nette', t151, 'pct', 'CGI art. 151 septies II');
+          add('Court terme exonéré', 'net × taux', pos(netCT) * t151, 'eur', '');
+          add('Long terme exonéré', 'net × taux', pos(sp.exo) * t151, 'eur', '');
+          irCT = pos(netCT) * (1 - t151); irLT = pos(sp.exo) * (1 - t151) + sp.ex;
+        } else {
+          const netLT = niLT + imLT + ex - mvLT;
+          add('Plus-value nette à court terme', 'non immobilier + immobilier − moins-values', netCT, 'eur', 'BOI-BIC-PVMV-40-10-10-30 § 1');
+          add('Plus-value nette à long terme', 'non immobilier + immobilier − moins-values', netLT, 'eur', 'BOI-BIC-PVMV-40-10-10-30 § 1');
+          irCT = pos(netCT); irLT = pos(netLT);
+        }
+        psBase = irCT + irLT; psLT = irLT;
+      } else {
+        add('Taux d\'exonération 238 quindecies', 'appliqué aux plus-values non immobilières', t238, 'pct', 'BOI-BIC-PVMV-40-20-50 § 360');
+        add('Court terme non immobilier exonéré', niCT + ' × taux', niCT * t238, 'eur', '');
+        add('Long terme non immobilier exonéré', niLT + ' × taux', niLT * t238, 'eur', '');
+        add('Immobilier : imposé au droit commun', 'court terme ' + imCT + ' € ; long terme ' + (imLT + ex) + ' €', imCT + imLT + ex, 'eur', 'CGI art. 238 quindecies V');
+        const tCT = niCT * (1 - t238) + imCT - mvCT, tLT = niLT * (1 - t238) + imLT + ex - mvLT;
+        add('Court terme imposable', 'part non exonérée + immobilier − moins-values', tCT, 'eur', 'BOI-BIC-PVMV-40-20-20-50 § 20');
+        add('Long terme imposable', 'part non exonérée + immobilier − moins-values', tLT, 'eur', 'BOI-BIC-PVMV-40-20-20-50 § 20');
+        irCT = pos(tCT); irLT = pos(tLT); psBase = irCT + irLT; psLT = irLT;
+      }
+    } else {
+      add('Non immobilier : exonéré d\'impôt sur le revenu', 'court terme ' + niCT + ' € + long terme ' + niLT + ' €', niCT + niLT, 'eur', 'CGI art. 151 septies A I');
+      const bCT = imCT - mvCT;
+      const spA = splitMV(imLT - mvLT);
+      const bLT = (t151 !== null) ? spA.exo : imLT + ex - mvLT;
+      add('Court terme restant imposable', 'immobilier − moins-values à court terme', bCT, 'eur', 'BOI-BIC-PVMV-40-20-20-50 § 20');
+      add('Long terme restant imposable', 'immobilier − moins-values à long terme', bLT, 'eur', 'BOI-BIC-PVMV-40-20-20-50 § 20');
+      const psAdd = niLT;
+      add('Long terme non immobilier maintenu dans l\'assiette des prélèvements sociaux', 'plus-value à long terme exonérée par le 151 septies A', psAdd, 'eur', 'BOI-BIC-PVMV-40-20-20-50 § 20');
+      if (t151 !== null) {
+        add('Taux d\'exonération 151 septies', 'appliqué à l\'assiette restante (impôt et prélèvements sociaux)', t151, 'pct', 'BOI-BIC-PVMV-40-10-10-30 § 310');
+        irCT = pos(bCT) * (1 - t151); irLT = pos(bLT) * (1 - t151) + spA.ex;
+        psBase = (pos(bCT) + pos(bLT) + psAdd) * (1 - t151) + spA.ex;
+        psLT = (pos(bLT) + psAdd) * (1 - t151) + spA.ex;
+        add('Assiette des prélèvements sociaux', '(court terme + long terme + long terme non immobilier) × (1 − taux)', psBase, 'eur', 'BOI-BIC-PVMV-40-10-10-30 § 310', true);
+      } else if (t238 !== null) {
+        add('Taux d\'exonération 238 quindecies', 'appliqué aux prélèvements sociaux sur le long terme non immobilier', t238, 'pct', 'BOI-BIC-PVMV-40-20-20-50 § 20');
+        irCT = pos(bCT); irLT = pos(bLT);
+        psBase = irCT + irLT + psAdd * (1 - t238); psLT = irLT + psAdd * (1 - t238);
+        add('Assiette des prélèvements sociaux', 'court terme + long terme + long terme non immobilier × (1 − taux)', psBase, 'eur', 'BOI-BIC-PVMV-40-20-20-50 § 20', true);
+      } else {
+        irCT = pos(bCT); irLT = pos(bLT);
+        psBase = irCT + irLT + psAdd; psLT = irLT + psAdd;
+        add('Assiette des prélèvements sociaux', 'court terme + long terme + long terme non immobilier', psBase, 'eur', 'BOI-BIC-PVMV-40-20-20-50 § 20', true);
+      }
+    }
+    if (inp.mvCT && (def.useA || t238 !== null) && imCT + niCT < mvCT) notes.push('Moins-value à court terme supérieure aux plus-values à court terme imposables : l\'excédent est déductible du résultat.');
+    if (ex > 0 && t151 !== null) notes.push('Plus-value de ' + Math.round(ex) + ' € sur terrain à bâtir ou immeuble hors exploitation : exclue du 151 septies, imposée en totalité.');
+    if (inp.mvLT && imLT + niLT < mvLT) notes.push('Moins-value à long terme supérieure aux plus-values à long terme : l\'excédent est imputable sur les 10 exercices suivants.');
+
+    const tmi = num(inp.tmi) / 100, tLTr = num(inp.tauxLT) / 100, tPS = num(inp.tauxPS) / 100;
+    const irTax = irCT * tmi + irLT * tLTr;
+    const psTax = psLT * tPS;
+    add('Impôt sur le revenu estimé', 'court terme × ' + num(inp.tmi) + ' % + long terme × ' + num(inp.tauxLT) + ' %', irTax, 'eur', 'CGI art. 39 quindecies', false);
+    add('Prélèvements sociaux sur le long terme (revenus du patrimoine)', 'assiette long terme × ' + num(inp.tauxPS) + ' %', psTax, 'eur', 'BOI-BIC-PVMV-40-20-20-40 § 230', false);
+
+    /* Court terme : revenu d'activité, CSG-CRDS d'activité et cotisations des indépendants (art. L136-3 et L131-6 CSS) */
+    const statut = ['csg', 'aucune', 'msa'].includes(inp.statutSocial) ? inp.statutSocial : 'ssi';
+    const isMsa = statut === 'msa';
+    const Bc = num(inp.benef);
+    /* Non agricole : le court terme, même exonéré d'impôt, reste dans l'assiette sociale (CSS L136-3 et L131-6).
+       Agricole : L136-4 I-A exclut les plus-values à long terme (3°) et les plus-values à court terme exonérées d'impôt par les articles 151 septies et 238 quindecies.
+       Le 151 septies A n'est pas visé par cette exclusion : sa part exonérée reste dans l'assiette. */
+    const inclExo = !isMsa;
+    let exoCT = 0;
+    if (isMsa) {
+      if (!def.useA) {
+        if (t238 !== null) exoCT = niCT * t238;
+        else if (t151 !== null) exoCT = pos(niCT + imCT - mvCT) * t151;
+      } else if (t151 !== null) exoCT = pos(imCT - mvCT) * t151;
+    }
+    const ctSoc = niCT + imCT - mvCT - exoCT;
+    let socTax = 0, cotisTax = 0, csgTax = 0, dedSave = 0, s0 = null, s1 = null;
+    if (statut !== 'aucune') {
+      const calc = isMsa ? msaCalc : (b) => socCalc(b, statut);
+      s0 = calc(Bc); s1 = calc(Bc + ctSoc);
+      cotisTax = s1.cotis - s0.cotis; csgTax = s1.csg - s0.csg; socTax = cotisTax + csgTax;
+      dedSave = (cotisTax + 0.068 * (s1.A - s0.A)) * tmi;
+      if (isMsa) add('Assiette sociale : plus-values à court terme', 'court terme net − part exonérée par le 151 septies ou le 238 quindecies (' + Math.round(exoCT) + ' €) ; long terme exclu', ctSoc, 'eur', 'CSS L136-4 I-A (3°) ; CRPM L731-14', false);
+      else add('Assiette sociale : plus-values à court terme', 'court terme net, exonérations comprises (L136-3 CSS)', ctSoc, 'eur', 'CSS L136-3 et L131-6 ; BOI-BIC-PVMV-40-20-20-40 § 230 (151 septies A) ; Agaura (238 quindecies)', false);
+      if (statut === 'ssi') add('Cotisations des indépendants supplémentaires', 'barème 2026 sur (' + Math.round(Bc) + ' + court terme) moins barème sur ' + Math.round(Bc), cotisTax, 'eur', 'CSS L131-6 ; barème 2026', false);
+      if (isMsa) add('Cotisations MSA supplémentaires', 'barème MSA 2026 sur (' + Math.round(Bc) + ' + court terme) moins barème sur ' + Math.round(Bc), cotisTax, 'eur', 'CRPM L731-14 ; barème MSA 2026', false);
+      add('CSG-CRDS d\'activité supplémentaire', '9,7 % × variation de l\'assiette abattue de 26 %', csgTax, 'eur', isMsa ? 'CSS L136-4' : 'CSS L136-3', false);
+      add('Économie d\'impôt : cotisations et CSG déductibles', '(cotisations + 6,8 % de l\'assiette) × ' + num(inp.tmi) + ' %', -dedSave, 'eur', 'CGI art. 154 bis et 154 quinquies II', false);
+    }
+    const total = irTax + psTax + socTax - dedSave;
+    add('Total estimé', 'impôt + prélèvements sur le long terme + cotisations et CSG-CRDS du court terme − économie d\'impôt', total, 'eur', '', true);
+
+    return {
+      id: def.id, label: def.label, regimes: def.regimes, ok: def.ok, reason: def.reason || '',
+      irCT, irLT, psBase, psLT, irTax, psTax, socTax, cotisTax, csgTax, dedSave, psTotal: psTax + socTax, soc: { statut, Bc, ctSoc, s0, s1, inclExo }, total, steps: st, notes,
+      baseIR: irCT + irLT, brutNet, def, bAbat: opts.noB ? 0 : B.totalAbat
+    };
+  }
+
+  function analyse(inp) {
+    const rec = analyseRecettes(inp);
+    const r151 = calc151(inp, rec);
+    const r238 = calc238(inp, rec);
+    const rA = calcA(inp);
+    const rB = calcB(inp);
+
+    const failing = (r) => r.conds.filter((c) => !c.ok).map((c) => c.text);
+    const defs = [
+      { id: 'none', label: rB.eligible ? 'Droit commun, avec abattement 151 septies B' : 'Droit commun', regimes: 0, ok: true },
+      { id: 's151', label: '151 septies', regimes: 1, use151: true, ok: r151.eligible, reason: failing(r151) },
+      { id: 's238', label: '238 quindecies', regimes: 1, use238: true, ok: r238.eligible, reason: failing(r238) },
+      { id: 'sA', label: '151 septies A', regimes: 1, useA: true, ok: rA.eligible, reason: failing(rA) },
+      { id: 'sA238', label: '151 septies A + 238 quindecies', regimes: 2, useA: true, use238: true, ok: rA.eligible && r238.eligible, reason: failing(rA).concat(failing(r238)) },
+      { id: 'sA151', label: '151 septies A + 151 septies', regimes: 2, useA: true, use151: true, ok: rA.eligible && r151.eligible, reason: failing(rA).concat(failing(r151)) }
+    ];
+    const scenarios = defs.map((d) => buildScenario(inp, d, r151, r238, rB));
+    const base = scenarios[0];
+    const applicable = scenarios.filter((s) => s.ok);
+    const ranked = applicable.slice().sort((x, y) => x.total - y.total || x.regimes - y.regimes || x.psBase - y.psBase);
+    const best = ranked[0];
+    const notApplicable = scenarios.filter((s) => !s.ok);
+    const bestNoB = rB.eligible ? buildScenario(inp, best.def, r151, r238, rB, { noB: true }) : null;
+    const savingB = bestNoB ? bestNoB.total - best.total : 0;
+
+    const warnings = [];
+    const sumPV = num(inp.pvNiCT) + num(inp.pvNiLT) + num(inp.pvImCT) + rB.totalPV;
+    if (sumPV <= 0) warnings.push({ lvl: 'warn', t: 'Aucune plus-value saisie : renseignez les plus-values de la cession pour obtenir un chiffrage.' });
+    if (r151.eligible && r151.taux === 1) warnings.push({ lvl: 'info', t: 'Le 151 septies exonère déjà la totalité : cumuler le 151 septies A ou le 238 quindecies n\'apporte rien (BOI-BIC-PVMV-40-20-20-50 § 10).' });
+    if (r238.eligible && r151.eligible) warnings.push({ lvl: 'info', t: 'Le 238 quindecies est exclusif du 151 septies : le simulateur compare les deux, sans les cumuler.' });
+    if (rA.eligible) warnings.push({ lvl: 'info', t: 'Le 151 septies A n\'exonère pas des prélèvements sociaux sur les plus-values à long terme, ni de la CSG-CRDS et des cotisations sur le court terme.' });
+    if (r238.eligible) warnings.push({ lvl: 'info', t: 'Le 238 quindecies est optionnel : l\'option se fait sur papier libre lors du dépôt de la déclaration de cession.' });
+    if (rec.acts.some((a) => a.r1 === 0 && a.r2 === 0)) warnings.push({ lvl: 'warn', t: 'Recettes à zéro sur une activité : vérifiez la saisie. Pour une activité de moins de 2 ans, les recettes sont ramenées à 12 mois (BOI-BIC-PVMV-40-10-10-20 § 190).' });
+    const yrA = num(inp.annee) || 2026;
+    if (inp.jeuneAgri && rec.hasAgri && yrA < 2025) warnings.push({ lvl: 'warn', t: 'Les plafonds majorés « jeune agriculteur » (151 septies d, 238 quindecies VII bis) ne valent que pour les cessions des exercices ouverts à compter du 1er janvier 2025 : ils sont ignorés pour ' + yrA + '.' });
+    if (yrA < 2023 && rec.hasAgri) warnings.push({ lvl: 'warn', t: 'Grille agricole du 151 septies (350 000 € / 450 000 €) applicable aux cessions à compter du 1er janvier 2023 : pour ' + yrA + ', vérifiez les seuils applicables.' });
+    if (inp.exprop) warnings.push({ lvl: 'info', t: 'Expropriation ou sinistre : la condition de 5 ans est levée pour le 151 septies, mais seule la plus-value directement consécutive à l\'événement est exonérée ; les autres plus-values restent imposables (BOI-BIC-PVMV-40-10-10-30 § 30).' });
+    if (r238.eligible || (inp.cession !== 'elements')) warnings.push({ lvl: 'muted', t: 'Valeur retenue pour le 238 quindecies : les stocks et les créances comptent dans le prix, mais les profits sur stocks restent imposés au droit commun (BOI-BIC-PVMV-40-20-50 § 295 et 370).' });
+    if (inp.cession === 'parts') warnings.push({ lvl: 'muted', t: 'Cession de parts : les seuils du 238 quindecies tiennent aussi compte des parts transmises au cours des 5 années précédentes (CGI art. 238 quindecies III ; BOI-BIC-PVMV-40-20-50 § 350).' });
+    if (inp.mode === 'gratuit') warnings.push({ lvl: 'info', t: 'Transmission à titre gratuit : vérifiez le report d\'imposition de l\'article 41 du CGI, non modélisé ici.' });
+    if (rB.eligible) warnings.push({ lvl: 'info', t: 'Le 151 septies B s\'applique quels que soient les recettes et les autres régimes : il est appliqué en premier, sur le long terme immobilier d\'exploitation, et réduit aussi l\'assiette des prélèvements sociaux.' });
+    rB.lines.forEach((l) => {
+      if (l.pv > 0 && l.nature !== 'autre' && l.annees <= 5) warnings.push({ lvl: 'warn', t: 'Ligne ' + (l.i + 1) + ' : moins de 6 années de détention révolues, aucun abattement du 151 septies B.' });
+      if (l.pv > 0 && l.nature === 'autre') warnings.push({ lvl: 'warn', t: 'Ligne ' + (l.i + 1) + ' : terrain à bâtir ou immeuble hors exploitation, exclu du 151 septies B, du 151 septies, du 151 septies A et du 238 quindecies : plus-value imposée en totalité.' });
+    });
+    warnings.push({ lvl: 'muted', t: 'Non modélisés : plus-values en report d\'imposition, quote-part d\'immeuble à usage privatif (abattement au prorata des surfaces, BOI-BIC-PVMV-20-40-30 § 240), micro-entreprise, ACRE.' });
+    if (inp.statutSocial === 'aucune') warnings.push({ lvl: 'warn', t: 'Cotisations et CSG-CRDS d\'activité non chiffrées : les plus-values à court terme y sont pourtant soumises (art. L136-3 CSS).' });
+    else {
+      if (inp.statutSocial === 'csg') warnings.push({ lvl: 'warn', t: 'Seule la CSG-CRDS d\'activité (9,7 %) est chiffrée : les cotisations des professions libérales (caisses CNAVPL) et des exploitants agricoles (MSA) ne sont pas modélisées.' });
+      else if (inp.statutSocial === 'msa') warnings.push({ lvl: 'info', t: 'Exploitant agricole : l\'assiette sociale exclut le long terme et le court terme exonéré par le 151 septies ou le 238 quindecies (CSS L136-4 I-A). Le court terme exonéré par le 151 septies A n\'est pas visé par cette exclusion : il reste dans l\'assiette (hypothèse prudente). Barème MSA 2026, chef d\'exploitation à titre exclusif ou principal ; non modélisés : exonération jeune agriculteur, option sur le revenu cadastral (rente du sol), étalement, régularisation.' });
+      else if (rec.hasAgri) warnings.push({ lvl: 'warn', t: 'Activité agricole : les cotisations relèvent de la MSA. Choisissez « Exploitant agricole (MSA) » comme régime social pour appliquer le barème MSA et l\'exclusion de L136-4.' });
+      if (inp.statutSocial !== 'msa') warnings.push({ lvl: 'info', t: 'Les plus-values à court terme (éléments amortissables), même exonérées d\'impôt par le 151 septies, le 151 septies A ou le 238 quindecies, restent dans l\'assiette des cotisations et de la CSG-CRDS d\'activité (CSS L136-3 et L131-6 ; BOI-BIC-PVMV-40-20-20-40 § 230). Cette charge est donc la même dans tous les scénarios.' });
+      warnings.push({ lvl: 'muted', t: (inp.statutSocial === 'msa' ? 'Cotisations MSA calculées au barème 2026' : 'Cotisations calculées au barème 2026') + ' (PASS 48 060 €) sur la variation du revenu, selon le bénéfice courant saisi. Régularisation l\'année suivante, cotisations minimales et réductions de début d\'activité non traitées.' });
+    }
+    warnings.push({ lvl: 'muted', t: 'Recettes : le simulateur retient la moyenne des deux années saisies. Pour une comptabilité d\'engagement, ce sont les exercices clos au cours des deux années civiles précédant la clôture de l\'exercice de cession.' });
+
+    return { rec, r151, r238, rA, rB, scenarios, base, ranked, best, notApplicable, warnings, savingB };
+  }
+
+
+  /* ---------- Société soumise à l'IS : 238 quindecies et impôt sur les sociétés ----------
+     Sources : CGI art. 238 quindecies I, II-2-d, V, VII bis (Légifrance), BOI-BIC-PVMV-40-20-50 § 10 à 450,
+     CGI art. 219 I (taux normal 25 %, taux réduit PME 15 % jusqu'à 42 500 €), art. 209 I (imputation des déficits :
+     1 000 000 € + 50 % de la fraction excédentaire), art. 235 ter ZC (contribution sociale de 3,3 % au-delà de 763 000 € d'IS). */
+  const IS_TAUX = 0.25, IS_TAUX_RED = 0.15, IS_PLAF_RED = 42500, IS_CSB_SEUIL = 763000, IS_DEF_PLAF = 1000000;
+  function isCompute(res, pvNi, pvIm, def, reduit) {
+    const base = res + pvNi + pvIm;
+    let imput = 0;
+    if (base > 0 && def > 0) imput = Math.min(def, base <= IS_DEF_PLAF ? base : IS_DEF_PLAF + 0.5 * (base - IS_DEF_PLAF));
+    const taxable = Math.max(0, base - imput);
+    const t15 = reduit ? Math.min(taxable, IS_PLAF_RED) : 0;
+    const is15 = t15 * IS_TAUX_RED, is25 = (taxable - t15) * IS_TAUX;
+    const is = is15 + is25;
+    const csb = is > IS_CSB_SEUIL ? 0.033 * (is - IS_CSB_SEUIL) : 0;
+    return { base, imput, taxable, t15, is15, is25, is, csb, tot: is + csb, deficit: base < 0 ? -base : 0 };
+  }
+  function analyseIS(inp) {
+    const yr = num(inp.annee) || 2026;
+    const res = Number(inp.isRes) || 0, pvNi = pos(num(inp.isPvNi)), pvIm = pos(num(inp.isPvIm));
+    const def = pos(num(inp.isDef)), reduit = !!inp.isReduit;
+    const ja = !!inp.jeuneAgri && yr >= 2025;
+    const low = ja ? 700000 : 500000, high = ja ? 1200000 : 1000000;
+    const V = num(inp.vNonImmo) + num(inp.charges);
+    const distPct = Math.min(100, pos(num(inp.isDistrib))) / 100, tDiv = pos(Number(inp.isTauxDiv) || 0) / 100;
+    const conds = [], steps = [], warnings = [];
+    const st = (l, f, v, t, ref, strong) => steps.push(step(l, f, v, t, ref, strong));
+
+    const natureOk = inp.cession === 'branche';
+    const anc = num(inp.anciennete) >= 5;
+    const lienOk = inp.mode === 'gratuit' ? true : !!inp.sansLien;
+    const pmeOk = !!inp.isPme, capOk = !!inp.isCap, minOk = !!inp.isMinimis;
+    conds.push({ ok: natureOk, text: 'Transmission d\'une branche complète d\'activité (exploitation autonome, personnel compris)', detail: natureOk ? 'La vente de l\'ensemble du fonds avec les moyens d\'exploitation et le personnel est une branche complète si elle forme une exploitation autonome' : 'Des éléments isolés ne sont pas éligibles : ni la clientèle, le droit au bail ou le matériel cédés seuls', ref: 'BOI-BIC-PVMV-40-20-50 § 100 et 110' });
+    conds.push({ ok: anc, text: 'Branche d\'activité exercée depuis au moins 5 ans', detail: num(inp.anciennete) + ' an(s) saisi(s)', ref: 'CGI art. 238 quindecies II-1 ; BOI-BIC-PVMV-40-20-50 § 230' });
+    conds.push({ ok: pmeOk, text: 'Société de moins de 250 salariés, avec un chiffre d\'affaires inférieur à 50 M€ ou un total de bilan inférieur à 43 M€', detail: '', ref: 'CGI art. 238 quindecies II-2-d-1°' });
+    conds.push({ ok: capOk, text: 'Capital et droits de vote non détenus à 25 % ou plus, de manière continue, par des entreprises hors PME', detail: '', ref: 'CGI art. 238 quindecies II-2-d-2°' });
+    conds.push({ ok: minOk, text: 'Respect du plafond des aides de minimis (règlement (UE) 2023/2831 : 300 000 € sur 3 exercices, hors secteurs agricole et pêche)', detail: 'L\'exonération constitue une aide de minimis', ref: 'CGI art. 238 quindecies II-2-d' });
+    conds.push({ ok: lienOk, text: 'Absence de lien de contrôle entre la société cédante (ou son associé détenant au moins 50 % ou dirigeant) et le repreneur, à la cession et pendant 3 ans', detail: inp.mode === 'gratuit' ? 'Non exigée pour une transmission à titre gratuit' : '', ref: 'CGI art. 238 quindecies II-3 et IV' });
+
+    st('Éléments non immobiliers transmis', 'prix ou valeur vénale, stocks et créances compris', num(inp.vNonImmo), 'eur', 'BOI-BIC-PVMV-40-20-50 § 295');
+    st('Charges en capital et indemnités stipulées au profit du cédant', 'ajoutées au prix', num(inp.charges), 'eur', 'BOI-BIC-PVMV-40-20-50 § 295');
+    st('Valeur retenue pour les seuils', 'hors immeubles et parts à prépondérance immobilière', V, 'eur', 'BOI-BIC-PVMV-40-20-50 § 293', true);
+    st('Plafonds applicables', ja ? 'jeune agriculteur aidé : 700 000 € / 1 200 000 €' : 'général : 500 000 € / 1 000 000 €', high, 'eur', 'BOI-BIC-PVMV-40-20-50 § 290 et 285');
+    let taux = 0, statut = 'non';
+    if (V <= low) { taux = 1; statut = 'total'; st('Exonération totale', 'valeur ≤ ' + low + ' €', 1, 'pct', 'BOI-BIC-PVMV-40-20-50 § 290', true); }
+    else if (V < high) { taux = (high - V) / (high - low); statut = 'partiel'; st('Taux d\'exonération', '(' + high + ' − ' + V + ') / ' + (high - low), taux, 'pct', 'BOI-BIC-PVMV-40-20-50 § 360', true); }
+    else st('Valeur au-dessus du plafond', 'aucune exonération', 0, 'pct', 'BOI-BIC-PVMV-40-20-50 § 290', true);
+    conds.push({ ok: taux > 0, text: 'Valeur transmise (hors immobilier) sous les plafonds', detail: statut === 'total' ? 'Exonération totale' : statut === 'partiel' ? 'Exonération partielle de ' + (taux * 100).toFixed(2).replace('.', ',') + ' %' : 'Valeur ' + Math.round(V) + ' € : au-dessus de ' + high + ' €', ref: 'CGI art. 238 quindecies I' });
+    const eligible = natureOk && anc && pmeOk && capOk && minOk && lienOk && taux > 0;
+    const tauxApp = eligible ? taux : 0;
+    const exo = pvNi * tauxApp;
+
+    const dc = isCompute(res, pvNi, pvIm, def, reduit);
+    const ex = isCompute(res, pvNi - exo, pvIm, def, reduit);
+    const ref0 = isCompute(res, 0, 0, def, reduit);
+    const mk = (id, label, c, exoAmt) => {
+      const pvTot = pvNi + pvIm;
+      const isPv = c.is - ref0.is; /* IS attribuable aux plus-values (écart avec l'exercice sans plus-value) */
+      const net = pos(pvTot - isPv - (c.csb - ref0.csb));
+      const dist = net * distPct, taxDiv = dist * tDiv;
+      return Object.assign({ id, label, exoAmt, pvTaxable: pvNi - exoAmt + pvIm, isPv, net, dist, taxDiv, total: c.tot + taxDiv, isOnly: c.tot }, c);
+    };
+    const sDC = mk('dc', 'Droit commun', dc, 0);
+    const sEX = mk('238', '238 quindecies', ex, exo);
+    const scenarios = eligible ? [sEX, sDC] : [sDC];
+    const best = scenarios.slice().sort((a, b) => a.total - b.total)[0];
+    const eco = sDC.isOnly - sEX.isOnly;
+    const ecoNet = sDC.total - sEX.total;
+
+    steps.push(step('Plus-values sur éléments non immobiliers', 'fonds, clientèle, matériel : court et long terme confondus à l\'IS', pvNi, 'eur', 'CGI art. 39 duodecies et s. ; BOI-BIC-PVMV-40-20-50 § 390'));
+    steps.push(step('Plus-value exonérée', pvNi + ' × ' + (tauxApp * 100).toFixed(2).replace('.', ',') + ' %', exo, 'eur', 'CGI art. 238 quindecies I', true));
+
+    if (res < 0 && pvNi + pvIm > 0) warnings.push({ lvl: '', t: 'Résultat de l\'exercice déficitaire : la plus-value imposable s\'impute d\'abord sur ce déficit, ce qui réduit l\'impôt avec ou sans exonération.' });
+    if (eligible && exo > 300000 && minOk) warnings.push({ lvl: 'warn', t: 'Exonération supérieure à 300 000 € : elle compte dans le plafond de minimis de la société (règlement (UE) 2023/2831, 300 000 € sur 3 exercices glissants, toutes aides confondues). Vérifier les aides déjà perçues.' });
+    if (pvIm > 0) warnings.push({ lvl: '', t: 'Les plus-values immobilières (immeubles, parts à prépondérance immobilière) sont exclues du 238 quindecies et de son seuil : elles restent imposées à l\'IS au droit commun.' });
+    warnings.push({ lvl: '', t: 'Les profits sur stocks (actif circulant) restent imposés dans les conditions de droit commun, même si leur valeur compte dans le seuil (BOI-BIC-PVMV-40-20-50 § 295 et 370). Ne les incluez pas dans les plus-values saisies.' });
+    warnings.push({ lvl: '', t: 'À l\'IS, la plus-value sur fonds de commerce n\'a pas de régime à long terme à taux réduit : elle est taxée comme le résultat courant. Court terme et long terme ne se distinguent pas. L\'exonération est supposée porter sur l\'ensemble de la plus-value non immobilière, amortissements réintégrés compris.' });
+    if (!eligible) warnings.push({ lvl: 'warn', t: 'Une ou plusieurs conditions du 238 quindecies ne sont pas remplies : la plus-value est imposée à l\'IS dans les conditions de droit commun.' });
+    if (eligible) warnings.push({ lvl: '', t: 'Option à exercer sur papier libre, signé, joint à la déclaration de cession. L\'exonération est remise en cause si le cédant contrôle le repreneur dans les 3 ans (CGI art. 238 quindecies IV).' });
+    if (Math.max(dc.is, ex.is) > IS_CSB_SEUIL) warnings.push({ lvl: '', t: 'IS supérieur à 763 000 € : la contribution sociale de 3,3 % s\'applique (art. 235 ter ZC) si le chiffre d\'affaires atteint 7 630 000 €. Elle est incluse dans le calcul, vérifiez ce seuil de chiffre d\'affaires.' });
+    if (distPct > 0) warnings.push({ lvl: 'muted', t: 'Distribution aux associés : estimation au taux unique saisi. Dividendes d\'un gérant majoritaire de SARL : cotisations sociales au-delà de 10 % du capital social, non chiffrées ici.' });
+    else warnings.push({ lvl: 'muted', t: 'L\'exonération évite l\'IS dans la société. Le produit de la vente reste à distribuer aux associés (dividendes ou boni de liquidation), avec le coût fiscal correspondant : indiquez une part distribuée pour le chiffrer.' });
+
+    const notApplicable = [
+      { label: '151 septies', reason: ['Réservé aux entreprises dont les résultats sont soumis à l\'impôt sur le revenu (art. 151 septies I).'] },
+      { label: '151 septies A', reason: ['Sociétés soumises à l\'IS hors champ (BOI-BIC-PVMV-40-20-20-20 § 250).'] },
+      { label: '151 septies B', reason: ['Abattement réservé aux entreprises soumises à l\'impôt sur le revenu (art. 151 septies B).'] }
+    ];
+    return { regime: 'is', eligible, taux, tauxApp, statut, V, low, high, conds, steps, exo, pvNi, pvIm, res, def, reduit, distPct, tDiv, dc: sDC, ex: sEX, ref0, scenarios, best, eco, ecoNet, warnings, notApplicable, ja };
+  }
+
+  return { analyse, analyseIS, SEUILS, socCalc, msaCalc, PASS };
+})();
+
+if (typeof module !== 'undefined') module.exports = Engine;
+
+
+/* ---------- Jeux de données ---------- */
+const BLANK = {
+  annee: 2026, anciennete: 0, cession: 'ei', mode: 'onereux', jeuneAgri: false, exprop: false, sansLien: true, retraite: false, pme: true, partsImmo: false,
+  vNonImmo: 0, charges: 0, pvNiCT: 0, pvNiLT: 0, pvImCT: 0, immeubles: [], mvCT: 0, mvLT: 0,
+  regime: 'ir', qDone: false, qImm: false, qDef: false, qDist: false, agri: false, isPvNi: 0, isPvIm: 0, isRes: 0, isDef: 0, isReduit: false, isPme: true, isCap: true, isMinimis: true, isDistrib: 0, isTauxDiv: 31.4,
+  tmi: 30, tauxLT: 12.8, tauxPS: 18.6, statutSocial: 'ssi', benef: 40000, activites: [{ cat: 'a', r1: 0, r2: 0, anc: 0, cedee: true }]
+};
+let S = JSON.parse(JSON.stringify(BLANK));
+let RES = null;
+let view = 'sim';
+let naOpen = false;
+
+/* ---------- Formats ---------- */
+const nf0 = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
+const nf2 = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const eur = (n) => { const r = Math.round(n * 100) / 100; return (Math.abs(r - Math.round(r)) > 0.004 ? nf2 : nf0).format(r) + ' €'; };
+const pct = (x) => (Math.round(x * 10000) / 100).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' %';
+const fv = (s) => s.t === 'eur' ? eur(s.v) : s.t === 'pct' ? pct(s.v) : String(s.v);
+const nice = (f) => String(f).replace(/\b\d{4,}\b/g, (m) => nf0.format(Number(m)));
+const $ = (id) => document.getElementById(id);
+
+const CATS = [
+  ['a', 'Ventes, hôtels, cafés, restaurants'],
+  ['b', 'Prestations de services, BNC, location meublée professionnelle'],
+  ['c', 'Activité agricole']
+];
+
+/* ---------- Saisie ---------- */
+function renderActs() {
+  const yr = Number(S.annee) || 2026;
+  $('acts').innerHTML = S.activites.map((a, i) => `
+    <div class="act" data-i="${i}">
+      <label class="fld"><span class="lbl">Nature de l'activité</span>
+        <select data-act="${i}" data-f="cat">${CATS.map(([v, t]) => `<option value="${v}"${a.cat === v ? ' selected' : ''}>${t}</option>`).join('')}</select>
+      </label>
+      <label class="fld"><span class="lbl">Recettes HT ${yr - 1}</span><span class="inp"><input data-act="${i}" data-f="r1" data-money inputmode="numeric" value="${a.r1 ? nf0.format(a.r1) : ''}"><span class="sfx">€</span></span></label>
+      <label class="fld"><span class="lbl">Recettes HT ${yr - 2}</span><span class="inp"><input data-act="${i}" data-f="r2" data-money inputmode="numeric" value="${a.r2 ? nf0.format(a.r2) : ''}"><span class="sfx">€</span></span></label>
+      <label class="fld"><span class="lbl">Exercée depuis</span><span class="inp"><input data-act="${i}" data-f="anc" data-int inputmode="numeric" value="${a.anc ? a.anc : ''}"><span class="sfx">ans</span></span></label>
+      ${S.activites.length > 1 ? `<label class="cedee"><input type="checkbox" data-cedee="${i}"${a.cedee ? ' checked' : ''}><span>Activité cédée</span></label>` : ''}
+      ${S.activites.length > 1 ? `<button type="button" class="rm" data-rm="${i}" aria-label="Retirer cette activité">×</button>` : ''}
+    </div>`).join('');
+  $('addAct').hidden = S.activites.length >= 3;
+}
+
+const IMM_OPTS = [
+  ['exploit', 'Immeuble affecté à l\'exploitation'],
+  ['parts', 'Parts de société à prépondérance immobilière d\'exploitation'],
+  ['autre', 'Exclu des exonérations : terrain à bâtir, immeuble hors exploitation']
+];
+function renderImms() {
+  $('imms').innerHTML = S.immeubles.map((m, i) => `
+    <div class="act imm" data-i="${i}">
+      <label class="fld"><span class="lbl">Nature</span>
+        <select data-imm="${i}" data-f="nature">${IMM_OPTS.map(([v, tx]) => `<option value="${v}"${m.nature === v ? ' selected' : ''}>${tx}</option>`).join('')}</select>
+      </label>
+      <label class="fld"><span class="lbl">Plus-value long terme</span><span class="inp"><input data-imm="${i}" data-f="pv" data-money inputmode="numeric" value="${m.pv ? nf0.format(m.pv) : ''}"><span class="sfx">€</span></span></label>
+      <label class="fld"><span class="lbl">Détention, années révolues</span><span class="inp"><input data-imm="${i}" data-f="annees" inputmode="numeric" value="${m.annees ? m.annees : ''}"><span class="sfx">ans</span></span></label>
+      <button type="button" class="rm" data-rmimm="${i}" aria-label="Retirer cet immeuble">×</button>
+      <span class="chip imm-chip" data-chip="${i}"></span>
+    </div>`).join('');
+  $('addImm').hidden = S.immeubles.length >= 4;
+}
+function updateImmChips() {
+  RES.rB.lines.forEach((l) => {
+    const el = document.querySelector('[data-chip="' + l.i + '"]');
+    if (!el) return;
+    if (l.pv === 0) { el.className = 'chip imm-chip'; el.textContent = 'Saisissez la plus-value à long terme'; }
+    else if (!l.elig) { el.className = 'chip bad imm-chip'; el.textContent = 'Aucun abattement ni exonération : exclu du 151 septies B, du 151 septies, du 151 septies A et du 238 quindecies'; }
+    else if (l.taux > 0) { el.className = 'chip ok imm-chip'; el.textContent = 'Abattement ' + pct(l.taux) + ' : ' + eur(l.abat) + ' exonérés, ' + eur(l.reste) + ' restent imposables'; }
+    else { el.className = 'chip warn imm-chip'; el.textContent = 'Aucun abattement : au moins 6 années de détention révolues sont nécessaires'; }
+  });
+  $('imLTsum').value = RES.rB.totalPV ? nf0.format(Math.round(RES.rB.imLTapres + RES.rB.exclPV)) : '';
+}
+
+function syncForm() {
+  document.querySelectorAll('[data-k]').forEach((el) => {
+    const k = el.dataset.k, v = S[k];
+    if (el.type === 'radio') el.checked = (el.value === v);
+    else if (el.type === 'checkbox') el.checked = !!v;
+    else if (el.hasAttribute('data-money')) el.value = v ? nf0.format(v) : '';
+    else if (el.hasAttribute('data-dec')) el.value = String(v).replace('.', ',');
+    else el.value = (v === 0 && el.hasAttribute('data-int') && k !== 'tmi') ? '' : String(v);
+  });
+  renderActs();
+  renderImms();
+  toggles();
+}
+
+/* Ancienneté retenue : la plus faible parmi les activités cédées (à défaut de choix, toutes les activités). */
+function cedees() { const c = S.activites.filter((a) => a.cedee); return c.length ? c : S.activites; }
+function ancEff() { return S.regime === 'is' ? (Number(S.anciennete) || 0) : Math.min(...cedees().map((a) => Number(a.anc) || 0)); }
+/* Données retenues pour le calcul : un champ masqué par le questionnaire ne compte jamais (sa saisie est conservée si l'on revient en arrière). */
+function effInput() {
+  const e = Object.assign({}, S, { anciennete: ancEff() });
+  const iso = S.cession === 'elements', isR = S.regime === 'is';
+  if (iso) { e.vNonImmo = 0; e.charges = 0; e.retraite = false; e.sansLien = true; }
+  if (isR) { e.retraite = false; e.exprop = false; e.statutSocial = 'aucune'; e.benef = 0; e.pvNiCT = 0; e.pvNiLT = 0; e.pvImCT = 0; e.mvCT = 0; e.mvLT = 0; e.immeubles = []; }
+  else { e.isPvNi = 0; e.isPvIm = 0; e.isRes = 0; e.isDef = 0; e.isDistrib = 0; e.isReduit = false; }
+  if (!S.qImm) { e.immeubles = []; e.pvImCT = 0; e.isPvIm = 0; }
+  if (!S.qDef) e.isDef = 0;
+  if (!S.qDist) e.isDistrib = 0;
+  if (S.cession !== 'parts') e.partsImmo = false;
+  if (!S.agri) e.jeuneAgri = false;
+  if (S.statutSocial === 'aucune') e.benef = 0;
+  return e;
+}
+
+function toggles() {
+  document.body.dataset.regime = S.regime;
+  if (S.regime === 'is' && S.mode !== 'onereux') {
+    S.mode = 'onereux';
+    const m = document.querySelector('[data-k="mode"][value="onereux"]'); if (m) m.checked = true;
+  }
+  if (S.regime === 'is' && S.cession !== 'branche' && S.cession !== 'elements') {
+    S.cession = 'branche';
+    const r = document.querySelector('[data-k="cession"][value="branche"]'); if (r) r.checked = true;
+  }
+  $('row-ja').hidden = true;                /* question posée dans le questionnaire */
+  $('row-pimmo').hidden = S.cession !== 'parts';
+  $('row-exprop').hidden = true;            /* question posée dans le questionnaire */
+  $('hint-cedee').hidden = S.activites.length < 2;
+  /* Champs inutiles masqués selon le contexte */
+  const iso = S.cession === 'elements';
+  $('hint-elements').hidden = !iso;
+  $('card-valeur').hidden = iso;            /* valeur transmise : seuil du 238 quindecies uniquement */
+  $('card-retraite').hidden = iso;          /* départ en retraite : 151 septies A uniquement */
+  $('card-soc').hidden = iso;               /* conditions de la société cédante : 238 quindecies uniquement */
+  $('row-lien').hidden = iso;               /* non-contrôle du repreneur : 238 quindecies uniquement */
+  $('row-anc-is').hidden = iso;             /* ancienneté en mode IS : 238 quindecies uniquement */
+  /* Situation décrite par le questionnaire : les champs qualitatifs ne s'affichent plus dans le formulaire */
+  $('card-regime').hidden = true;
+  $('card-op').hidden = true;
+  $('card-retraite').hidden = true;
+  $('card-soc').hidden = true;
+  $('row-statut').hidden = true;
+  $('card-social').hidden = S.statutSocial === 'aucune';
+  document.querySelectorAll('.imm-only').forEach((el) => { el.hidden = !S.qImm; });
+  $('row-isPvIm').hidden = !S.qImm;
+  $('row-isDef').hidden = !S.qDef;
+  $('row-isReduit').hidden = true;
+  $('blk-dist').hidden = !S.qDist;
+  $('row-benef').hidden = S.statutSocial === 'aucune';
+  $('hint-soc').textContent = S.statutSocial === 'msa'
+    ? 'Exploitant agricole : l\'assiette sociale exclut le long terme et le court terme exonéré par le 151 septies ou le 238 quindecies (art. L136-4 du Code de la sécurité sociale). Le court terme exonéré par le 151 septies A y reste (hypothèse prudente).'
+    : 'Les plus-values à court terme (éléments amortissables) restent dans l\'assiette sociale même lorsqu\'elles sont exonérées d\'impôt (art. L136-3 et L131-6 du Code de la sécurité sociale).';
+  $('vRetenue').textContent = eur((Number(S.vNonImmo) || 0) + (Number(S.charges) || 0));
+}
+
+function reformatMoney(el) {
+  const raw = el.value, caret = el.selectionStart == null ? raw.length : el.selectionStart;
+  const before = raw.slice(0, caret).replace(/\D/g, '').length;
+  const digits = raw.replace(/\D/g, '').replace(/^0+(?=\d)/, '');
+  const neg = el.hasAttribute('data-signed') && /[-−]/.test(raw);
+  const out = (neg ? '-' : '') + (digits ? nf0.format(Number(digits)) : '');
+  el.value = out;
+  let pos = 0, c = 0;
+  while (pos < out.length && c < before) { if (/\d/.test(out[pos])) c++; pos++; }
+  try { el.setSelectionRange(pos, pos); } catch (e) { /* champ non focalisé */ }
+}
+const moneyVal = (el) => (Number(el.value.replace(/\D/g, '')) || 0) * (el.hasAttribute('data-signed') && /[-−]/.test(el.value) ? -1 : 1);
+
+function onField(e) {
+  const t = e.target;
+  if (t.dataset.cedee !== undefined) { S.activites[Number(t.dataset.cedee)].cedee = t.checked; toggles(); update(); return; }
+  if (t.dataset.act !== undefined) {
+    const i = Number(t.dataset.act), f = t.dataset.f;
+    if (f === 'cat') { S.activites[i].cat = t.value; toggles(); }
+    else if (f === 'anc') { S.activites[i].anc = Number(String(t.value).replace(/\D/g, '')) || 0; toggles(); }
+    else { reformatMoney(t); S.activites[i][f] = moneyVal(t); }
+    update(); return;
+  }
+  if (t.dataset.imm !== undefined) {
+    const i = Number(t.dataset.imm), f = t.dataset.f;
+    if (f === 'nature') S.immeubles[i].nature = t.value;
+    else if (f === 'pv') { reformatMoney(t); S.immeubles[i].pv = moneyVal(t); }
+    else S.immeubles[i].annees = Number(String(t.value).replace(/\D/g, '')) || 0;
+    update(); return;
+  }
+  if (!t.dataset.k) return;
+  const k = t.dataset.k;
+  if (t.type === 'radio') { if (!t.checked) return; S[k] = t.value; }
+  else if (t.type === 'checkbox') S[k] = t.checked;
+  else if (t.hasAttribute('data-money')) { reformatMoney(t); S[k] = moneyVal(t); }
+  else if (t.hasAttribute('data-dec')) S[k] = Number(String(t.value).replace(',', '.')) || 0;
+  else if (t.hasAttribute('data-int')) S[k] = Number(String(t.value).replace(/\D/g, '')) || 0;
+  else S[k] = t.value;
+  if (k === 'annee') {
+    renderActs();
+    /* taux des prélèvements sociaux : 17,2 % jusqu'en 2024, 18,6 % ensuite, sauf saisie personnalisée */
+    if (S.tauxPS === 17.2 || S.tauxPS === 18.6) {
+      S.tauxPS = (Number(S.annee) || 2026) <= 2024 ? 17.2 : 18.6;
+      const ps = document.querySelector('[data-k="tauxPS"]'); if (ps) ps.value = String(S.tauxPS).replace('.', ',');
+    }
+  }
+  toggles();
+  update();
+}
+$('form').addEventListener('input', onField);
+// Sélectionne tout le contenu à l'entrée dans un champ : la saisie remplace la valeur au lieu de s'y ajouter
+$('form').addEventListener('focusin', (e) => {
+  const t = e.target;
+  if (t.tagName === 'INPUT' && (t.type === 'text' || t.type === 'number' || !t.type) && t.value) setTimeout(() => { try { t.select(); } catch (_) {} }, 0);
+});
+$('form').addEventListener('change', (e) => { if (e.target.type === 'radio' || e.target.type === 'checkbox' || e.target.tagName === 'SELECT') onField(e); });
+$('form').addEventListener('click', (e) => {
+  const rm = e.target.closest('[data-rm]');
+  if (rm) { S.activites.splice(Number(rm.dataset.rm), 1); renderActs(); toggles(); update(); }
+  const ri = e.target.closest('[data-rmimm]');
+  if (ri) { S.immeubles.splice(Number(ri.dataset.rmimm), 1); renderImms(); update(); }
+});
+$('addImm').addEventListener('click', () => {
+  if (S.immeubles.length < 4) { S.immeubles.push({ nature: 'exploit', pv: 0, annees: 0 }); renderImms(); update(); }
+});
+$('addAct').addEventListener('click', () => {
+  if (S.activites.length < 3) { S.activites.push({ cat: 'b', r1: 0, r2: 0, anc: 0, cedee: false }); renderActs(); toggles(); update(); }
+});
+$('blank').addEventListener('click', () => { S = JSON.parse(JSON.stringify(BLANK)); qIdx = 0; Object.keys(qSeen).forEach((k) => delete qSeen[k]); syncForm(); update(); renderQuest(); setView('quest'); });
+
+/* ---------- Rendu : résultats ---------- */
+function chipFor(r) {
+  if (r.id === 'rB') return r.eligible ? '<span class="chip ok">Abattement ' + eur(r.totalAbat) + '</span>' : '<span class="chip">Sans effet</span>';
+  if (!r.eligible) return '<span class="chip bad">Non applicable</span>';
+  if (r.id === 'rA') return '<span class="chip ok">Applicable</span>';
+  return r.statut === 'total' ? '<span class="chip ok">Exonération totale</span>' : '<span class="chip warn">Partielle, ' + pct(r.taux) + '</span>';
+}
+function condList(conds) {
+  return '<ul class="conds">' + conds.map((c) => `<li class="${c.ok ? 'ok' : 'ko'}"><span class="ic">${c.ok ? '✓' : '✕'}</span><span><span class="ct">${c.text}</span>${c.detail ? `<span class="cd">${c.detail}</span>` : ''}</span></li>`).join('') + '</ul>';
+}
+
+function renderResults(R) {
+  const best = R.best, base = R.base;
+  const gross = (s) => s.irTax + s.psTotal;
+  const maxTot = Math.max(...R.scenarios.filter((s) => s.ok).map(gross), 1);
+  const none = best.id === 'none';
+  const ties = R.ranked.filter((s) => s !== best && Math.abs(s.total - best.total) < 1 && s.id !== 'none');
+  const irW = gross(best) > 0 ? (best.irTax / gross(best)) * 100 : 0;
+  const saving = base.total - best.total;
+
+  const hero = `
+  <div class="hero">
+    <div class="eyebrow">${none ? 'Résultat' : 'Régime le plus favorable'}</div>
+    <h2 class="hero-name">${none ? 'Aucune exonération applicable' : best.label}</h2>
+    <div class="hero-sub">${none ? 'Les conditions ne sont réunies pour aucun régime : la plus-value reste imposée au droit commun.' : best.regimes > 1 ? 'Cumul de deux régimes, appliqués dans l\'ordre prévu par le BOFiP.' : 'Régime unique, sans cumul.'}</div>
+    <div class="hero-figs">
+      <div><div class="big">${eur(best.total)}</div><div class="cap">impôt, prélèvements et cotisations estimés${best.dedSave > 0 ? ', nets de l\'économie d\'impôt' : ''}</div></div>
+      ${none ? '' : `<div><div class="big">${eur(saving)}</div><div class="cap">d'économie face au droit commun (${eur(base.total)})</div></div>`}
+    </div>
+    <div class="split" role="img" aria-label="Répartition entre impôt sur le revenu et prélèvements sociaux"><i class="ir" style="width:${irW}%"></i><i class="ps" style="width:${gross(best) > 0 ? 100 - irW : 0}%"></i></div>
+    <div class="legend"><span><span class="dot" style="background:var(--hero-ir)"></span>Impôt sur le revenu <b>${eur(best.irTax)}</b></span><span><span class="dot" style="background:var(--hero-ps)"></span>Prélèvements et cotisations <b>${eur(best.psTotal)}</b></span>${best.dedSave > 0 ? `<span>Économie d'impôt sur cotisations <b>−${eur(best.dedSave)}</b></span>` : ''}</div>
+    ${R.savingB > 0 ? `<div class="tie">Dont ${eur(R.savingB)} évités grâce à l'abattement du 151 septies B, appliqué en premier.</div>` : ''}
+    ${ties.length ? `<div class="tie">Résultat identique avec : ${ties.map((t) => t.label).join(' ; ')}.</div>` : ''}
+    <button class="btn" type="button" id="goDetail">Voir le détail des calculs →</button>
+  </div>`;
+
+  const rows = R.ranked.map((s, i) => {
+    const w = (gross(s) / maxTot) * 100;
+    const irPart = gross(s) > 0 ? (s.irTax / gross(s)) * w : 0;
+    const eco = base.total - s.total;
+    return `<div class="row${s === best ? ' best' : ''}">
+      <div class="row-top"><span class="rk">${i + 1}</span><span class="nm">${s.label}</span><span class="amt">${eur(s.total)}</span></div>
+      <div class="bars"><i class="ir" style="width:${irPart}%"></i><i class="ps" style="width:${w - irPart}%"></i></div>
+      <div class="meta"><span>Impôt <b>${eur(s.irTax)}</b></span><span>Long terme (PS) <b>${eur(s.psTax)}</b></span><span>Court terme (cotisations, CSG) <b>${eur(s.socTax)}</b></span><span>Assiette IR <b>${eur(s.baseIR)}</b></span>${s.id !== 'none' ? `<span>Économie <b>${eur(eco)}</b></span>` : ''}</div>
+    </div>`;
+  }).join('');
+
+  const na = R.notApplicable.map((s) => `<div class="na-item"><b>${s.label}</b><ul>${s.reason.map((r) => `<li>${r}</li>`).join('')}</ul></div>`).join('');
+
+  const cmp = `
+  <div class="card">
+    <div class="cmp-h"><h2>Comparatif des régimes applicables</h2><div class="leg"><span><span class="dot" style="background:var(--c-ir)"></span>Impôt sur le revenu</span><span><span class="dot" style="background:var(--c-ps)"></span>Prélèvements et cotisations</span></div></div>
+    ${rows}
+    ${R.notApplicable.length ? `<details class="na"${naOpen ? ' open' : ''}><summary>Combinaisons non applicables (${R.notApplicable.length})</summary>${na}</details>` : ''}
+  </div>`;
+
+  const reg = (r) => `<div class="reg"><div class="reg-h"><h3>${r.nom}</h3>${chipFor(r)}</div>${condList(r.conds)}<div class="reg-p">${r.portee}</div></div>`;
+  const regs = `<div><div class="sec-label">Conditions par régime</div><div class="regimes">${reg(R.rB)}${reg(R.r151)}${reg(R.r238)}${reg(R.rA)}</div></div>`;
+
+  const notes = `<div><div class="sec-label">Points de vigilance</div><ul class="notes">${R.warnings.map((w) => `<li class="${w.lvl === 'warn' ? 'warn' : w.lvl === 'muted' ? 'muted' : ''}">${w.t}</li>`).join('')}</ul></div>`;
+
+  $('results').innerHTML = hero + cmp + regs + notes;
+  const det = $('results').querySelector('details.na');
+  if (det) det.addEventListener('toggle', () => { naOpen = det.open; });
+  const g = $('goDetail'); if (g) g.addEventListener('click', () => setView('detail'));
+
+  $('mini-n').textContent = none ? 'Aucune exonération' : best.label;
+  $('mini-a').textContent = eur(best.total);
+}
+
+/* ---------- Rendu : détail ---------- */
+function stepsTable(steps) {
+  return `<div class="tbl"><table class="calc"><thead><tr><th>Ligne</th><th>Calcul</th><th class="r">Montant</th></tr></thead><tbody>${steps.map((s) =>
+    `<tr class="${s.strong ? 'strong' : ''}"><td><span class="l">${s.l}</span>${s.ref ? `<span class="ref">${s.ref}</span>` : ''}</td><td class="f">${nice(s.f)}</td><td class="r v">${fv(s)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function kv(pairs) { return '<div class="kv">' + pairs.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('') + '</div>'; }
+
+function renderDetail(R) {
+  const yr = Number(S.annee) || 2026;
+  const natures = { ei: 'Entreprise individuelle entière', branche: 'Branche complète d\'activité', parts: 'Parts de société de personnes (IR)', elements: 'Éléments isolés' };
+  $('detail-intro').textContent = natures[S.cession] + ', ' + (S.mode === 'onereux' ? 'vente' : 'donation ou succession') + ', cession en ' + yr + '. Chaque section montre la formule, les valeurs retenues et la référence BOFiP ou CGI.';
+
+  const sections = [
+    { id: 'd-data', label: 'Données retenues', sub: '' },
+    { id: 'd-B', label: '151 septies B', sub: R.rB.eligible ? pct(R.rB.taux) : 'sans effet', off: !R.rB.eligible },
+    { id: 'd-151', label: '151 septies', sub: R.r151.eligible ? (R.r151.statut === 'total' ? '100 %' : pct(R.r151.taux)) : 'non', off: !R.r151.eligible },
+    { id: 'd-238', label: '238 quindecies', sub: R.r238.eligible ? (R.r238.statut === 'total' ? '100 %' : pct(R.r238.taux)) : 'non', off: !R.r238.eligible },
+    { id: 'd-A', label: '151 septies A', sub: R.rA.eligible ? 'oui' : 'non', off: !R.rA.eligible },
+    { id: 'd-soc', label: 'Cotisations', sub: S.statutSocial === 'aucune' ? 'non' : eur(R.best.socTax), off: S.statutSocial === 'aucune' },
+    { id: 'd-scen', label: 'Assiettes et impôt', sub: R.ranked.length + '' }
+  ];
+  $('dnav').innerHTML = sections.map((s) => `<button type="button" class="navchip${s.off ? ' off' : ''}" data-go="${s.id}"><span>${s.label}</span><span class="sub">${s.sub}</span></button>`).join('');
+
+  /* Données */
+  const maxBasA = Math.max(...R.rec.acts.map((a) => a.bas)), maxHautA = Math.max(...R.rec.acts.map((a) => a.haut));
+  const recRows = R.rec.acts.map((a) => `<tr><td><span class="l">${a.short}</span></td><td class="r v">${eur(a.r1)}</td><td class="r v">${eur(a.r2)}</td><td class="r v">${eur(a.avg)}</td><td class="r v">≤ ${eur(a.bas)}</td><td class="r v">&lt; ${eur(a.haut)}</td></tr>`).join('');
+  const recTable = `<div class="tbl"><table class="calc"><thead><tr><th>Activité</th><th class="r">${yr - 1}</th><th class="r">${yr - 2}</th><th class="r">Moyenne</th><th class="r">Exonération totale</th><th class="r">Exonération partielle</th></tr></thead><tbody>${recRows}${R.rec.acts.length > 1 ? `<tr class="strong"><td><span class="l">Recettes globales</span><span class="ref">Plafonds retenus : les plus élevés des activités</span></td><td></td><td></td><td class="r v">${eur(R.rec.global)}</td><td class="r v">≤ ${eur(maxBasA)}</td><td class="r v">&lt; ${eur(maxHautA)}</td></tr>` : ''}</tbody></table></div>
+    <p class="hint">Information, 151 septies II : exonération totale si les recettes moyennes ne dépassent pas le plafond bas ; exonération partielle si elles sont inférieures au plafond haut, au taux (plafond haut − recettes) / (plafond haut − plafond bas) ; aucune exonération au-delà. Plafonds 2026 : ventes, hôtels, cafés, restaurants 250 000 € / 350 000 € ; services, BNC 90 000 € / 126 000 € ; agricole 350 000 € / 450 000 € (550 000 € pour une cession à un jeune agriculteur aidé, à compter de 2025).</p>`;
+  const EI = effInput(); const n = (k) => Number(EI[k]) || 0;
+  const pvTable = `<div class="tbl"><table class="calc"><thead><tr><th>Plus-values</th><th class="r">Court terme</th><th class="r">Long terme</th></tr></thead><tbody>
+    <tr><td><span class="l">Non immobilier</span></td><td class="r v">${eur(n('pvNiCT'))}</td><td class="r v">${eur(n('pvNiLT'))}</td></tr>
+    <tr><td><span class="l">Immobilier</span><span class="ref">Long terme après abattement 151 septies B</span></td><td class="r v">${eur(n('pvImCT'))}</td><td class="r v">${eur(R.rB.imLTapres + R.rB.exclPV)}</td></tr>
+    <tr><td><span class="l">Moins-values</span></td><td class="r v">${eur(-n('mvCT'))}</td><td class="r v">${eur(-n('mvLT'))}</td></tr>
+    <tr class="strong"><td><span class="l">Plus-value nette</span><span class="ref">Compensation par nature, BOI-BIC-PVMV-40-10-10-30 § 1</span></td><td class="r v">${eur(n('pvNiCT') + n('pvImCT') - n('mvCT'))}</td><td class="r v">${eur(n('pvNiLT') + R.rB.imLTapres + R.rB.exclPV - n('mvLT'))}</td></tr>
+  </tbody></table></div>`;
+  const data = `<section class="dsec card" id="d-data"><h2>Données retenues</h2><p class="lead">Recettes moyennes, valeur transmise et plus-values servant à tous les calculs.</p>
+    <div class="stack">
+      ${recTable}
+      <div class="two"><div>${kv([
+        ['Valeur non immobilière transmise', eur(n('vNonImmo'))],
+        ['Charges en capital et indemnités', eur(n('charges'))],
+        ['Valeur retenue pour le seuil du 238', eur(n('vNonImmo') + n('charges'))],
+      ])}</div><div>${kv([
+        ['Activité(s) cédée(s)', cedees().map((a) => (R.rec.acts[S.activites.indexOf(a)] || R.rec.acts[0]).short + (a.anc ? ' (' + a.anc + ' ans)' : '')).join(' ; ')],
+        ['Ancienneté retenue (la plus récente des activités cédées)', ancEff() + ' ans'],
+        ['Tranche marginale (court terme)', n('tmi') + ' %'],
+        ['Taux long terme', String(S.tauxLT).replace('.', ',') + ' %'],
+        ['Taux prélèvements sociaux (long terme)', String(S.tauxPS).replace('.', ',') + ' %'],
+        ['Régime social', S.statutSocial === 'ssi' ? 'Artisan ou commerçant (SSI)' : S.statutSocial === 'msa' ? 'Exploitant agricole (MSA)' : S.statutSocial === 'csg' ? 'CSG-CRDS seule' : 'Non chiffré'],
+        ['Bénéfice courant avant plus-values', S.statutSocial === 'aucune' ? '—' : eur(n('benef'))]
+      ])}</div></div>
+      ${pvTable}
+    </div></section>`;
+
+  const regSec = (id, r, lead, extraTop) => `<section class="dsec card" id="${id}">
+    <div class="dhead"><h2>${r.nom}</h2>${chipFor(r)}</div>
+    <p class="lead">${lead}</p>
+    <div class="stack">
+      ${extraTop || ''}
+      <div><div class="sec-label">Conditions</div>${condList(r.conds)}</div>
+      <div><div class="sec-label">${r.id === 'rA' ? 'Effet' : r.id === 'rB' ? 'Abattement par immeuble' : 'Calcul du taux d\'exonération'}</div>${stepsTable(r.steps)}</div>
+    </div></section>`;
+
+  const sB = regSec('d-B', R.rB, 'Abattement pour durée de détention sur les plus-values à long terme d\'immeubles d\'exploitation. Il s\'applique en premier et réduit l\'assiette de l\'impôt et des prélèvements sociaux avant le 151 septies A, le 151 septies ou le 238 quindecies.');
+  const s151 = regSec('d-151', R.r151, 'Exonération en fonction des recettes moyennes des deux années précédentes. Taux partiel : (plafond haut − recettes) / (plafond haut − plafond bas).', '<div>' + '<div class="sec-label">Recettes moyennes</div>' + stepsTable(R.rec.steps) + '</div>');
+  const s238 = regSec('d-238', R.r238, 'Exonération en fonction du prix ou de la valeur vénale des éléments transmis, immobilier exclu. Taux partiel : (1 000 000 € − valeur) / 500 000 €, relevé à 1 200 000 € et 700 000 € pour un jeune agriculteur.');
+  const sA = regSec('d-A', R.rA, 'Exonération des plus-values non immobilières lors du départ en retraite. Les prélèvements sociaux restent dus sur le long terme.');
+
+  let socSec = '';
+  if (S.statutSocial !== 'aucune' && R.best.soc.s0) {
+    const sc = R.best.soc, a = sc.s0, b = sc.s1;
+    const keys = b.lines.map((l) => l.k);
+    const rowsS = keys.map((k) => {
+      const l0 = a.lines.find((x) => x.k === k), l1 = b.lines.find((x) => x.k === k);
+      return `<tr><td><span class="l">${l1.l}</span><span class="ref">${nice(l1.f)}</span></td><td class="r v">${eur(l0.v)}</td><td class="r v">${eur(l1.v)}</td><td class="r v">${eur(l1.v - l0.v)}</td></tr>`;
+    }).join('');
+    socSec = `<section class="dsec card" id="d-soc"><h2>Cotisations sociales du dirigeant</h2>
+      <p class="lead">Coût social des plus-values à court terme, calculé pour le scénario retenu (${R.best.label}). Assiette : revenu avant cotisations abattu de 26 % (plancher 1,76 % et plafond 130 % du PASS), ${sc.statut === 'msa' ? 'articles L136-4 du Code de la sécurité sociale et L731-14 du Code rural' : 'articles L131-6 et L136-3 du Code de la sécurité sociale'}. Les plus-values à long terme en sont exclues.</p>
+      <div class="stack">
+        ${kv([
+          ['Bénéfice courant avant plus-values', eur(sc.Bc)],
+          ['Plus-value à court terme retenue' + (sc.statut === 'msa' ? ' (hors part exonérée par le 151 septies ou le 238 quindecies)' : sc.inclExo ? ' (exonérations comprises)' : ' (imposable seulement)'), eur(sc.ctSoc)],
+          ['Assiette abattue, avant / après', eur(a.A) + ' / ' + eur(b.A)],
+          ['PASS 2026', eur(48060)]
+        ])}
+        <div class="tbl"><table class="calc"><thead><tr><th>Cotisation</th><th class="r">Sans la plus-value</th><th class="r">Avec la plus-value</th><th class="r">Variation</th></tr></thead><tbody>${rowsS}
+          <tr class="strong"><td><span class="l">Total</span><span class="ref">Cotisations + CSG-CRDS</span></td><td class="r v">${eur(a.total)}</td><td class="r v">${eur(b.total)}</td><td class="r v">${eur(b.total - a.total)}</td></tr></tbody></table></div>
+        <p class="hint">Déductibilité : les cotisations et 6,8 points de CSG sont déductibles du bénéfice imposable, soit une économie d'impôt de ${eur(R.best.dedSave)} à la tranche marginale saisie. ${sc.statut === 'msa' ? 'Barème MSA 2026 : document « Barème des cotisations et contributions sociales des non-salariés agricoles pour 2026 », chef d\'exploitation à titre exclusif ou principal, domicilié en France. Les forfaits (indemnités journalières, ATEXA, VIVEA, FMSE) ne varient pas avec la plus-value et ne sont pas repris. Non modélisés : exonération jeune agriculteur, option sur le revenu cadastral, étalement.' : 'Barème 2026 recoupé sur trois sources secondaires (Weblex, Lefebvre Dalloz, lecoindesentrepreneurs.fr) : à valider sur le site de l\'Urssaf.'}</p>
+        ${sc.statut === 'msa' ? '<p class="src">Assiette sociale agricole : CSS art. L136-4 I-A (exclusion du long terme et du court terme exonéré par les articles 151 septies et 238 quindecies, 3°), texte relu sur Légifrance ; cotisations : art. L731-14 du Code rural. Le 151 septies A n\'est pas visé par l\'exclusion : sa part exonérée est maintenue dans l\'assiette par prudence.</p>' : `<p class="src">Court terme exonéré et assiette sociale : CSS art. L136-3 et L131-6 ; BOI-BIC-PVMV-40-20-20-40 § 230 pour le 151 septies A ; pour le 238 quindecies, <a href="https://www.agaura.fr/blog/fiscal/plus-values-professionnelles-exoneration-en-fonction-du-prix-de-cession" target="_blank" rel="noopener">Agaura, plus-values professionnelles : exonération en fonction du prix de cession</a> (source de cabinet, sans texte administratif cité).</p>`}
+      </div></section>`;
+  }
+  const scen = R.ranked.map((s, i) => `<div class="card">
+    <div class="dhead"><h3 style="font-size:17px">${i + 1}. ${s.label}</h3><span class="chip ${s === R.best ? 'acc' : ''}">${s === R.best ? 'Meilleur résultat' : eur(s.total)}</span></div>
+    <div style="margin-top:14px">${stepsTable(s.steps)}</div>
+    ${s.notes.length ? `<ul class="notes" style="margin-top:12px">${s.notes.map((t) => `<li class="warn">${t}</li>`).join('')}</ul>` : ''}
+    <div class="scen-total"><span>Assiette IR <b>${eur(s.baseIR)}</b></span><span>Assiette PS (BOFiP) <b>${eur(s.psBase)}</b></span><span>Court terme imposable <b>${eur(s.irCT)}</b></span><span>Long terme imposable <b>${eur(s.irLT)}</b></span></div>
+  </div>`).join('');
+  const scenSec = `<section class="dsec" id="d-scen"><h2>Assiettes et impôt par scénario</h2><p class="lead">Les scénarios applicables sont classés du moins coûteux au plus coûteux. Le droit commun sert de référence. Ordre d'application des cumuls : 151 septies A, puis 151 septies ou 238 quindecies (BOI-BIC-PVMV-40-20-20-50 § 10).</p><div class="dcontent">${scen}</div>
+    <p class="src" style="margin-top:12px">Sources : CGI art. 151 septies, 151 septies A, 151 septies B et 238 quindecies (Légifrance) ; BOI-BIC-PVMV-20-40-30, 40-10-10-20, 40-10-10-30, 40-20-20-10, 40-20-20-50 et 40-20-50. Estimation à valider par l'expert-comptable.</p></section>`;
+
+  $('dcontent').innerHTML = data + sB + s151 + s238 + sA + socSec + scenSec;
+}
+$('dnav').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-go]'); if (!b) return;
+  const el = $(b.dataset.go);
+  if (el) el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+});
+
+
+/* ---------- Questionnaire d'accueil ---------- */
+let qIdx = 0;
+const qSeen = {};  /* questions déjà répondues : seules celles-ci affichent une réponse sélectionnée */
+const YN = (yes, no) => [[true, 'Oui', yes || ''], [false, 'Non', no || '']];
+const QSTEPS = [
+  { id: 'regime', short: 'Régime d\'imposition', title: 'Quel est le régime d\'imposition du cédant ?',
+    help: 'Le 151 septies, le 151 septies A et le 151 septies B sont réservés à l\'impôt sur le revenu. Une société à l\'IS ne peut bénéficier que du 238 quindecies.',
+    show: () => true, opts: () => [['ir', 'Impôt sur le revenu', 'Entreprise individuelle ou société de personnes'], ['is', 'Impôt sur les sociétés', 'Société soumise à l\'IS, de plein droit ou sur option']],
+    get: () => S.regime, set: (v) => { S.regime = v; S.cession = v === 'is' ? 'branche' : 'ei'; } },
+  { id: 'cession', short: 'Ce qui est cédé', title: 'Que cède-t-on ?',
+    help: 'Le 238 quindecies et le 151 septies A exigent la transmission d\'une entreprise ou d\'une branche complète. Une vente de biens isolés relève seulement du 151 septies et du 151 septies B.',
+    show: () => true,
+    opts: () => S.regime === 'is'
+      ? [['branche', 'Un fonds de commerce avec ses moyens d\'exploitation et son personnel', 'Branche complète d\'activité : exploitation autonome'], ['elements', 'Des éléments isolés', 'Fonds ou clientèle seuls, matériel, droit au bail']]
+      : [['ei', 'Une entreprise individuelle entière', 'Vente du fonds de commerce ou de la clientèle avec les éléments qui permettent de poursuivre l\'activité'],
+         ['branche', 'Une branche complète d\'activité', 'Une exploitation autonome parmi plusieurs activités'],
+         ['parts', 'Des parts de société de personnes à l\'IR', 'Cession de l\'intégralité des parts de l\'associé (hors sociétés à l\'IS)'],
+         ['elements', 'Des éléments isolés', 'Un ou plusieurs biens sans transmettre l\'exploitation']],
+    get: () => S.cession, set: (v) => { S.cession = v; } },
+  { id: 'retraite', short: 'Départ en retraite', title: 'Le cédant part-il à la retraite ?',
+    help: 'Il cesse toute fonction et fait valoir ses droits à la retraite dans les 2 ans avant ou après la cession (151 septies A).',
+    show: () => S.regime === 'ir' && S.cession !== 'elements', opts: () => YN(), get: () => S.retraite, set: (v) => { S.retraite = v; } },
+  { id: 'pme', short: 'Entreprise de moins de 250 salariés', title: 'L\'entreprise cédée est-elle une PME au sens européen ?',
+    help: 'Moins de 250 salariés, et chiffre d\'affaires inférieur à 50 M€ ou total de bilan inférieur à 43 M€. Pour une cession de parts : capital non détenu à 25 % ou plus par des entreprises qui ne sont pas des PME (151 septies A I-5° et 6°).',
+    show: () => S.regime === 'ir' && S.retraite && S.cession !== 'elements', opts: () => YN(), get: () => S.pme, set: (v) => { S.pme = v; } },
+  { id: 'partsImmo', short: 'Société à prépondérance immobilière', title: 'L\'actif de la société est-il principalement constitué d\'immeubles non affectés à son exploitation ?',
+    help: 'Dans ce cas, les plus-values sur les parts sont exclues des exonérations.',
+    show: () => S.regime === 'ir' && S.cession === 'parts', opts: () => YN(), get: () => S.partsImmo, set: (v) => { S.partsImmo = v; } },
+  { id: 'lien', short: 'Contrôle du repreneur par le cédant', title: 'Le cédant contrôle-t-il le repreneur ?',
+    help: 'Il détient plus de 50 % des droits de vote ou des bénéfices du repreneur, ou en exerce la direction effective, à la cession ou dans les 3 ans qui suivent. Pour une société cédante : l\'associé détenant au moins 50 % ou le dirigeant (238 quindecies II-3).',
+    show: () => S.cession !== 'elements', opts: () => [[false, 'Non', 'Aucun lien de contrôle'], [true, 'Oui', 'Le 238 quindecies et le 151 septies A sont alors exclus']],
+    get: () => !S.sansLien, set: (v) => { S.sansLien = !v; } },
+  { id: 'isconds', short: 'Conditions de la société à l\'IS', title: 'Quelles conditions la société cédante remplit-elle ?',
+    help: 'Cochez celles qui sont remplies (238 quindecies II-2-d). Le cas habituel d\'une petite société les remplit toutes.',
+    show: () => S.regime === 'is' && S.cession !== 'elements', multi: true,
+    items: () => [['isPme', 'Moins de 250 salariés, et chiffre d\'affaires inférieur à 50 M€ ou total de bilan inférieur à 43 M€'],
+                  ['isCap', 'Capital et droits de vote non détenus à 25 % ou plus par des entreprises qui ne sont pas des PME'],
+                  ['isMinimis', 'Plafond des aides de minimis respecté (300 000 € sur 3 exercices)']],
+    sumText: () => ['isPme', 'isCap', 'isMinimis'].every((k) => S[k]) ? 'Toutes remplies' : ['isPme', 'isCap', 'isMinimis'].filter((k) => !S[k]).length + ' non remplie(s)' },
+  { id: 'agri', short: 'Activité agricole', title: 'L\'activité est-elle agricole ?',
+    help: 'Les seuils sont relevés pour une cession à un jeune agriculteur bénéficiaire des aides à l\'installation.',
+    show: () => S.cession !== 'elements' || S.regime === 'ir', opts: () => YN(), get: () => S.agri,
+    set: (v) => { S.agri = v; if (v && S.statutSocial === 'ssi') S.statutSocial = 'msa'; if (!v && S.statutSocial === 'msa') S.statutSocial = 'ssi'; if (!v) S.jeuneAgri = false; if (v && S.regime === 'ir' && S.activites[0] && S.activites[0].cat === 'a') S.activites[0].cat = 'c'; } },
+  { id: 'ja', short: 'Repreneur jeune agriculteur', title: 'Le repreneur est-il un jeune agriculteur ayant obtenu les aides à l\'installation ?',
+    help: 'Relève les plafonds du 151 septies (450 000 € / 550 000 €) et du 238 quindecies (700 000 € / 1 200 000 €) à compter de 2025.',
+    show: () => S.agri, opts: () => YN(), get: () => S.jeuneAgri, set: (v) => { S.jeuneAgri = v; } },
+  { id: 'imm', short: 'Immeubles dans la cession', title: 'La cession comprend-elle des immeubles ?',
+    help: 'Immeubles bâtis ou non bâtis, ou parts de sociétés à prépondérance immobilière. Leurs plus-values sont exclues du 238 quindecies et du 151 septies A, mais l\'abattement du 151 septies B peut s\'appliquer (IR).',
+    show: () => S.cession !== 'parts', opts: () => YN(), get: () => S.qImm,
+    set: (v) => { S.qImm = v; if (!v) { S.immeubles = []; S.pvImCT = 0; S.isPvIm = 0; } } },
+  { id: 'exprop', short: 'Expropriation ou indemnité d\'assurance', title: 'La plus-value résulte-t-elle d\'une expropriation ou d\'une indemnité d\'assurance ?',
+    help: 'Cas rare : le 151 septies n\'exige alors plus 5 ans d\'activité (art. 151 septies V).',
+    show: () => S.regime === 'ir', opts: () => YN(), get: () => S.exprop, set: (v) => { S.exprop = v; } },
+  { id: 'social', short: 'Régime social du dirigeant', title: 'Quel est le régime social du dirigeant ?',
+    help: 'Le court terme est un revenu d\'activité : il supporte la CSG-CRDS et, pour un artisan ou commerçant, les cotisations des indépendants.',
+    show: () => S.regime === 'ir', opts: () => S.agri ? [['msa', 'Exploitant agricole (MSA)', 'Cotisations MSA 2026 et CSG-CRDS'], ['csg', 'Autre régime', 'CSG-CRDS seule'], ['aucune', 'Ne pas chiffrer', 'Impôt seul']] : [['ssi', 'Artisan ou commerçant (SSI)', 'Cotisations et CSG-CRDS'], ['csg', 'Autre indépendant', 'CSG-CRDS seule'], ['aucune', 'Ne pas chiffrer', 'Impôt seul']],
+    get: () => S.statutSocial, set: (v) => { S.statutSocial = v; } },
+  { id: 'isReduit', short: 'Taux réduit d\'IS', title: 'Le taux réduit d\'IS de 15 % est-il applicable ?',
+    help: 'Chiffre d\'affaires inférieur à 10 M€, capital entièrement libéré et détenu à 75 % au moins par des personnes physiques (art. 219 I-b). Il s\'applique aux 42 500 premiers euros de bénéfice.',
+    show: () => S.regime === 'is', opts: () => YN(), get: () => S.isReduit, set: (v) => { S.isReduit = v; } },
+  { id: 'isDef', short: 'Déficits reportables', title: 'La société a-t-elle des déficits antérieurs reportables ?',
+    help: 'Ils s\'imputent dans la limite de 1 000 000 € plus 50 % de la fraction du bénéfice au-delà (art. 209 I).',
+    show: () => S.regime === 'is', opts: () => YN(), get: () => S.qDef, set: (v) => { S.qDef = v; if (!v) S.isDef = 0; } },
+  { id: 'isDist', short: 'Distribution aux associés', title: 'Veut-on chiffrer une distribution du produit de la vente aux associés ?',
+    help: 'Facultatif : le simulateur estime alors le prélèvement sur les dividendes et l\'économie nette après distribution.',
+    show: () => S.regime === 'is', opts: () => YN(), get: () => S.qDist, set: (v) => { S.qDist = v; if (!v) S.isDistrib = 0; } }
+];
+const qSteps = () => QSTEPS.filter((st) => st.show());
+const optText = (st) => { const o = st.opts ? st.opts().find((x) => x[0] === st.get()) : null; return o ? o[1] : '–'; };
+const answerText = (st) => st.multi ? st.sumText() : optText(st);
+
+function renderQuest() {
+  const steps = qSteps();
+  if (qIdx > steps.length) qIdx = steps.length;
+  const total = steps.length;
+  const card = $('qcard');
+  if (qIdx >= total) {
+    card.innerHTML = `<div class="qprog"><i style="width:100%"></i></div>
+      <div class="qmeta"><span>Récapitulatif</span><span>${total} réponses</span></div>
+      <h2 class="qtitle">Situation retenue</h2>
+      <p class="qhelp">Vérifiez les réponses. Vous pourrez les modifier depuis la page de simulation.</p>
+      <div class="qsum">${steps.map((st, i) => `<div><span>${st.short}</span><b><a href="#" data-qgo="${i}" style="color:inherit">${answerText(st)}</a></b></div>`).join('')}</div>
+      <div class="qnav"><button type="button" class="btn ghost" id="qback">← Retour</button><button type="button" class="btn primary" id="qopen">Ouvrir la simulation →</button></div>`;
+    return;
+  }
+  const st = steps[qIdx];
+  let body;
+  if (st.multi) {
+    body = `<div class="qopts">${st.items().map(([k, t]) => `<button type="button" class="qopt" data-qmulti="${k}" aria-pressed="${!!S[k]}"><b>${t}</b></button>`).join('')}</div>
+      <div class="qnav"><button type="button" class="btn ghost" id="qback"${qIdx === 0 ? ' hidden' : ''}>← Retour</button><button type="button" class="btn primary" id="qnext">Continuer →</button></div>`;
+  } else {
+    body = `<div class="qopts">${st.opts().map(([v, t, sub], i) => `<button type="button" class="qopt" data-qopt="${i}" aria-pressed="${!!qSeen[st.id] && st.get() === v}"><b>${t}</b>${sub ? `<small>${sub}</small>` : ''}</button>`).join('')}</div>
+      <div class="qnav"><button type="button" class="btn ghost" id="qback"${qIdx === 0 ? ' hidden' : ''}>← Retour</button><span></span></div>`;
+  }
+  card.innerHTML = `<div class="qprog"><i style="width:${(qIdx / total) * 100}%"></i></div>
+    <div class="qmeta"><span>Question ${qIdx + 1} sur ${total}</span><span>${st.short}</span></div>
+    <h2 class="qtitle">${st.title}</h2>${st.help ? `<p class="qhelp">${st.help}</p>` : ''}${body}`;
+}
+$('qcard').addEventListener('click', (e) => {
+  const steps = qSteps();
+  const go = e.target.closest('[data-qgo]');
+  if (go) { e.preventDefault(); qIdx = Number(go.dataset.qgo); renderQuest(); return; }
+  if (e.target.closest('#qback')) { qIdx = Math.max(0, qIdx - 1); renderQuest(); return; }
+  if (e.target.closest('#qopen')) { S.qDone = true; syncForm(); update(); setView('sim'); return; }
+  if (e.target.closest('#qnext')) { qIdx++; renderQuest(); return; }
+  const m = e.target.closest('[data-qmulti]');
+  if (m) { const k = m.dataset.qmulti; S[k] = !S[k]; m.setAttribute('aria-pressed', S[k]); return; }
+  const o = e.target.closest('[data-qopt]');
+  if (o) {
+    const st = steps[qIdx]; const v = st.opts()[Number(o.dataset.qopt)][0];
+    st.set(v); qSeen[st.id] = true; qIdx++; renderQuest();
+  }
+});
+function sitLine() {
+  const st = qSteps();
+  const get = (id) => st.find((x) => x.id === id);
+  const parts = [S.regime === 'is' ? 'IS' : 'IR', optText(get('cession'))];
+  if (S.regime === 'ir' && S.cession !== 'elements') parts.push(S.retraite ? 'départ en retraite' : 'sans départ en retraite');
+  return parts.join(' · ');
+}
+$('editQ').addEventListener('click', () => { qIdx = 0; renderQuest(); setView('quest'); });
+
+/* ---------- Vues ---------- */
+function setView(v) {
+  if (v !== 'quest' && !S.qDone) v = 'quest';
+  view = v;
+  $('view-quest').hidden = v !== 'quest';
+  $('view-sim').hidden = v !== 'sim';
+  $('view-detail').hidden = v !== 'detail';
+  $('tab-quest').setAttribute('aria-selected', v === 'quest');
+  $('tab-sim').setAttribute('aria-selected', v === 'sim');
+  $('tab-detail').setAttribute('aria-selected', v === 'detail');
+  document.body.dataset.view = v;
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => setView(t.dataset.view)));
+$('mini').addEventListener('click', () => $('results').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+
+
+/* ---------- Société à l'IS : résultats et détail ---------- */
+function renderResultsIS(R) {
+  const best = R.best, dc = R.dc, ex = R.ex;
+  const apply = R.eligible && R.exo > 0;
+  const maxTot = Math.max(dc.total, ex.total, 1);
+  const showD = R.distPct > 0;
+  const hero = `
+  <div class="hero">
+    <div class="eyebrow">${apply ? 'Société à l\'IS : régime applicable' : 'Société à l\'IS'}</div>
+    <h2 class="hero-name">${apply ? '238 quindecies' : R.eligible ? 'Aucune plus-value à exonérer' : 'Droit commun'}</h2>
+    <div class="hero-sub">${apply ? (R.statut === 'total' ? 'Exonération totale des plus-values non immobilières.' : 'Exonération partielle : ' + pct(R.taux) + ' des plus-values non immobilières.') : R.eligible ? 'Saisissez les plus-values de la cession.' : 'Les conditions du 238 quindecies ne sont pas toutes remplies : la plus-value est imposée à l\'IS.'}</div>
+    <div class="hero-figs">
+      <div><div class="big">${eur(best.isOnly)}</div><div class="cap">d'impôt sur les sociétés dû sur l'exercice${apply ? ' avec l\'exonération' : ''}</div></div>
+      ${apply ? `<div><div class="big">${eur(R.eco)}</div><div class="cap">d'IS évité par l'exonération (${eur(dc.isOnly)} sans)</div></div>` : ''}
+    </div>
+    ${apply ? `<div class="split" role="img" aria-label="IS évité et IS restant dû"><i class="ir" style="width:${dc.isOnly > 0 ? (ex.isOnly / dc.isOnly) * 100 : 0}%"></i><i class="ps" style="width:${dc.isOnly > 0 ? (R.eco / dc.isOnly) * 100 : 0}%"></i></div>
+    <div class="legend"><span><span class="dot" style="background:var(--hero-ir)"></span>IS restant dû <b>${eur(ex.isOnly)}</b></span><span><span class="dot" style="background:var(--hero-ps)"></span>IS évité <b>${eur(R.eco)}</b></span></div>` : ''}
+    ${apply && showD ? `<div class="tie">Après distribution de ${pct(R.distPct)} du produit net aux associés, l'économie nette est de ${eur(R.ecoNet)} : l'exonération accroît le montant distribuable et donc le prélèvement sur les distributions (${eur(ex.taxDiv - dc.taxDiv)} de plus).</div>` : ''}
+    <button class="btn" type="button" id="goDetail">Voir le détail des calculs →</button>
+  </div>`;
+
+  const row = (s, i) => {
+    const w = (s.total / maxTot) * 100, isW = s.total > 0 ? (s.isOnly / s.total) * w : 0;
+    return `<div class="row${s === best ? ' best' : ''}">
+      <div class="row-top"><span class="rk">${i + 1}</span><span class="nm">${s.label}</span><span class="amt">${eur(s.total)}</span></div>
+      <div class="bars"><i class="ir" style="width:${isW}%"></i><i class="ps" style="width:${w - isW}%"></i></div>
+      <div class="meta"><span>Résultat imposable <b>${eur(s.taxable)}</b></span><span>IS <b>${eur(s.is)}</b></span>${s.csb > 0 ? `<span>Contribution sociale <b>${eur(s.csb)}</b></span>` : ''}<span>Plus-value imposable <b>${eur(s.pvTaxable)}</b></span>${showD ? `<span>Prélèvement sur distributions <b>${eur(s.taxDiv)}</b></span>` : ''}</div>
+    </div>`;
+  };
+  const rows = R.scenarios.slice().sort((a, b) => a.total - b.total).map(row).join('');
+  const na = R.notApplicable.map((x) => `<div class="na-item"><b>${x.label}</b><ul>${x.reason.map((r) => `<li>${r}</li>`).join('')}</ul></div>`).join('');
+  const cmp = `<div class="card">
+    <div class="cmp-h"><h2>Impôt sur les sociétés, avec et sans exonération</h2><div class="leg"><span><span class="dot" style="background:var(--c-ir)"></span>IS</span><span><span class="dot" style="background:var(--c-ps)"></span>Distributions</span></div></div>
+    ${rows}
+    <details class="na"${naOpen ? ' open' : ''}><summary>Régimes non applicables à une société à l'IS (${R.notApplicable.length})</summary>${na}</details>
+  </div>`;
+  const reg = `<div><div class="sec-label">Conditions du 238 quindecies</div><div class="regimes"><div class="reg"><div class="reg-h"><h3>238 quindecies, société à l'IS</h3>${R.eligible ? (R.statut === 'total' ? '<span class="chip ok">Exonération totale</span>' : '<span class="chip warn">Partielle, ' + pct(R.taux) + '</span>') : '<span class="chip bad">Non applicable</span>'}</div>${condList(R.conds)}<div class="reg-p">Exonération des plus-values non immobilières de la société, sur option. Les plus-values immobilières et les profits sur stocks restent imposés.</div></div></div></div>`;
+  const notes = `<div><div class="sec-label">Points de vigilance</div><ul class="notes">${R.warnings.map((w) => `<li class="${w.lvl === 'warn' ? 'warn' : w.lvl === 'muted' ? 'muted' : ''}">${w.t}</li>`).join('')}</ul></div>`;
+  $('results').innerHTML = hero + cmp + reg + notes;
+  const det = $('results').querySelector('details.na');
+  if (det) det.addEventListener('toggle', () => { naOpen = det.open; });
+  const g = $('goDetail'); if (g) g.addEventListener('click', () => setView('detail'));
+  $('mini-n').textContent = apply ? '238 quindecies, IS' : 'IS, droit commun';
+  $('mini-a').textContent = apply ? eur(R.eco) + ' évités' : eur(best.isOnly);
+}
+
+function isScenTable(c, R) {
+  const L = (l, f, v, strong, ref) => `<tr class="${strong ? 'strong' : ''}"><td><span class="l">${l}</span>${ref ? `<span class="ref">${ref}</span>` : ''}</td><td class="f">${f}</td><td class="r v">${eur(v)}</td></tr>`;
+  return `<div class="tbl"><table class="calc"><thead><tr><th>Ligne</th><th>Calcul</th><th class="r">Montant</th></tr></thead><tbody>
+    ${L('Résultat de l\'exercice avant plus-values', '', R.res, false, '')}
+    ${L('Plus-values non immobilières imposables', eur(R.pvNi) + ' − ' + eur(c.exoAmt) + ' exonérés', R.pvNi - c.exoAmt, false, 'CGI art. 238 quindecies I')}
+    ${L('Plus-values immobilières imposables', 'droit commun', R.pvIm, false, 'CGI art. 238 quindecies V')}
+    ${L('Résultat avant imputation des déficits', '', c.base, true, '')}
+    ${c.imput > 0 ? L('Déficits antérieurs imputés', 'plafond 1 000 000 € + 50 % de l\'excédent', -c.imput, false, 'CGI art. 209 I') : ''}
+    ${L('Résultat imposable', '', c.taxable, true, '')}
+    ${R.reduit ? L('IS à 15 %', eur(c.t15) + ' × 15 %', c.is15, false, 'CGI art. 219 I-b') : ''}
+    ${L('IS à 25 %', eur(c.taxable - c.t15) + ' × 25 %', c.is25, false, 'CGI art. 219 I')}
+    ${c.csb > 0 ? L('Contribution sociale de 3,3 %', '3,3 % × (IS − 763 000 €)', c.csb, false, 'CGI art. 235 ter ZC') : ''}
+    ${L('Impôt sur les sociétés dû', '', c.tot, true, '')}
+    ${L('IS imputable aux plus-values', 'IS de l\'exercice − IS sans plus-value (' + eur(R.ref0.tot) + ')', c.isPv, false, '')}
+    ${R.distPct > 0 ? L('Produit net distribuable', 'plus-values − IS qui leur est imputable', c.net, false, '') + L('Prélèvement sur distributions', eur(c.dist) + ' × ' + pct(R.tDiv), c.taxDiv, false, '') : ''}
+    ${L('Coût fiscal total', R.distPct > 0 ? 'IS + prélèvement sur distributions' : 'IS', c.total, true, '')}
+  </tbody></table></div>`;
+}
+
+function renderDetailIS(R) {
+  const yr = Number(S.annee) || 2026;
+  const EI = effInput(); const n = (k) => Number(EI[k]) || 0;
+  $('detail-intro').textContent = 'Société à l\'IS, ' + (S.mode === 'onereux' ? 'vente' : 'transmission à titre gratuit') + ', cession en ' + yr + '. Chaque section montre la formule, les valeurs retenues et la référence BOFiP ou CGI.';
+  const secs = [
+    { id: 'd-data', label: 'Données retenues', sub: '' },
+    { id: 'd-cond', label: 'Conditions', sub: R.eligible ? 'remplies' : 'non remplies', off: !R.eligible },
+    { id: 'd-exo', label: 'Taux d\'exonération', sub: R.eligible ? pct(R.taux) : 'non', off: !R.eligible },
+    { id: 'd-is', label: 'IS avec et sans', sub: eur(R.eco) },
+    { id: 'd-nature', label: 'Ce que couvre l\'exonération', sub: '' }
+  ];
+  $('dnav').innerHTML = secs.map((x) => `<button type="button" class="navchip${x.off ? ' off' : ''}" data-go="${x.id}"><span>${x.label}</span><span class="sub">${x.sub}</span></button>`).join('');
+  const data = `<section class="dsec card" id="d-data"><h2>Données retenues</h2><p class="lead">Valeur transmise, plus-values et résultat de la société servant à tous les calculs.</p>
+    <div class="stack"><div class="two"><div>${kv([
+      ['Valeur non immobilière transmise', eur(n('vNonImmo'))],
+      ['Charges en capital et indemnités', eur(n('charges'))],
+      ['Valeur retenue pour le seuil', eur(n('vNonImmo') + n('charges'))],
+    ])}</div><div>${kv([
+      ['Branche exercée depuis', n('anciennete') + ' ans'],
+      ['Plus-values non immobilières', eur(R.pvNi)],
+      ['Plus-values immobilières', eur(R.pvIm)],
+      ['Résultat avant plus-values', eur(R.res)],
+      ['Déficits reportables', eur(R.def)],
+      ['Taux d\'IS', R.reduit ? '15 % jusqu\'à 42 500 €, puis 25 %' : '25 %']
+    ])}</div></div></div></section>`;
+  const cond = `<section class="dsec card" id="d-cond"><h2>Conditions du 238 quindecies</h2><p class="lead">Conditions applicables à une société soumise à l'IS (II-2-d). Elles sont cumulatives.</p>${condList(R.conds)}
+    <p class="src" style="margin-top:12px">CGI art. 238 quindecies I, II et IV ; BOI-BIC-PVMV-40-20-50 § 50 à 280.</p></section>`;
+  const exo = `<section class="dsec card" id="d-exo"><h2>Valeur transmise et taux d'exonération</h2><p class="lead">Taux partiel : (1 000 000 € − valeur) / 500 000 € entre 500 000 € et 1 000 000 €. Les stocks et créances comptent dans la valeur, l'immobilier non.</p>${stepsTable(R.steps)}</section>`;
+  const sc = `<section class="dsec" id="d-is"><h2>Impôt sur les sociétés avec et sans exonération</h2><p class="lead">La plus-value exonérée est déduite du résultat fiscal. L'économie d'IS est calculée par différence entre les deux liquidations, ce qui tient compte du taux réduit, des déficits et de la contribution sociale.</p><div class="dcontent">
+    <div class="card"><div class="dhead"><h3 style="font-size:17px">Sans exonération, droit commun</h3><span class="chip">${eur(R.dc.total)}</span></div><div style="margin-top:14px">${isScenTable(R.dc, R)}</div></div>
+    ${R.eligible ? `<div class="card"><div class="dhead"><h3 style="font-size:17px">Avec le 238 quindecies</h3><span class="chip acc">${eur(R.ex.total)}</span></div><div style="margin-top:14px">${isScenTable(R.ex, R)}</div>
+      <div class="scen-total"><span>Exonération <b>${eur(R.exo)}</b></span><span>IS évité <b>${eur(R.eco)}</b></span>${R.distPct > 0 ? `<span>Économie après distribution <b>${eur(R.ecoNet)}</b></span>` : ''}</div></div>` : ''}
+  </div></section>`;
+  const nature = `<section class="dsec card" id="d-nature"><h2>Ce que couvre l'exonération</h2><div class="stack">
+    <p>Pour une société à l'IS, la transmission doit porter sur une <b>branche complète d'activité</b> : un ensemble d'éléments d'actif et de passif formant une exploitation autonome, avec le personnel qui y est affecté. Sont exclues les cessions de la seule clientèle, du seul droit au bail, du matériel ou de marques. Le régime pratique des entreprises individuelles (activité poursuivie à l'identique par le repreneur) ne s'applique pas aux sociétés. <span class="src">BOI-BIC-PVMV-40-20-50 § 110 et 200.</span></p>
+    <p>L'exonération porte sur les plus-values soumises aux articles 39 duodecies à 39 quindecies. Restent imposés au droit commun : les immeubles et parts à prépondérance immobilière, les terrains à bâtir et les profits sur stocks. <span class="src">CGI art. 238 quindecies V ; BOI-BIC-PVMV-40-20-50 § 370 à 390.</span></p>
+    <p>À l'IS, la plus-value sur fonds de commerce n'a pas de régime à long terme à taux réduit : elle est taxée comme le résultat courant. Le simulateur suppose que l'exonération couvre l'ensemble de la plus-value non immobilière, amortissements réintégrés compris. Point à confirmer pour un dossier sensible.</p>
+    <p>L'exonération ne dispense pas de l'impôt des associés sur le produit distribué (dividendes, boni de liquidation). Option sur papier libre, remise en cause si le cédant contrôle le repreneur dans les 3 ans. <span class="src">CGI art. 238 quindecies IV ; BOI-BIC-PVMV-40-20-50 § 450.</span></p>
+  </div></section>`;
+  $('dcontent').innerHTML = data + cond + exo + sc + nature;
+}
+
+function update() {
+  $('sitline').textContent = sitLine();
+  if (S.regime === 'is') {
+    RES = Engine.analyseIS(effInput());
+    renderResultsIS(RES);
+    renderDetailIS(RES);
+    return;
+  }
+  RES = Engine.analyse(effInput());
+  renderResults(RES);
+  renderDetail(RES);
+  updateImmChips();
+}
+
+syncForm();
+update();
+renderQuest();
+setView('quest');
+</script>
+</body></html>

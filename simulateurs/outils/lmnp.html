@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Simulateur Lmnp",
+  "schemaVersion": 1,
+  "description": "Simulateur d'orientation LMNP/LMP : qualification LMP/LMNP, affiliation SSI ou prélèvements 17,2 %, TVA, CFE, micro vs réel avec chiffrage. À jour du droit 2026 (art. 50-0, 155 IV, 150 VB III CGI ; L.611-1 CSS). Mode client + mode expert.",
+  "mcpTools": [],
+  "mcpServerNames": []
+}
+</script>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulateur LMNP — régimes fiscal, social et TVA</title>
+<style>
+  :root{
+    --navy:#14213d; --navy2:#1f2f52; --gold:#b7892f;
+    --bg:#f4f2ec; --card:#ffffff; --ink:#23272e; --muted:#5b6472; --line:#e2e0d8;
+    --green:#2c5f45; --green-bg:#e7f0ea;
+    --amber:#8a6d1f; --amber-bg:#f8f0da;
+    --red:#8a3324; --red-bg:#fbeee9;
+    --blue:#1f4e79; --blue-bg:#e9f0f7;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:15.5px;line-height:1.6;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px;}
+
+  header{background:linear-gradient(160deg,var(--navy),var(--navy2));color:#f4f2ea;
+    padding:28px 0;border-bottom:4px solid var(--gold);}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+  header h1{font-family:Georgia,serif;font-size:1.5rem;margin:0 0 4px;color:#fff;}
+  header p{margin:0;color:#c7cdd9;font-size:.9rem;}
+  .expert-switch{display:flex;align-items:center;gap:10px;font-size:.85rem;color:#dfe3ea;
+    background:rgba(255,255,255,.08);padding:8px 14px;border-radius:30px;cursor:pointer;user-select:none;}
+  .switch{width:42px;height:24px;background:#41506e;border-radius:20px;position:relative;transition:.2s;flex:0 0 auto;}
+  .switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s;}
+  body.expert .switch{background:var(--gold);}
+  body.expert .switch::after{left:21px;}
+
+  main{padding:26px 0 60px;}
+  .grid{display:grid;grid-template-columns:380px 1fr;gap:26px;align-items:start;}
+  @media (max-width:900px){.grid{grid-template-columns:1fr;}}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;}
+  .panel.form{position:sticky;top:16px;}
+  @media (max-width:900px){.panel.form{position:static;}}
+  h2.pt{font-family:Georgia,serif;font-size:1.08rem;color:var(--navy);margin:0 0 16px;}
+
+  .field{margin-bottom:15px;}
+  .field label{display:block;font-size:.82rem;font-weight:600;color:var(--navy2);margin-bottom:5px;}
+  .field .hint{font-weight:400;color:var(--muted);font-size:.76rem;}
+  .field input[type=number], .field select{width:100%;padding:9px 11px;border:1px solid #cfd3da;border-radius:7px;
+    font-size:.95rem;background:#fff;color:var(--ink);}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(183,137,47,.15);}
+  .radios{display:flex;flex-direction:column;gap:7px;}
+  .radios label{display:flex;align-items:flex-start;gap:9px;font-size:.86rem;font-weight:500;color:var(--ink);
+    padding:9px 11px;border:1px solid #d8dbe1;border-radius:8px;cursor:pointer;transition:.15s;}
+  .radios label:hover{border-color:var(--gold);}
+  .radios input{margin-top:2px;accent-color:var(--navy);}
+  .radios label.sel{border-color:var(--navy);background:#f5f7fb;}
+  .chk{display:flex;gap:9px;align-items:flex-start;font-size:.84rem;padding:9px 11px;border:1px dashed #d0c9b5;border-radius:8px;background:#fbf8f0;}
+  .chk input{margin-top:3px;accent-color:var(--gold);}
+  .sep{height:1px;background:var(--line);margin:18px 0;}
+  .amort{width:100%;border-collapse:collapse;font-size:.75rem;margin-top:5px;}
+  .amort th{background:#eff1f5;color:var(--navy);font-weight:600;padding:5px 5px;border:1px solid var(--line);text-align:right;}
+  .amort th:first-child{text-align:left;}
+  .amort td{padding:3px 5px;border:1px solid var(--line);text-align:right;}
+  .amort td:first-child{text-align:left;font-weight:500;}
+  .amort input{width:44px;padding:4px 3px;border:1px solid #cfd3da;border-radius:5px;font-size:.76rem;text-align:right;}
+  .amort .dot{color:var(--navy);font-weight:600;font-variant-numeric:tabular-nums;}
+  .amort tfoot td{background:#faf9f5;font-weight:700;}
+
+  /* Results */
+  .summary{background:var(--navy);color:#fff;border-radius:12px;padding:18px 22px;margin-bottom:20px;}
+  .summary .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .chip{background:rgba(255,255,255,.12);border-radius:20px;padding:5px 13px;font-size:.83rem;}
+  .chip b{color:#f0d79a;}
+  .summary h3{margin:0;font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:#f0d79a;font-weight:700;}
+
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:560px){.cards{grid-template-columns:1fr;}}
+  .rcard{border:1px solid var(--line);border-radius:11px;padding:15px 17px;background:var(--card);border-left-width:4px;}
+  .rcard h4{margin:0 0 3px;font-size:.74rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;}
+  .rcard .val{font-size:1.14rem;font-weight:700;color:var(--navy);line-height:1.3;}
+  .rcard .sub{font-size:.82rem;color:var(--muted);margin-top:4px;}
+  .rcard.g{border-left-color:var(--green);} .rcard.g .val{color:var(--green);}
+  .rcard.a{border-left-color:var(--amber);} .rcard.a .val{color:var(--amber);}
+  .rcard.r{border-left-color:var(--red);} .rcard.r .val{color:var(--red);}
+  .rcard.b{border-left-color:var(--blue);} .rcard.b .val{color:var(--blue);}
+  .expert-only{display:none;}
+  body.expert .expert-only{display:block;}
+  .rcard .exp{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line);font-size:.76rem;color:var(--muted);}
+  .rcard .exp code{background:#eef0f4;color:var(--navy);padding:1px 5px;border-radius:4px;font-size:.9em;}
+
+  .chiffrage{margin-top:20px;}
+  .chiffrage h3{font-family:Georgia,serif;font-size:1.05rem;color:var(--navy);margin:0 0 12px;}
+  table{border-collapse:collapse;width:100%;font-size:.87rem;background:var(--card);border-radius:8px;overflow:hidden;}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:right;}
+  th:first-child,td:first-child{text-align:left;}
+  thead th{background:var(--navy);color:#fff;font-weight:600;}
+  tbody th{background:#f3f1ea;color:var(--navy);font-weight:600;}
+  td.reco{background:var(--green-bg);font-weight:700;color:var(--green);}
+  td.muted{color:#a8a49b;background:#f4f3ef;text-align:center;}
+  th.muted-head{opacity:.5;}
+  .tag-off{display:inline-block;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+    background:#7a2f22;color:#fff;padding:1px 7px;border-radius:10px;vertical-align:middle;margin-left:6px;text-decoration:none;}
+  .winner{font-size:.9rem;margin-top:10px;padding:11px 15px;border-radius:8px;background:var(--green-bg);
+    border-left:4px solid var(--green);color:#1f4433;}
+
+  .note{margin-top:14px;padding:12px 16px;border-radius:8px;font-size:.82rem;}
+  .note.pv{background:var(--red-bg);border-left:4px solid var(--red);color:#5f231a;}
+  .note.info{background:var(--blue-bg);border-left:4px solid var(--blue);color:#1d3a55;}
+  .note.ok{background:var(--green-bg);border-left:4px solid var(--green);color:#1f4433;}
+
+  .disclaimer{margin-top:22px;background:#efece3;border-radius:9px;padding:14px 18px;font-size:.78rem;color:var(--muted);}
+  footer{color:var(--muted);font-size:.76rem;text-align:center;padding:20px 0;}
+  .expert-only-inline{display:none;}
+  body.expert .expert-only-inline{display:inline;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div>
+      <h1>Simulateur LMNP</h1>
+      <p>Orientation des régimes fiscal, social et TVA de la location meublée — à jour 2026</p>
+    </div>
+    <div class="expert-switch" id="expertToggle" role="switch" aria-checked="false" tabindex="0">
+      <span class="switch"></span> Mode expert
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+<div class="grid">
+
+  <!-- ============ FORM ============ -->
+  <section class="panel form">
+    <h2 class="pt">Votre situation</h2>
+
+    <div class="field">
+      <label>Type de location</label>
+      <div class="radios" id="typeRadios">
+        <label class="sel"><input type="radio" name="type" value="longue" checked><span>Location meublée <b>longue durée</b><br><span class="hint">bail d'habitation classique (RP du locataire)</span></span></label>
+        <label><input type="radio" name="type" value="classe"><span>Meublé de tourisme <b>classé</b><br><span class="hint">clientèle de passage, classement obtenu</span></span></label>
+        <label><input type="radio" name="type" value="nonclasse"><span>Meublé de tourisme <b>non classé</b><br><span class="hint">type Airbnb sans classement</span></span></label>
+        <label><input type="radio" name="type" value="hotes"><span><b>Chambres d'hôtes</b><br><span class="hint">hébergement chez l'habitant + petit-déjeuner</span></span></label>
+      </div>
+    </div>
+
+    <div class="field" id="paraWrap">
+      <div class="chk">
+        <input type="checkbox" id="para">
+        <label for="para" style="margin:0;font-weight:500;cursor:pointer;">Je fournis <b>au moins 3 des 4 services</b> para-hôteliers (petit-déjeuner, ménage régulier, linge, accueil) sur des séjours ≤ 30 nuitées</label>
+      </div>
+    </div>
+
+    <div class="field" id="thWrap">
+      <div class="chk">
+        <input type="checkbox" id="thJouissance">
+        <label for="thJouissance" style="margin:0;font-weight:500;cursor:pointer;">Je me réserve la <b>jouissance du bien</b> une partie de l'année (logement non loué en permanence)</label>
+      </div>
+    </div>
+    <div class="sep"></div>
+
+    <div class="field">
+      <label>Recettes annuelles de location <span class="hint">(loyers encaissés, € / an)</span></label>
+      <input type="number" id="recettes" value="18000" min="0" step="500">
+    </div>
+
+    <div class="field">
+      <label>Autres revenus d'activité du foyer <span class="hint">salaires, pensions, BIC/BNC/BA, gérance (€ / an)</span></label>
+      <input type="number" id="autres" value="45000" min="0" step="1000">
+    </div>
+
+    <div class="sep"></div>
+    <p style="font-size:.78rem;color:var(--muted);margin:0 0 12px;">Paramètres du régime réel (pour le chiffrage) :</p>
+
+    <div class="field">
+      <label>Charges afférentes à l'immeuble et à la location <span class="hint">énergie, charges locatives, entretien, assurance, intérêts d'emprunt, taxe foncière, gérance… (€)</span></label>
+      <input type="number" id="chargesImmo" value="6000" min="0" step="500">
+      <div class="hint" style="margin-top:3px;color:var(--navy2);">→ entrent dans le plafond de l'art. 39 C</div>
+    </div>
+    <div class="field">
+      <label>Autres charges de l'activité <span class="hint">honoraires comptables/juridiques, frais bancaires, CFE… (€)</span></label>
+      <input type="number" id="chargesActivite" value="1500" min="0" step="500">
+      <div class="hint" style="margin-top:3px;">déductibles du résultat, mais <b>hors</b> plafond de l'art. 39 C</div>
+    </div>
+    <div class="field">
+      <label>Valeur de l'ensemble immobilier <span class="hint">frais d'acquisition inclus si immobilisés (€)</span></label>
+      <input type="number" id="valTotal" value="250000" min="0" step="5000">
+    </div>
+    <div class="field">
+      <label>Quote-part terrain <span class="hint">non amortissable (%)</span></label>
+      <input type="number" id="terrainPct" value="15" min="0" max="100" step="1">
+    </div>
+    <div class="field">
+      <label>Amortissement par composants <span class="hint">BOFiP «&nbsp;Logements&nbsp;» — % de la valeur hors terrain · durée (ans)</span></label>
+      <table class="amort">
+        <thead><tr><th>Composant</th><th>%</th><th>Ans</th><th>Dot./an</th></tr></thead>
+        <tbody>
+          <tr><td>Gros œuvre</td><td><input id="go_pct" type="number" value="40" min="0" step="1"></td><td><input id="go_dur" type="number" value="50" min="1" step="1"></td><td class="dot" id="go_dot">—</td></tr>
+          <tr><td>Façades</td><td><input id="fa_pct" type="number" value="20" min="0" step="1"></td><td><input id="fa_dur" type="number" value="25" min="1" step="1"></td><td class="dot" id="fa_dot">—</td></tr>
+          <tr><td>IGT</td><td><input id="ig_pct" type="number" value="20" min="0" step="1"></td><td><input id="ig_dur" type="number" value="20" min="1" step="1"></td><td class="dot" id="ig_dot">—</td></tr>
+          <tr><td>Agencements</td><td><input id="ag_pct" type="number" value="20" min="0" step="1"></td><td><input id="ag_dur" type="number" value="10" min="1" step="1"></td><td class="dot" id="ag_dot">—</td></tr>
+        </tbody>
+        <tfoot><tr><td>Total immeuble</td><td id="pctSum">—</td><td></td><td class="dot" id="dot_tot">—</td></tr></tfoot>
+      </table>
+      <div class="hint expert-only" style="margin-top:4px;">Fourchettes BOFiP Logements — valeur&nbsp;: gros œuvre 40-50, façades 5-20, IGT 20-30, agencements 20-25 · durée&nbsp;: gros œuvre &gt;50, façades 20-50, IGT 15-30, agencements 5-15.</div>
+    </div>
+    <div class="field">
+      <label>Mobilier et équipements <span class="hint">amorti séparément (€ · durée en ans)</span></label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="number" id="mob_val" value="8000" min="0" step="500" style="flex:2">
+        <input type="number" id="mob_dur" value="7" min="1" step="1" style="flex:1">
+        <span class="dot" id="mob_dot" style="flex:1;text-align:right;color:var(--navy);font-weight:600;">—</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Amortissements différés antérieurs <span class="hint">stock reporté à l'ouverture de l'exercice (€)</span></label>
+      <input type="number" id="stockDiff" value="0" min="0" step="1000">
+      <div class="hint" style="margin-top:3px;">imputables sur la marge sous le plafond de l'art. 39 C</div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="field">
+      <label>Tranche marginale d'imposition (TMI)</label>
+      <select id="tmi">
+        <option value="0">0 %</option>
+        <option value="0.11">11 %</option>
+        <option value="0.30" selected>30 %</option>
+        <option value="0.41">41 %</option>
+        <option value="0.45">45 %</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>RFR du foyer (N-2) <span class="hint">pour tester le versement libératoire — laisser vide si non concerné (€)</span></label>
+      <input type="number" id="rfr" value="" min="0" step="1000" placeholder="—">
+    </div>
+    <div class="field">
+      <label>Nombre de parts <span class="hint">quotient familial (pour le seuil du versement libératoire)</span></label>
+      <input type="number" id="parts" value="1" min="1" step="0.25">
+    </div>
+    <div class="field expert-only">
+      <label>Taux SSI forfaitaire <span class="hint">(optionnel — laisser vide pour le calcul détaillé par poste, barème TNS 2026)</span></label>
+      <input type="number" id="tauxSSI" value="" min="0" max="60" step="1" placeholder="calcul détaillé">
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section>
+    <div class="summary" id="summary"></div>
+    <div class="cards" id="cards"></div>
+
+    <div class="chiffrage">
+      <h3>Chiffrage indicatif — micro-BIC vs régime réel</h3>
+      <div id="chiffrageBox"></div>
+    </div>
+
+    <div id="notes"></div>
+
+    <div class="disclaimer">
+      <strong>Avertissement.</strong> Cet outil fournit une orientation et un ordre de grandeur à partir de la législation applicable en juillet 2026. Le résultat annuel d'une activité LMNP non professionnelle supporte des prélèvements sociaux de 18,6 %, tandis que les plus-values immobilières demeurent soumises au taux de 17,2 %. Les résultats réels dépendent notamment de la situation du foyer, de la nature exacte des charges, de la ventilation terrain-construction-mobilier, du plan d'amortissement par composants, de la CFE, de la TVA et d'une éventuelle affiliation sociale. Toute décision doit être validée au regard du dossier complet.
+    </div>
+  </section>
+
+</div>
+</div>
+</main>
+
+<footer>Simulateur LMNP — calcul local dans votre navigateur, aucune donnée transmise. Vérifier les seuils en vigueur à la date d'utilisation.</footer>
+
+<script>
+"use strict";
+
+/* ---------- Données de référence (droit en vigueur 2026) ---------- */
+var CATS = {
+  longue:    {label:"Location meublée longue durée", courte:false, seuilMicro:83600,  abat:0.50, tvaBase:false},
+  classe:    {label:"Meublé de tourisme classé",     courte:true,  seuilMicro:83600,  abat:0.50, tvaBase:false},
+  nonclasse: {label:"Meublé de tourisme non classé",  courte:true,  seuilMicro:15000,  abat:0.30, tvaBase:false},
+  hotes:     {label:"Chambres d'hôtes",               courte:true,  seuilMicro:83600,  abat:0.50, tvaBase:true}
+};
+var SEUIL_LMP = 23000;         // art. 155 IV 2 CGI
+var PS_PATRIMOINE = 0.186;     // PS revenus du patrimoine LMNP non affilié — LFSS 2026 (CSG 10,6 %)
+var PS_PLUSVALUE = 0.172;      // plus-value immobilière : inchangée à 17,2 %
+var PASS = 48060;              // PASS 2026
+var SEUIL_HOTES_SOCIAL = Math.round(0.13 * PASS); // 13 % du PASS ≈ 6 248 €
+var SEUIL_VL_PART = 29315;     // versement libératoire 2026 : RFR 2024 max par part (revalorisé chaque année)
+
+/* ---------- Helpers ---------- */
+function euro(n){ return (Math.round(n)).toLocaleString('fr-FR') + ' €'; }
+function pct(n){ return (n*100).toLocaleString('fr-FR',{maximumFractionDigits:1}) + ' %'; }
+function el(id){ return document.getElementById(id); }
+function val(id){ return parseFloat(el(id).value) || 0; }
+
+/* Cotisations SSI (TNS – BIC) estimées par poste, barème 2026, sur le bénéfice B */
+function cotisSSI(B){
+  var P = PASS;                          // PASS 2026 = 48 060 €
+  if(!(B > 0)) B = 0;
+  var souPass = Math.min(B, P);
+  var retraiteBase = 0.1787*souPass + 0.0072*B;                          // 17,87 % ≤ 1 PASS + 0,72 % déplaf.
+  var retraiteCompl = 0.07*souPass + 0.08*Math.max(0, Math.min(B,4*P)-P);// 7 % ≤ 1 PASS, 8 % de 1 à 4 PASS
+  var tMal = B<=0.4*P ? 0 : (B>=1.1*P ? 0.065 : 0.065*(B-0.4*P)/(0.7*P));// maladie 0→6,5 % progressif
+  var maladie = tMal*B;
+  var invalidite = 0.013*souPass;                                        // 1,3 % ≤ 1 PASS
+  var tAF = B<=1.1*P ? 0 : (B>=1.4*P ? 0.031 : 0.031*(B-1.1*P)/(0.3*P)); // alloc. familiales 0→3,1 %
+  var af = tAF*B;
+  var horsCSG = retraiteBase+retraiteCompl+maladie+invalidite+af;
+  var csg = 0.097*(B + horsCSG);                                         // CSG-CRDS 9,7 % sur bénéfice + cotis.
+  var formation = 0.0029*P;                                              // formation prof. forfait
+  var brut = horsCSG + csg + formation;
+  var total = Math.max(1200, brut);                                      // cotisation minimale ~1 200 €
+  return {total:total, retraiteBase:retraiteBase, retraiteCompl:retraiteCompl, maladie:maladie,
+          invalidite:invalidite, af:af, csg:csg, formation:formation,
+          plancher:(brut<1200), taux:(B>0? total/B : 0)};
+}
+
+/* Décomposition de l'amortissement par composants (BOFiP « Logements ») */
+function computeAmort(){
+  var valTotal = val('valTotal'), terrainPct = val('terrainPct');
+  var valTerrain = valTotal * terrainPct/100;
+  var valHT = valTotal - valTerrain;
+  var comps = [
+    {id:'go', name:'Gros œuvre',  pct:val('go_pct'), dur:Math.max(1,val('go_dur'))},
+    {id:'fa', name:'Façades',     pct:val('fa_pct'), dur:Math.max(1,val('fa_dur'))},
+    {id:'ig', name:'IGT',         pct:val('ig_pct'), dur:Math.max(1,val('ig_dur'))},
+    {id:'ag', name:'Agencements', pct:val('ag_pct'), dur:Math.max(1,val('ag_dur'))}
+  ];
+  var sumPct = 0, dotImmeuble = 0;
+  comps.forEach(function(c){ c.val = valHT*c.pct/100; c.dot = c.val/c.dur; sumPct += c.pct; dotImmeuble += c.dot; });
+  var mobVal = val('mob_val'), mobDur = Math.max(1, val('mob_dur'));
+  var mobDot = mobVal/mobDur;
+  return {valTotal:valTotal, valTerrain:valTerrain, valHT:valHT, comps:comps,
+          mobVal:mobVal, mobDot:mobDot, dotImmeuble:dotImmeuble,
+          dotation:dotImmeuble+mobDot, dureeMoy:(dotImmeuble>0?valHT/dotImmeuble:0), sumPct:sumPct,
+          quotePart:((valTotal+mobVal)>0 ? (valHT+mobVal)/(valTotal+mobVal) : 1)};   // biens amortissables (immeuble hors terrain + mobilier) / actif immobilisé total
+}
+
+/* ---------- Moteur ---------- */
+function compute(){
+  var type = document.querySelector('input[name=type]:checked').value;
+  var cat = CATS[type];
+  var para = el('para').checked && cat.courte;
+  var recettes = val('recettes');
+  var autres = val('autres');
+  var chargesImmo = val('chargesImmo');
+  var chargesActivite = val('chargesActivite');
+  var amort = computeAmort();
+  var tmi = parseFloat(el('tmi').value);
+  var tauxSSI = val('tauxSSI')/100;
+
+  var r = {cat:cat, type:type, para:para, recettes:recettes};
+  r.amort = amort;
+
+  /* 1. Qualification LMP / LMNP (art. 155 IV CGI) */
+  var condSeuil = recettes > SEUIL_LMP;
+  var condPrepond = recettes > autres;
+  var isLMP = condSeuil && condPrepond;
+  r.qualif = {
+    lmp:isLMP,
+    label: isLMP ? "LMP — Loueur meublé professionnel" : "LMNP — Loueur meublé non professionnel",
+    detail: "Conditions cumulatives (art. 155 IV-2 CGI) : recettes > 23 000 € = " + (condSeuil?"OUI":"NON")
+            + " ; recettes > autres revenus d'activité = " + (condPrepond?"OUI":"NON") + "."
+  };
+
+  /* 2. Régime social */
+  var social = {};
+  if(para){
+    social.label = "Affiliation SSI (para-hôtellerie)";
+    social.tone = "a";
+    social.sub = "Activité para-hôtelière : BIC classique, affiliation au régime des indépendants.";
+    social.detail = "Les 3/4 services (art. 261 D 4°-b) font sortir du régime meublé : affiliation SSI de droit.";
+  } else if(type === 'hotes'){
+    var affilieH = (recettes*(1-cat.abat)) > SEUIL_HOTES_SOCIAL;
+    social.label = affilieH ? "Affiliation SSI" : "Prélèvements sociaux 18,6 %";
+    social.tone = affilieH ? "a" : "g";
+    social.sub = affilieH
+       ? "Revenu imposable > 13 % du PASS (≈ " + euro(SEUIL_HOTES_SOCIAL) + ")."
+       : "Revenu sous le seuil de 13 % du PASS (≈ " + euro(SEUIL_HOTES_SOCIAL) + ").";
+    social.detail = "Chambres d'hôtes : art. L.611-1 5° CSS — affiliation si revenu imposable > 13 % du PASS.";
+  } else if(cat.courte){
+    if(recettes <= SEUIL_LMP){
+      social.label = "Prélèvements sociaux 18,6 %";
+      social.tone = "g";
+      social.sub = "Recettes ≤ 23 000 € : pas d'affiliation SSI.";
+    } else {
+      var optionMicro = recettes <= cat.seuilMicro;
+      social.label = "Affiliation SSI obligatoire";
+      social.tone = "a";
+      social.sub = recettes > cat.seuilMicro
+         ? "Recettes > " + euro(cat.seuilMicro) + " : SSI au régime réel (option micro fermée)."
+         : "Recettes > 23 000 € : option micro-entrepreneur / régime général possible (≤ " + euro(cat.seuilMicro) + ").";
+    }
+    social.detail = "Courte durée : art. L.611-1 6° CSS — affiliation dès 23 000 €. Seuil de " + euro(cat.seuilMicro)
+                    + " = plafond de l'option micro-social / régime général (art. L.311-3 35° CSS), pas seuil d'affiliation.";
+  } else { /* longue durée */
+    if(isLMP){
+      social.label = "Affiliation SSI (LMP)";
+      social.tone = "a";
+      social.sub = "Longue durée : affiliation car qualification LMP atteinte.";
+    } else {
+      social.label = "Prélèvements sociaux 18,6 %";
+      social.tone = "g";
+      social.sub = "Reste LMNP : pas d'affiliation SSI, quel que soit le montant.";
+    }
+    social.detail = "Longue durée : affiliation seulement si LMP (art. 155 IV) — le montant seul ne suffit pas, la prépondérance est requise.";
+  }
+  r.social = social;
+  r.affilie = (social.label.indexOf('Affiliation') === 0) || (social.label.indexOf('Affiliation SSI')>=0);
+
+  /* 3. TVA */
+  var tva = {};
+  var tvaOui = cat.tvaBase || para;
+  if(tvaOui){
+    tva.label = "Dans le champ de la TVA";
+    tva.tone = "a";
+    tva.sub = (type === 'hotes')
+        ? "Chambres d'hôtes : en principe soumises à la TVA (para-hôtellerie), mais l'exploitant peut être dispensé de la facturer sous la franchise en base : CA ≤ 85 000 € (année précédente) ou 93 500 € (en cours)."
+        : "Para-hôtellerie soumise à la TVA, mais dispense de facturation sous la franchise en base : CA ≤ 85 000 € (année précédente) / 93 500 € (en cours).";
+    tva.detail = (type === 'hotes')
+        ? "Sous franchise : facturation sans TVA, mention « TVA non applicable, art. 293 B du CGI », sans récupération de la TVA sur achats/travaux. Au-delà des seuils ou sur option : TVA 10 % (hébergement et table d'hôtes), 20 % (boissons alcoolisées)."
+        : "Hors exonération de l'art. 261 D 4° : activité para-hôtelière soumise à TVA (art. 261 D 4°-b CGI) ; franchise en base de l'art. 293 B (10 % hébergement, 20 % alcool au-delà des seuils).";
+  } else {
+    tva.label = "Exonéré de TVA";
+    tva.tone = "g";
+    tva.sub = "Location meublée d'habitation : exonération de plein droit, option impossible.";
+    tva.detail = "Art. 261 D 4° CGI : exonération sans influence du montant ni du caractère saisonnier.";
+  }
+  r.tva = tva;
+
+  /* 4. Régime fiscal micro vs réel + chiffrage */
+  var microPossible = recettes <= cat.seuilMicro;
+  var resMicro = recettes * (1 - cat.abat);
+
+  // Réel : plafonnement art. 39 C sur les SEULES charges afférentes aux biens loués
+  var dotation = amort.dotation;
+  // Plafond art. 39 C II : loyers ventilés par la quote-part amortissable − charges afférentes (en totalité)
+  var plafond39C = amort.quotePart * recettes - chargesImmo;
+  var amortDeduct = Math.max(0, Math.min(dotation, plafond39C));
+  var amortDiffere = Math.max(0, dotation - amortDeduct);
+  // Imputation des amortissements différés antérieurs sur la marge restante sous le plafond
+  var stockDiff = val('stockDiff');
+  var marge = Math.max(0, plafond39C - dotation);        // marge disponible quand pas de limitation
+  var imputAnterieurs = Math.max(0, Math.min(marge, stockDiff));
+  var stockCloture = stockDiff - imputAnterieurs + amortDiffere;
+  var resReel = recettes - chargesImmo - chargesActivite - amortDeduct - imputAnterieurs;
+  var deficit = resReel < 0 ? resReel : 0;           // déficit LMNP (issu des charges, jamais de l'amort.)
+  var resReelImpot = Math.max(0, resReel);
+
+  function charge(res){
+    var ir = res * tmi;
+    var soc;
+    if(r.affilie){
+      soc = tauxSSI>0 ? res*tauxSSI : cotisSSI(res).total;   // taux forfaitaire si renseigné, sinon détaillé
+    } else {
+      soc = res * PS_PATRIMOINE;
+    }
+    return {res:res, ir:ir, soc:soc, tot:ir+soc};
+  }
+  var cMicro = charge(resMicro);
+  var cReel = charge(resReelImpot);
+  r.ssiDetail = (r.affilie && tauxSSI<=0) ? cotisSSI(resReelImpot) : null;   // détail pour l'affichage
+
+  // Arbitrage micro-social (colonne micro) : retenir le moins cher entre micro-social (sur recettes) et SSI global (sur bénéfice)
+  // Auto-entrepreneur réservé au classé (6 %) et aux chambres d'hôtes (21,2 %) ; le non classé en est exclu (2026)
+  var microSocialRate = (type==='classe') ? 0.06 : (type==='hotes' ? 0.212 : null);
+  r.microSocial = null;
+  if(r.affilie && microSocialRate!==null && microPossible){   // micro-entrepreneur : suppose l'affiliation (recettes > seuil)
+    var msCotis = microSocialRate * recettes;
+    r.microSocial = {rate:microSocialRate, cotis:msCotis, alt:cMicro.soc,
+                     altLabel:'SSI sur le bénéfice',
+                     retenu:(msCotis < cMicro.soc)};
+    if(msCotis < cMicro.soc){
+      cMicro = {res:resMicro, ir:cMicro.ir, soc:msCotis, tot:cMicro.ir + msCotis};
+    }
+  }
+
+  // Versement libératoire de l'IR (option micro-entrepreneur), sous condition de RFR N-2 par part
+  var rfr = val('rfr');
+  var parts = Math.max(1, val('parts') || 1);
+  // Versement libératoire réservé aux activités éligibles au micro-entrepreneur : classé (1 %) et chambres d'hôtes (1,7 %)
+  // Versement libératoire : 1,7 % depuis les recettes 2025 (classé et chambres d'hôtes rattachés aux prestations de services BIC)
+  var vlRate = (microPossible && (type==='classe' || type==='hotes')) ? 0.017 : null;
+  r.vl = null;
+  if(vlRate !== null && rfr > 0 && r.affilie){   // le VL suppose le statut micro-entrepreneur (donc l'affiliation)
+    var vlEligible = (rfr / parts) <= SEUIL_VL_PART;
+    var vlMontant = vlRate * recettes;
+    r.vl = {rate:vlRate, montant:vlMontant, bareme:cMicro.ir, eligible:vlEligible, seuilPart:SEUIL_VL_PART, rfrPart:rfr/parts, retenu:false};
+    if(vlEligible && vlMontant < cMicro.ir){
+      r.vl.retenu = true;
+      cMicro = {res:resMicro, ir:vlMontant, soc:cMicro.soc, tot:vlMontant + cMicro.soc};
+    }
+  }
+
+  r.fisc = {
+    microPossible:microPossible, seuilMicro:cat.seuilMicro, abat:cat.abat,
+    dotation:dotation, amortDeduct:amortDeduct, amortDiffere:amortDiffere,
+    deficit:deficit, chargesImmo:chargesImmo, chargesActivite:chargesActivite, plafond39C:plafond39C, quotePart:amort.quotePart,
+    marge:marge, imputAnterieurs:imputAnterieurs, stockDiff:stockDiff, stockCloture:stockCloture,
+    micro:cMicro, reel:cReel,
+    reco: (microPossible && cMicro.tot < cReel.tot) ? "micro" : "reel"
+  };
+
+  /* 5. CFE */
+  r.cfe = recettes < 5000
+      ? {label:"CFE : exonération probable", tone:"g", sub:"CA < 5 000 € : exonération de base (sauf délibération contraire)."}
+      : {label:"Assujetti à la CFE", tone:"b", sub:"Activité BIC : CFE due dans chaque commune (base = valeur locative N-2)."};
+  r.cfe.detail = "Rép. min. 1978, BOI-IF-CFE ; exonérations : CA<5 000 €, RP louée, meublé de tourisme classé partie de l'habitation…";
+
+  /* 6. Taxe d'habitation */
+  var thJou = el('thJouissance').checked;
+  if(type === 'longue'){
+    r.th = {label:"Non redevable", tone:"g", sub:"Location à l'année sous bail : bien à l'usage exclusif du locataire, pas de jouissance réservée possible."};
+  } else {
+    r.th = thJou
+      ? {label:"Taxe d'habitation due", tone:"a", sub:"Jouissance réservée une partie de l'année : THRS due."}
+      : {label:"Non redevable", tone:"g", sub:"Locaux spécialement aménagés et loués : pas de taxe d'habitation."};
+  }
+  r.th.detail = "TH sur résidence secondaire due si le propriétaire s'en réserve la disposition (CE 2-7-2014) ; en pratique, peut se superposer à la CFE.";
+
+  return r;
+}
+
+/* ---------- Rendu ---------- */
+function render(){
+  var r = compute();
+  var f = r.fisc;
+
+  // Décomposition de l'amortissement (dotations calculées + total)
+  var am = r.amort;
+  am.comps.forEach(function(c){ var e = el(c.id+'_dot'); if(e) e.textContent = euro(c.dot); });
+  if(el('mob_dot')) el('mob_dot').textContent = euro(am.mobDot);
+  if(el('dot_tot')) el('dot_tot').textContent = euro(am.dotImmeuble);
+  if(el('pctSum')){
+    el('pctSum').textContent = Math.round(am.sumPct)+'%';
+    el('pctSum').style.color = (Math.round(am.sumPct)!==100) ? '#8a3324' : '';
+  }
+
+  // Summary
+  var regimeFisc = f.reco === "micro" ? "au micro-BIC" : "au réel";
+  el('summary').innerHTML =
+    '<h3>Synthèse</h3>'
+    + '<div style="font-size:1.05rem;font-weight:700;margin-top:6px;">'
+    + r.cat.label + '</div>'
+    + '<div class="chips">'
+    + '<span class="chip">Statut : <b>' + (r.qualif.lmp?"LMP":"LMNP") + '</b></span>'
+    + '<span class="chip">Social : <b>' + (r.affilie?"SSI":"PS 18,6 %") + '</b></span>'
+    + '<span class="chip">TVA : <b>' + (r.tva.tone==="g"?"Exonéré":"Assujetti") + '</b></span>'
+    + '<span class="chip">Conseil fiscal : <b>' + (f.microPossible ? (f.reco==="micro"?"micro-BIC":"réel") : "réel obligatoire") + '</b></span>'
+    + '</div>';
+
+  // Cards
+  function card(cls,title,val,sub,detail,refs){
+    return '<div class="rcard '+cls+'"><h4>'+title+'</h4><div class="val">'+val+'</div>'
+      + (sub?'<div class="sub">'+sub+'</div>':'')
+      + (detail?'<div class="exp expert-only">'+detail+'</div>':'')
+      + '</div>';
+  }
+  var cards = '';
+  cards += card(r.qualif.lmp?'a':'g', 'Qualification', r.qualif.lmp?'LMP':'LMNP', r.qualif.label.split('—')[1], r.qualif.detail);
+  cards += card(r.social.tone, 'Régime social', r.social.label, r.social.sub, r.social.detail);
+  cards += card(r.tva.tone, 'TVA', r.tva.label, r.tva.sub, r.tva.detail);
+  cards += card(r.cfe.tone, 'CFE', r.cfe.label, r.cfe.sub, r.cfe.detail);
+  cards += card(r.th.tone, "Taxe d'habitation", r.th.label, r.th.sub, r.th.detail);
+  el('cards').innerHTML = cards;
+
+  // Chiffrage
+  var micro = f.micro, reel = f.reel;
+  var recoMicro = f.reco==="micro";
+  var mp = f.microPossible;
+  // Classe des cellules de la colonne micro : grisée si seuil dépassé, sinon recommandée le cas échéant
+  function mCell(isReco){ return !mp ? ' class="muted"' : (isReco ? ' class="reco"' : ''); }
+  function rCell(isReco){ return isReco ? ' class="reco"' : ''; }
+  function mVal(v){ return mp ? euro(v) : '—'; }   // pas de chiffres si le seuil est dépassé
+  var box = '<table><thead><tr><th></th>'
+      + '<th' + (mp?'':' class="muted-head"') + '>Micro-BIC'
+      + (mp?'':' <span class="tag-off">seuil dépassé</span>')
+      + '</th><th>Régime réel</th></tr></thead><tbody>';
+  box += '<tr><th>Résultat imposable</th>'
+      + '<td'+mCell(recoMicro)+'>'+mVal(micro.res)+'</td>'
+      + '<td'+rCell(!recoMicro)+'>'+euro(reel.res)+'</td></tr>';
+  var vlTag = (r.vl && r.vl.retenu) ? '<br><span style="font-size:.66rem;font-weight:700;color:#2c5f45;">versement libératoire '+pct(r.vl.rate)+'</span>' : '';
+  box += '<tr><th>Impôt sur le revenu'+((r.vl&&r.vl.retenu)?'':' (TMI)')+'</th><td'+mCell(false)+'>'+mVal(micro.ir)+vlTag+'</td><td>'+euro(reel.ir)+'</td></tr>';
+  var msTag = (r.microSocial && r.microSocial.retenu) ? '<br><span style="font-size:.66rem;font-weight:700;color:#2c5f45;">micro-social '+pct(r.microSocial.rate)+'</span>' : '';
+  box += '<tr><th>'+(r.affilie?'Cotisations sociales (est.)':'Prélèvements sociaux 18,6 %')+'</th><td'+mCell(false)+'>'+mVal(micro.soc)+msTag+'</td><td>'+euro(reel.soc)+'</td></tr>';
+  box += '<tr><th>Total prélèvements</th><td'+mCell(recoMicro)+'>'+mVal(micro.tot)+'</td><td'+rCell(!recoMicro)+'>'+euro(reel.tot)+'</td></tr>';
+  box += '</tbody></table>';
+
+  // Winner line
+  if(!f.microPossible){
+    box += '<div class="winner">Recettes > '+euro(f.seuilMicro)+' : le <b>régime réel est obligatoire</b> (micro-BIC fermé).</div>';
+  } else {
+    var eco = Math.abs(micro.tot - reel.tot);
+    box += '<div class="winner">Le <b>régime '+(recoMicro?'micro-BIC':'réel')+'</b> ressort le plus favorable ici — écart estimé de <b>'+euro(eco)+'</b> de prélèvements annuels.</div>';
+  }
+  el('chiffrageBox').innerHTML = box;
+
+  // Notes
+  var notes = '';
+  // Expert breakdown réel
+  notes += '<div class="note info expert-only">'
+    + '<b>Détail du réel.</b> Plafond art. 39 C = (loyers × quote-part '+pct(f.quotePart)+' = '+euro(f.quotePart*r.recettes)+') − charges afférentes '+euro(f.chargesImmo)+' = <b>'+euro(Math.max(0,f.plafond39C))+'</b>. '
+    + 'Dotation totale '+euro(f.dotation)+' (immeuble '+euro(r.amort.dotImmeuble)+' sur '+r.amort.dureeMoy.toFixed(1)+' ans + mobilier '+euro(r.amort.mobDot)+') → amortissement déductible '+euro(f.amortDeduct)
+    + ', différé reporté '+euro(f.amortDiffere)+'. '
+    + 'Autres charges d\'activité (hors plafond) '+euro(f.chargesActivite)+' déduites du résultat. '
+    + (f.stockDiff>0 || f.imputAnterieurs>0
+        ? 'Amortissements différés antérieurs : stock ouverture '+euro(f.stockDiff)+' − imputation sur marge '+euro(f.imputAnterieurs)+' + différé de l\'exercice '+euro(f.amortDiffere)+' = stock clôture '+euro(f.stockCloture)+'. '
+        : '')
+    + (f.deficit<0 ? '→ déficit reportable '+euro(f.deficit)+' (revenus LMNP, 10 ans, art. 156).' : '')
+    + '</div>';
+  // Alerte plus-value — distincte réel / micro
+  if(!r.qualif.lmp){
+    notes += '<div class="note pv">'
+      + '<b>Plus-value à la revente au régime réel.</b> Pour les cessions réalisées depuis le 15 février 2025, le prix d\'acquisition est minoré des amortissements effectivement admis en déduction en application de l\'article 39 C du CGI. '
+      + 'Les amortissements comptabilisés mais demeurés en report ne sont pas concernés tant qu\'ils n\'ont pas été déduits. '
+      + 'Certaines résidences étudiantes, résidences services pour personnes âgées ou handicapées et certains établissements médico-sociaux ou de soins de longue durée sont exclus du dispositif. '
+      + 'La plus-value immobilière demeure soumise à l\'IR au taux de 19 % et aux prélèvements sociaux de 17,2 %, après application des abattements pour durée de détention.</div>';
+    if(f.microPossible){
+      notes += '<div class="note ok">'
+        + '<b>Plus-value à la revente — au micro-BIC.</b> Aucun amortissement n\'étant déduit au titre de l\'art. 39 C, '
+        + 'la plus-value <b>n\'est pas minorée des amortissements</b> : la réintégration de l\'art. 150 VB III ne s\'applique pas au micro. '
+        + 'Elle relève du droit commun des particuliers (prix majoré des forfaits 7,5 % / 15 %, abattements pour durée de détention). '
+        + '<i>Atout du micro à la revente, à mettre en balance avec l\'économie annuelle du réel</i> (confirmation BOFiP attendue). '
+        + 'Lorsque le contribuable a antérieurement relevé du régime réel, les amortissements admis en déduction pendant cette période restent pris en compte lors de la cession, même si l\'activité relève du micro-BIC au moment de la vente.</div>';
+    }
+  }
+  // Cotisation minimale + détail SSI
+  if(r.affilie){
+    notes += '<div class="note info">'
+      + '<b>À prévoir.</b> Au SSI, une <b>cotisation minimale</b> (≈ 1 200 €) reste due même en résultat nul ou déficitaire. '
+      + (r.cat.courte && r.recettes<=r.fisc.seuilMicro ? 'En option micro-social, les cotisations sont assises sur les recettes (≈ 6 % meublé classé, ≈ 21,2 % sinon).' : '')
+      + '</div>';
+    if(r.ssiDetail){
+      var s = r.ssiDetail;
+      notes += '<div class="note info expert-only">'
+        + '<b>Détail des cotisations SSI (barème TNS 2026, sur le résultat réel '+euro(f.reel.res)+').</b> '
+        + 'Retraite de base '+euro(s.retraiteBase)+' · retraite complémentaire '+euro(s.retraiteCompl)+' · maladie-maternité '+euro(s.maladie)
+        + ' · invalidité-décès '+euro(s.invalidite)+' · allocations familiales '+euro(s.af)+' · CSG-CRDS '+euro(s.csg)+' · formation '+euro(s.formation)
+        + ' = <b>'+euro(s.total)+'</b> (≈ '+pct(s.taux)+' du bénéfice'+(s.plancher?', cotisation minimale appliquée':'')+'). '
+        + '<i>Estimation — les taux maladie et allocations familiales sont progressifs ; PASS 2026 = 48 060 €. Renseignez un taux forfaitaire pour forcer une valeur.</i>'
+        + '</div>';
+    }
+  }
+  if(r.vl){
+    var vl = r.vl;
+    if(!vl.eligible){
+      notes += '<div class="note info">'
+        + '<b>Versement libératoire de l\'IR — non éligible.</b> RFR/part '+euro(vl.rfrPart)+' &gt; seuil '+euro(vl.seuilPart)+' par part (revenus N-2)'
+        + ' : l\'option n\'est pas ouverte ; l\'IR est calculé au barème (TMI).</div>';
+    } else {
+      notes += '<div class="note ok">'
+        + '<b>Versement libératoire de l\'IR — éligible.</b> '
+        + pct(vl.rate)+' × recettes = <b>'+euro(vl.montant)+'</b> vs IR au barème '+euro(vl.bareme)+'. '
+        + (vl.retenu
+            ? 'Le <b>versement libératoire est le moins cher</b> → appliqué dans la colonne micro-BIC (économie '+euro(vl.bareme - vl.montant)+').'
+            : 'L\'<b>IR au barème reste le moins cher</b> → conservé.')
+        + ' (RFR/part '+euro(vl.rfrPart)+' ≤ seuil '+euro(vl.seuilPart)+' — revalorisé chaque année.)</div>';
+    }
+  }
+  if(r.microSocial){
+    var ms = r.microSocial;
+    notes += '<div class="note ok">'
+      + '<b>Micro-BIC — arbitrage social retenu d\'office.</b> '
+      + 'Micro-social (auto-entrepreneur) : ' + pct(ms.rate) + ' × recettes = <b>' + euro(ms.cotis) + '</b>. '
+      + 'Alternative — ' + ms.altLabel + ' : ' + euro(ms.alt) + '. '
+      + (ms.retenu
+          ? 'Le <b>micro-social est le moins cher</b> → <b>appliqué</b> (économie ' + euro(ms.alt - ms.cotis) + '). Il suppose l\'<b>option pour le statut micro-entrepreneur</b>, possible uniquement au-dessus du seuil d\'affiliation (classé &gt; 23 000 € ; chambres d\'hôtes &gt; ~12 500 €).'
+          : 'L\'alternative reste la moins chère → conservée.')
+      + '</div>';
+  }
+  // Non classé : exclu du micro-entrepreneur
+  if(r.type === 'nonclasse' && r.fisc.microPossible){
+    notes += '<div class="note info">'
+      + '<b>Meublé de tourisme non classé — pas de statut micro-entrepreneur.</b> Le non classé est <b>exclu</b> du régime micro-entrepreneur : ni micro-social (6 %/21,2 %), ni versement libératoire de l\'IR. Le résultat micro-BIC supporte l\'IR au barème (TMI) et les prélèvements sociaux du patrimoine à 18,6 %.'
+      + '</div>';
+  }
+  // Spécificités chambres d'hôtes
+  if(r.type === 'hotes'){
+    notes += '<div class="note info">'
+      + '<b>Spécificités chambres d\'hôtes.</b> '
+      + (r.recettes <= 760 ? 'Recettes ≤ 760 € : <b>exonération d\'IR</b> (art. 35 bis II CGI, hors micro-entreprise). ' : '')
+      + 'Micro-BIC en catégorie résiduelle (art. 50-0 2° CGI, confirmé CE 16-9-2025 n°505228) : <b>50 % / 83 600 €</b>, comme un meublé classique. '
+      + 'Affiliation sociale propre (art. L.611-1 5° CSS) : seuil de 13 % du PASS (≈ ' + euro(SEUIL_HOTES_SOCIAL) + '), cotisations micro-social ≈ 21,2 % des recettes. '
+      + 'TVA para-hôtelière : 10 % hébergement et table d\'hôtes, 20 % boissons alcoolisées, franchise en base sous les seuils.'
+      + '</div>';
+  }
+  // Rappel — assujettissement à la TVA (art. 261 D CGI)
+  notes += '<div class="note info expert-only">'
+    + '<b>Assujettissement à la TVA en LMNP (art. 261 D CGI).</b> '
+    + 'La liste relative aux hôtels classés, villages de vacances et résidences de tourisme avec bail de neuf ans correspond à une ancienne présentation du dispositif. Depuis la réforme de l\'article 261 D, le classement touristique ou la durée de neuf ans du bail ne constitue plus, à lui seul, un cas autonome d\'assujettissement. '
+    + 'Sont notamment taxées de plein droit&nbsp;: '
+    + '<ul>'
+    + '<li>les prestations hôtelières ou para-hôtelières proposant des séjours pouvant ne pas dépasser trente nuitées et au moins trois services sur quatre&nbsp;;</li>'
+    + '<li>les locations meublées résidentielles assorties d\'au moins trois services sur quatre&nbsp;;</li>'
+    + '<li>les locations consenties à un exploitant qui réalise lui-même l\'une de ces activités taxables.</li>'
+    + '</ul>'
+    + 'Les hôtels, chambres d\'hôtes, résidences de tourisme ou résidences services sont des exemples de structures susceptibles de répondre à ces critères, mais leur seule dénomination ou leur classement ne suffit pas. '
+    + 'Les seuils de franchise en base sont bien de&nbsp;: '
+    + '<ul>'
+    + '<li>85 000&nbsp;€ au titre de l\'année civile précédente&nbsp;;</li>'
+    + '<li>93 500&nbsp;€ en cours d\'année, avec perte de la franchise dès la date du dépassement.</li>'
+    + '</ul>'
+    + 'L\'option prévue à l\'article 293 F prend bien effet le premier jour du mois au cours duquel elle est déclarée et couvre une période de deux ans. Elle permet seulement de renoncer à la franchise pour des opérations déjà imposables&nbsp;: elle ne permet pas de soumettre volontairement à la TVA une location meublée ordinaire exonérée par l\'article 261 D.'
+    + '</div>';
+  el('notes').innerHTML = notes;
+}
+
+/* ---------- Interactions ---------- */
+function syncPara(){
+  var t = document.querySelector('input[name=type]:checked').value;
+  // Case para-hôtellerie : sans objet en longue durée (habitation) et en chambres d'hôtes (para-hôtelières par nature)
+  var hidePara = (t === 'longue' || t === 'hotes');
+  el('paraWrap').style.display = hidePara ? 'none' : 'block';
+  if(hidePara) el('para').checked = false;
+  // Case jouissance réservée : impossible en longue durée (bail à l'année)
+  var hideTh = (t === 'longue');
+  el('thWrap').style.display = hideTh ? 'none' : 'block';
+  if(hideTh) el('thJouissance').checked = false;
+}
+document.querySelectorAll('input[name=type]').forEach(function(rb){
+  rb.addEventListener('change', function(){
+    document.querySelectorAll('#typeRadios label').forEach(function(l){l.classList.remove('sel');});
+    rb.closest('label').classList.add('sel');
+    syncPara();
+    render();
+  });
+});
+['recettes','autres','chargesImmo','chargesActivite','valTotal','terrainPct','go_pct','go_dur','fa_pct','fa_dur','ig_pct','ig_dur','ag_pct','ag_dur','mob_val','mob_dur','stockDiff','tmi','rfr','parts','para','tauxSSI','thJouissance'].forEach(function(id){
+  el(id).addEventListener('input', render);
+  el(id).addEventListener('change', render);
+});
+var et = el('expertToggle');
+function toggleExpert(){
+  document.body.classList.toggle('expert');
+  et.setAttribute('aria-checked', document.body.classList.contains('expert'));
+}
+et.addEventListener('click', toggleExpert);
+et.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleExpert();} });
+
+syncPara();
+render();
+</script>
+</body>
+</html>

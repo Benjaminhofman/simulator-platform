@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=bcdaea55-f97f-4f23-ba38-a5e60e9ebc63
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PUMa 2026 — Simulateur</title>
+<meta property="og:title" content="Simulateur taxe PUMa 2026" />
+<meta property="og:description" content="Calculez votre cotisation subsidiaire maladie en temps réel. Seuils PASS 2026, formule officielle, interrupteurs par situation." />
+<meta property="og:image" content="https://taxepuma.netlify.app/preview.png" />
+<meta property="og:url" content="https://fiscalite-entrepreneur.fr/simulateurs/outils/taxe-puma.html" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --ink:#0f0e0c;
+  --ink2:#4a4845;
+  --ink3:#9a9690;
+  --ink4:#c8c4bc;
+  --paper:#faf8f4;
+  --paper2:#f2efe8;
+  --paper3:#e8e4da;
+  --accent:#1a3a2a;
+  --accent2:#2d6147;
+  --accent-light:#e8f2ec;
+  --red:#8a2020;
+  --red-light:#fdf0f0;
+  --line:rgba(15,14,12,0.1);
+  --line2:rgba(15,14,12,0.06);
+  --mono:'DM Mono',monospace;
+  --serif:'DM Serif Display',serif;
+  --sans:'DM Sans',sans-serif;
+}
+
+@media(prefers-color-scheme:dark){
+  :root{
+    --ink:#f0ece4;
+    --ink2:#b8b4ac;
+    --ink3:#6a6660;
+    --ink4:#3a3830;
+    --paper:#141210;
+    --paper2:#1c1a16;
+    --paper3:#242018;
+    --accent:#4a9e72;
+    --accent2:#3d8460;
+    --accent-light:#0e2018;
+    --red:#d47070;
+    --red-light:#1a0c0c;
+    --line:rgba(240,236,228,0.1);
+    --line2:rgba(240,236,228,0.05);
+  }
+}
+
+html{font-size:16px}
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  min-height:100vh;
+  padding:0;
+  line-height:1.6;
+}
+
+.page{
+  max-width:860px;
+  margin:0 auto;
+  padding:3rem 2rem 6rem;
+}
+
+header{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:end;
+  gap:1rem;
+  padding-bottom:2rem;
+  border-bottom:1px solid var(--line);
+  margin-bottom:3rem;
+}
+
+.header-left h1{
+  font-family:var(--serif);
+  font-size:clamp(2rem,5vw,3.2rem);
+  line-height:1.1;
+  letter-spacing:-0.02em;
+  color:var(--ink);
+  margin-bottom:0.4rem;
+}
+
+.header-left h1 em{
+  font-style:italic;
+  color:var(--ink3);
+}
+
+.header-left p{
+  font-size:13px;
+  color:var(--ink3);
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+  font-weight:300;
+}
+
+.pass-badge{
+  background:var(--paper3);
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:0.6rem 1rem;
+  text-align:right;
+}
+
+.pass-badge .label{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:var(--ink3);
+  display:block;
+}
+
+.pass-badge .value{
+  font-family:var(--mono);
+  font-size:14px;
+  font-weight:500;
+  color:var(--ink);
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:2rem;
+  align-items:start;
+}
+
+@media(max-width:640px){
+  .layout{grid-template-columns:1fr}
+  header{grid-template-columns:1fr}
+  .pass-badge{display:none}
+}
+
+.panel{
+  background:var(--paper2);
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.panel-head{
+  padding:1rem 1.25rem 0.75rem;
+  border-bottom:1px solid var(--line2);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.panel-head .icon{
+  width:28px;height:28px;
+  border-radius:6px;
+  background:var(--paper3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;
+  color:var(--ink2);
+}
+
+.panel-head h2{
+  font-size:13px;
+  font-weight:500;
+  color:var(--ink);
+  letter-spacing:0.01em;
+}
+
+.panel-body{padding:1.25rem}
+
+.switch-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:0.75rem 0;
+  border-bottom:1px solid var(--line2);
+  cursor:pointer;
+}
+
+.switch-item:last-child{border-bottom:none}
+
+.switch-text{}
+.switch-name{font-size:13px;font-weight:500;color:var(--ink)}
+.switch-sub{font-size:11px;color:var(--ink3);margin-top:1px;line-height:1.4}
+
+.toggle{
+  position:relative;
+  width:40px;height:22px;
+  flex-shrink:0;
+}
+
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+
+.track{
+  position:absolute;inset:0;
+  background:var(--paper3);
+  border-radius:22px;
+  border:1px solid var(--line);
+  transition:background .2s,border-color .2s;
+  cursor:pointer;
+}
+
+.track::after{
+  content:'';
+  position:absolute;
+  left:2px;top:2px;
+  width:16px;height:16px;
+  border-radius:50%;
+  background:var(--ink3);
+  transition:transform .2s,background .2s;
+}
+
+.toggle input:checked+.track{
+  background:var(--accent2);
+  border-color:var(--accent2);
+}
+
+.toggle input:checked+.track::after{
+  transform:translateX(18px);
+  background:#fff;
+}
+
+.slider-block{
+  margin-bottom:1.25rem;
+}
+
+.slider-block:last-child{margin-bottom:0}
+
+.slider-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  margin-bottom:6px;
+}
+
+.slider-name{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+  color:var(--ink3);
+  font-weight:400;
+}
+
+.slider-num{
+  font-family:var(--mono);
+  font-size:15px;
+  font-weight:500;
+  color:var(--ink);
+}
+
+input[type=range]{
+  width:100%;
+  height:3px;
+  appearance:none;
+  -webkit-appearance:none;
+  background:var(--paper3);
+  border-radius:3px;
+  outline:none;
+  cursor:pointer;
+}
+
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:16px;height:16px;
+  border-radius:50%;
+  background:var(--ink);
+  border:2px solid var(--paper);
+  cursor:pointer;
+  transition:transform .15s;
+}
+
+input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.2)}
+input[type=range]::-moz-range-thumb{
+  width:16px;height:16px;
+  border-radius:50%;
+  background:var(--ink);
+  border:2px solid var(--paper);
+  cursor:pointer;
+}
+
+.slider-hints{
+  display:flex;
+  justify-content:space-between;
+  margin-top:4px;
+}
+
+.slider-hints span{
+  font-size:10px;
+  color:var(--ink4);
+  font-family:var(--mono);
+}
+
+.result-card{
+  grid-column:1/-1;
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.result-top{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  border-bottom:1px solid var(--line);
+}
+
+.result-metric{
+  padding:1.25rem 1.5rem;
+  border-right:1px solid var(--line);
+}
+
+.result-metric:last-child{border-right:none}
+
+.result-metric .m-label{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:var(--ink3);
+  margin-bottom:6px;
+}
+
+.result-metric .m-val{
+  font-family:var(--mono);
+  font-size:20px;
+  font-weight:500;
+  color:var(--ink);
+  transition:color .3s;
+}
+
+.result-metric .m-val.danger{color:var(--red)}
+.result-metric .m-val.muted{color:var(--ink3)}
+
+.verdict{
+  padding:1.25rem 1.5rem;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  transition:background .3s;
+}
+
+.verdict.v-exempt{background:var(--accent-light)}
+.verdict.v-due{background:var(--red-light)}
+.verdict.v-none{background:var(--paper2)}
+
+.verdict-dot{
+  width:10px;height:10px;
+  border-radius:50%;
+  flex-shrink:0;
+  transition:background .3s;
+}
+
+.verdict.v-exempt .verdict-dot{background:var(--accent2)}
+.verdict.v-due .verdict-dot{background:var(--red)}
+.verdict.v-none .verdict-dot{background:var(--ink4)}
+
+.verdict-content{}
+.verdict-title{
+  font-size:14px;
+  font-weight:500;
+  color:var(--ink);
+}
+
+.verdict.v-exempt .verdict-title{color:var(--accent)}
+.verdict.v-due .verdict-title{color:var(--red)}
+
+.verdict-sub{
+  font-size:12px;
+  color:var(--ink3);
+  margin-top:2px;
+  line-height:1.5;
+}
+
+.cascade-section{
+  grid-column:1/-1;
+}
+
+.cascade-title{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:var(--ink3);
+  margin-bottom:12px;
+}
+
+.cascade-steps{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:0;
+  border:1px solid var(--line);
+  border-radius:10px;
+  overflow:hidden;
+}
+
+@media(max-width:640px){
+  .cascade-steps{grid-template-columns:1fr 1fr}
+}
+
+.c-step{
+  padding:1rem;
+  border-right:1px solid var(--line);
+  transition:background .3s;
+  position:relative;
+}
+
+.c-step:last-child{border-right:none}
+
+.c-step .step-n{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--ink4);
+  margin-bottom:6px;
+}
+
+.c-step .step-label{
+  font-size:11px;
+  color:var(--ink3);
+  line-height:1.4;
+}
+
+.c-step .step-result{
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:500;
+  margin-top:6px;
+  color:var(--ink4);
+}
+
+.c-step.active{background:var(--paper2)}
+.c-step.active .step-n{color:var(--ink2)}
+.c-step.active .step-label{color:var(--ink)}
+.c-step.active .step-result{color:var(--accent2)}
+
+.c-step.blocking{background:var(--accent-light)}
+.c-step.blocking .step-n{color:var(--accent2)}
+.c-step.blocking .step-label{color:var(--accent)}
+.c-step.blocking .step-result{color:var(--accent2)}
+
+.c-step.fired{background:var(--red-light)}
+.c-step.fired .step-n{color:var(--red)}
+.c-step.fired .step-label{color:var(--red)}
+.c-step.fired .step-result{color:var(--red)}
+
+.chart-section{
+  grid-column:1/-1;
+  background:var(--paper2);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:1.5rem;
+}
+
+.chart-section .chart-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  margin-bottom:1.25rem;
+}
+
+.chart-section h3{
+  font-family:var(--serif);
+  font-size:16px;
+  font-weight:400;
+  color:var(--ink);
+}
+
+.chart-section .chart-sub{
+  font-size:11px;
+  color:var(--ink3);
+}
+
+.chart-wrap{
+  position:relative;
+  height:200px;
+  width:100%;
+}
+
+.note{
+  grid-column:1/-1;
+  padding:1.25rem 1.5rem;
+  background:var(--paper2);
+  border:1px solid var(--line);
+  border-radius:10px;
+  font-size:12px;
+  color:var(--ink3);
+  line-height:1.7;
+}
+
+.note strong{
+  color:var(--ink2);
+  font-weight:500;
+}
+
+.info-grid{
+  grid-column:1/-1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
+}
+
+@media(max-width:640px){
+  .info-grid{grid-template-columns:1fr}
+}
+
+.info-card{
+  background:var(--paper2);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:1.1rem 1.25rem;
+  font-size:12px;
+  color:var(--ink3);
+  line-height:1.7;
+}
+
+.info-card--full{
+  grid-column:1/-1;
+}
+
+.info-head{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+  color:var(--ink2);
+  font-weight:500;
+  margin-bottom:10px;
+}
+
+.info-list{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.info-list li{
+  font-size:12px;
+  color:var(--ink3);
+  padding-left:4px;
+}
+
+.info-rule{
+  margin-top:10px;
+  padding-top:8px;
+  border-top:1px solid var(--line2);
+  font-size:11px;
+  color:var(--ink3);
+  font-style:italic;
+  line-height:1.6;
+}
+
+.info-disclaimers{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.disclaimer-item{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  font-size:12px;
+  color:var(--ink3);
+  line-height:1.6;
+}
+
+.d-dot{
+  width:5px;height:5px;
+  border-radius:50%;
+  background:var(--ink4);
+  flex-shrink:0;
+  margin-top:6px;
+}
+
+.disclaimer-item strong{
+  color:var(--ink2);
+  font-weight:500;
+}
+
+.disabled-zone{
+  opacity:0.3;
+  pointer-events:none;
+  transition:opacity .3s;
+}
+
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.panel,.result-card,.cascade-section .cascade-steps,.chart-section,.note{
+  animation:fadein .4s ease both;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="header-left">
+    <h1>Simulateur <em>PUMa</em> 2026</h1>
+    <p>Cotisation subsidiaire maladie — calcul en temps réel</p>
+  </div>
+  <div class="pass-badge">
+    <span class="label">PASS 2026</span>
+    <span class="value">48 060 €</span>
+  </div>
+</header>
+
+<div class="layout">
+
+  <div class="panel">
+    <div class="panel-head">
+      <div class="icon">↔</div>
+      <h2>Situation personnelle</h2>
+    </div>
+    <div class="panel-body">
+      <label class="switch-item" for="sw-ret">
+        <div class="switch-text">
+          <div class="switch-name">Retraite versée</div>
+          <div class="switch-sub">Pension de retraite effectivement perçue</div>
+        </div>
+        <div class="toggle">
+          <input type="checkbox" id="sw-ret"/>
+          <span class="track"></span>
+        </div>
+      </label>
+      <label class="switch-item" for="sw-cho">
+        <div class="switch-text">
+          <div class="switch-name">Chômage indemnisé (ARE)</div>
+          <div class="switch-sub">Allocation versée par France Travail</div>
+        </div>
+        <div class="toggle">
+          <input type="checkbox" id="sw-cho"/>
+          <span class="track"></span>
+        </div>
+      </label>
+      <label class="switch-item" for="sw-inv">
+        <div class="switch-text">
+          <div class="switch-name">Invalidité / maternité</div>
+          <div class="switch-sub">Pension d'invalidité ou indemnités maternité</div>
+        </div>
+        <div class="toggle">
+          <input type="checkbox" id="sw-inv"/>
+          <span class="track"></span>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <div class="panel" id="sliders-panel">
+    <div class="panel-head">
+      <div class="icon">≈</div>
+      <h2>Revenus annuels</h2>
+    </div>
+    <div class="panel-body">
+      <div class="slider-block">
+        <div class="slider-top">
+          <span class="slider-name">Capital (A)</span>
+          <span class="slider-num" id="out-cap">90 000 €</span>
+        </div>
+        <input type="range" min="0" max="500000" step="500" value="90000" id="sl-cap"/>
+        <div class="slider-hints">
+          <span>0 €</span>
+          <span>plafond 384 480 €</span>
+          <span>500 000 €</span>
+        </div>
+      </div>
+      <div class="slider-block">
+        <div class="slider-top">
+          <span class="slider-name">Activité (R)</span>
+          <span class="slider-num" id="out-act">3 000 €</span>
+        </div>
+        <input type="range" min="0" max="20000" step="100" value="3000" id="sl-act"/>
+        <div class="slider-hints">
+          <span>0 €</span>
+          <span>exonération 9 612 €</span>
+          <span>20 000 €</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-top">
+      <div class="result-metric">
+        <div class="m-label">Assiette taxable</div>
+        <div class="m-val" id="m-assiette">—</div>
+      </div>
+      <div class="result-metric">
+        <div class="m-label">Coefficient dégressif</div>
+        <div class="m-val" id="m-coeff">—</div>
+      </div>
+      <div class="result-metric">
+        <div class="m-label">Cotisation PUMa</div>
+        <div class="m-val" id="m-taxe">—</div>
+      </div>
+    </div>
+    <div class="verdict v-none" id="verdict">
+      <div class="verdict-dot"></div>
+      <div class="verdict-content">
+        <div class="verdict-title" id="v-title">—</div>
+        <div class="verdict-sub" id="v-sub">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cascade-section">
+    <div class="cascade-title">Logique de calcul — cascade de conditions</div>
+    <div class="cascade-steps">
+      <div class="c-step" id="cs1">
+        <div class="step-n">01</div>
+        <div class="step-label">Revenus de remplacement versés ?</div>
+        <div class="step-result" id="cr1">—</div>
+      </div>
+      <div class="c-step" id="cs2">
+        <div class="step-n">02</div>
+        <div class="step-label">Activité ≥ 9 612 € ?</div>
+        <div class="step-result" id="cr2">—</div>
+      </div>
+      <div class="c-step" id="cs3">
+        <div class="step-n">03</div>
+        <div class="step-label">Capital ≤ 24 030 € ?</div>
+        <div class="step-result" id="cr3">—</div>
+      </div>
+      <div class="c-step" id="cs4">
+        <div class="step-n">04</div>
+        <div class="step-label">6,5 % × assiette × coeff</div>
+        <div class="step-result" id="cr4">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-section" id="chart-sec">
+    <div class="chart-head">
+      <h3>Courbe de la cotisation</h3>
+      <span class="chart-sub">selon les revenus du capital, R fixé</span>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="ch" role="img" aria-label="Courbe de la taxe PUMa selon les revenus du capital"></canvas>
+    </div>
+  </div>
+
+  <div class="info-grid">
+
+    <div class="info-card">
+      <div class="info-head">💰 Revenus du capital pris en compte</div>
+      <ul class="info-list">
+        <li>💰 Dividendes</li>
+        <li>🏠 Revenus fonciers (locations nues)</li>
+        <li>📈 Plus-values de cession de titres</li>
+        <li>📊 Intérêts et revenus financiers</li>
+        <li>🏢 Revenus de SCPI</li>
+        <li>🏠 LMNP (BIC non professionnels)</li>
+        <li>📋 BNC non professionnel</li>
+      </ul>
+    </div>
+
+    <div class="info-card">
+      <div class="info-head">💼 Revenus d'activité pris en compte</div>
+      <ul class="info-list">
+        <li>Salaires nets soumis à cotisations sociales</li>
+        <li>Rémunération de gérance (SARL, SNC…)</li>
+        <li>Rémunération de président de SAS / SASU</li>
+        <li>Bénéfices d'activités indépendantes (BIC pro, BNC pro)</li>
+        <li>Revenus agricoles</li>
+        <li>Micro-entrepreneurs : CA moins abattement fiscal</li>
+      </ul>
+      <div class="info-rule">Règle générale : tout revenu issu d'un travail ou d'une activité professionnelle donnant lieu à des cotisations sociales.</div>
+    </div>
+
+    <div class="info-card info-card--full">
+      <div class="info-head">⚠️ À savoir</div>
+      <div class="info-disclaimers">
+        <div class="disclaimer-item">
+          <span class="d-dot"></span>
+          <span>Ce simulateur est <strong>indicatif</strong>. Le montant définitif est fixé par l'URSSAF à partir de votre déclaration fiscale.</span>
+        </div>
+        <div class="disclaimer-item">
+          <span class="d-dot"></span>
+          <span>La taxe est appelée après transmission des données par la DGFIP, généralement en novembre (Q4).</span>
+        </div>
+        <div class="disclaimer-item">
+          <span class="d-dot"></span>
+          <span>Un chômeur <strong>non indemnisé</strong> (fin de droits, période de carence) reste dans le calcul normal — seule l'ARE effectivement versée exonère.</span>
+        </div>
+        <div class="disclaimer-item">
+          <span class="d-dot"></span>
+          <span>Plafond d'assiette : 8 PASS = 384 480 €. Au-delà, aucune cotisation supplémentaire.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="grid-column:1/-1;display:flex;justify-content:flex-end;padding-top:0.5rem;">
+    <a id="li-btn" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;padding:0.55rem 1.1rem;border:1px solid var(--line);border-radius:8px;background:var(--paper2);color:var(--ink2);font-size:13px;font-family:var(--sans);text-decoration:none;transition:background .15s,border-color .15s;" onmouseover="this.style.background='var(--paper3)';this.style.borderColor='var(--line2)'" onmouseout="this.style.background='var(--paper2)';this.style.borderColor='var(--line)'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="24" height="24" rx="4" fill="#0A66C2"/><path d="M7 9.5H5V19H7V9.5ZM6 8.5C5.3 8.5 4.75 7.95 4.75 7.25C4.75 6.55 5.3 6 6 6C6.7 6 7.25 6.55 7.25 7.25C7.25 7.95 6.7 8.5 6 8.5ZM19 19H17V14.1C17 11.9 14.5 12.1 14.5 14.1V19H12.5V9.5H14.5V10.7C15.4 9.1 19 8.9 19 12.9V19Z" fill="white"/></svg>
+      Partager sur LinkedIn
+    </a>
+  </div>
+
+</div>
+</div>
+
+<script>
+const PASS=48060,SC=.5*PASS,SA=.2*PASS,PL=8*PASS,TX=.065;
+
+function calc(A,R){
+  const Ac=Math.min(A,PL),as=Math.max(0,Ac-SC);
+  if(!as)return{taxe:0,as:0,coeff:0};
+  const co=Math.max(0,1-R/SA);
+  return{taxe:TX*as*co,as,coeff:co};
+}
+
+function eur(n){return Math.round(n).toLocaleString('fr-FR')+' €'}
+function pct(n){return(n*100).toFixed(1)+' %'}
+
+const slCap=document.getElementById('sl-cap');
+const slAct=document.getElementById('sl-act');
+const swRet=document.getElementById('sw-ret');
+const swCho=document.getElementById('sw-cho');
+const swInv=document.getElementById('sw-inv');
+
+const isDark=matchMedia('(prefers-color-scheme:dark)').matches;
+
+const labels=[],seed=[];
+for(let a=0;a<=500000;a+=1000){labels.push(a/1000+'k');seed.push(calc(a,3000).taxe)}
+
+const ch=new Chart(document.getElementById('ch').getContext('2d'),{
+  type:'line',
+  data:{labels,datasets:[{
+    data:seed,
+    borderColor:isDark?'#4a9e72':'#1a3a2a',
+    backgroundColor:isDark?'rgba(74,158,114,0.08)':'rgba(26,58,42,0.06)',
+    fill:true,tension:.35,pointRadius:0,borderWidth:1.5
+  }]},
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>eur(c.parsed.y)}}},
+    scales:{
+      x:{ticks:{autoSkip:true,maxTicksLimit:8,font:{size:10,family:"'DM Mono',monospace"},color:isDark?'#6a6660':'#9a9690'},grid:{color:isDark?'rgba(240,236,228,0.05)':'rgba(15,14,12,0.05)'},title:{display:true,text:'revenus du capital',font:{size:10},color:isDark?'#6a6660':'#9a9690'}},
+      y:{ticks:{font:{size:10,family:"'DM Mono',monospace"},color:isDark?'#6a6660':'#9a9690',callback:v=>eur(v)},grid:{color:isDark?'rgba(240,236,228,0.05)':'rgba(15,14,12,0.05)'}}
+    }
+  }
+});
+
+function step(id,state,txt){
+  document.getElementById(id).className='c-step '+state;
+  document.getElementById(id.replace('cs','cr')).textContent=txt;
+}
+
+function update(){
+  const A=+slCap.value,R=+slAct.value;
+  const remp=swRet.checked||swCho.checked||swInv.checked;
+  const sources=[swRet.checked?'retraite':null,swCho.checked?'ARE':null,swInv.checked?'invalidité/maternité':null].filter(Boolean).join(', ');
+
+  document.getElementById('out-cap').textContent=eur(A);
+  document.getElementById('out-act').textContent=eur(R);
+
+  const sp=document.getElementById('sliders-panel');
+  const cs=document.getElementById('chart-sec');
+
+  if(remp){
+    sp.classList.add('disabled-zone');
+    cs.classList.add('disabled-zone');
+    document.getElementById('m-assiette').textContent='—';
+    document.getElementById('m-assiette').className='m-val muted';
+    document.getElementById('m-coeff').textContent='—';
+    document.getElementById('m-coeff').className='m-val muted';
+    document.getElementById('m-taxe').textContent='0 €';
+    document.getElementById('m-taxe').className='m-val';
+    const v=document.getElementById('verdict');
+    v.className='verdict v-exempt';
+    document.getElementById('v-title').textContent='Exonéré — revenus de remplacement';
+    document.getElementById('v-sub').textContent='Motif : '+sources+'. Aucune cotisation due, quel que soit le niveau du capital.';
+    step('cs1','blocking','→ exonération totale');
+    step('cs2','active','non atteint');
+    step('cs3','active','non atteint');
+    step('cs4','active','non atteint');
+    return;
+  }
+
+  sp.classList.remove('disabled-zone');
+  cs.classList.remove('disabled-zone');
+  step('cs1','active','non — calcul continue');
+
+  if(R>=SA){
+    document.getElementById('m-assiette').textContent='—';
+    document.getElementById('m-assiette').className='m-val muted';
+    document.getElementById('m-coeff').textContent='0 %';
+    document.getElementById('m-coeff').className='m-val muted';
+    document.getElementById('m-taxe').textContent='0 €';
+    document.getElementById('m-taxe').className='m-val';
+    const v=document.getElementById('verdict');
+    v.className='verdict v-exempt';
+    document.getElementById('v-title').textContent='Exonéré — activité suffisante';
+    document.getElementById('v-sub').textContent='Revenus d\'activité ≥ 9 612 € : coefficient dégressif = 0, cotisation nulle.';
+    step('cs2','blocking','→ exonération');
+    step('cs3','active','non atteint');
+    step('cs4','active','non atteint');
+    ch.data.datasets[0].data=Array(labels.length).fill(0);
+    ch.update('none');
+    return;
+  }
+
+  step('cs2','active','non — calcul continue');
+
+  if(A<=SC){
+    const co=Math.max(0,1-R/SA);
+    document.getElementById('m-assiette').textContent='0 €';
+    document.getElementById('m-assiette').className='m-val muted';
+    document.getElementById('m-coeff').textContent=pct(co);
+    document.getElementById('m-coeff').className='m-val muted';
+    document.getElementById('m-taxe').textContent='0 €';
+    document.getElementById('m-taxe').className='m-val';
+    const v=document.getElementById('verdict');
+    v.className='verdict v-exempt';
+    document.getElementById('v-title').textContent='Non assujetti — capital sous le seuil';
+    document.getElementById('v-sub').textContent='Revenus du capital ≤ 24 030 € : assiette nulle, pas de cotisation.';
+    step('cs3','blocking','→ assiette nulle');
+    step('cs4','active','non atteint');
+    const nd=[];for(let a=0;a<=500000;a+=1000)nd.push(calc(a,R).taxe);
+    ch.data.datasets[0].data=nd;ch.update('none');
+    return;
+  }
+
+  step('cs3','active','non — calcul continue');
+  step('cs4','fired','→ taxe calculée');
+
+  const{taxe,as,coeff}=calc(A,R);
+  document.getElementById('m-assiette').textContent=eur(as);
+  document.getElementById('m-assiette').className='m-val';
+  document.getElementById('m-coeff').textContent=pct(coeff);
+  document.getElementById('m-coeff').className='m-val';
+  document.getElementById('m-taxe').textContent=eur(taxe);
+  document.getElementById('m-taxe').className='m-val danger';
+  const v=document.getElementById('verdict');
+  v.className='verdict v-due';
+  document.getElementById('v-title').textContent='Assujetti — cotisation due';
+  document.getElementById('v-sub').textContent='Pour être exonéré : porter les revenus d\'activité au-delà de 9 612 €, ou percevoir un revenu de remplacement.';
+
+  const nd=[];for(let a=0;a<=500000;a+=1000)nd.push(calc(a,R).taxe);
+  ch.data.datasets[0].data=nd;ch.update('none');
+}
+
+slCap.addEventListener('input',update);
+slAct.addEventListener('input',update);
+swRet.addEventListener('change',update);
+swCho.addEventListener('change',update);
+swInv.addEventListener('change',update);
+update();
+
+const liBtn=document.getElementById("li-btn");
+const pageUrl=encodeURIComponent(window.location.href);
+liBtn.href="https://www.linkedin.com/sharing/share-offsite/?url="+pageUrl;
+</script>
+</body>
+</html>
