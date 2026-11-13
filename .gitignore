@@ -29,3 +29,7 @@ PROMPT_*.txt
 prompt-*.txt
 prompt_*.txt
 /simulateur-*.html
+
+# Fichier généré au build par generate-headers.js (contient le mot de passe) : ne jamais le suivre
+/_headers
+/_headers.tmp

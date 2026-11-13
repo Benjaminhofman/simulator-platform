@@ -6,9 +6,8 @@
   <title>À propos — Benjamin Hofman, Diplômé d'expertise comptable</title>
   <meta name="description" content="Benjamin Hofman, diplômé d'expertise comptable, spécialiste IA et outils innovants. Créateur de simulateurs fiscaux gratuits pour entrepreneurs et gérants." />
   <link rel="canonical" href="https://fiscalite-entrepreneur.fr/about.html" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="preload" href="/assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/assets/fonts/plus-jakarta-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="/assets/site.css" />
   <style>
     .page { max-width: 720px; margin: 0 auto; padding: 56px 24px 80px; }
@@ -45,7 +44,6 @@
       <a href="/blog.html">Blog</a>
       <a href="/about.html" aria-current="page">À propos</a>
     </nav>
-    <a class="btn btn-primary site-contact" href="/about.html#contact">Me contacter</a>
   </div>
 </header>
 
@@ -95,24 +93,6 @@
     <p>Constatant que mes clients posaient souvent les mêmes questions sur leur statut ou leur fiscalité, j'ai créé ces outils pour leur permettre de simuler rapidement leur situation avant même un rendez-vous.</p>
     <p>Gratuits, sans inscription, accessibles à tous.</p>
   </div>
-
-  <div class="section highlight" id="contact">
-    <div class="section-header">
-      <span class="section-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
-      <h2>Me contacter</h2>
-    </div>
-    <p>Vous souhaitez échanger sur votre situation fiscale ou patrimoniale ?</p>
-    <form name="contact" method="POST" data-netlify="true" class="contact-form">
-      <input type="hidden" name="form-name" value="contact" />
-      <input type="text" name="nom" placeholder="Votre nom" aria-label="Votre nom" autocomplete="name" />
-      <input type="email" name="email" placeholder="Votre email" aria-label="Votre email" autocomplete="email" />
-      <textarea name="message" placeholder="Votre message" aria-label="Votre message" rows="4"></textarea>
-      <button type="submit" class="btn">Envoyer</button>
-    </form>
-    <a class="linkedin-btn" href="https://www.linkedin.com/in/benjamin-hofman-ia/" target="_blank" rel="noopener">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg> Me suivre sur LinkedIn
-    </a>
-  </div>
 </main>
 
 <footer class="site-footer">
@@ -124,6 +104,8 @@
       <a href="/blog.html">Blog</a>
       <a href="/about.html">À propos</a>
       <a href="https://www.linkedin.com/in/benjamin-hofman-ia/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="/mentions-legales.html">Mentions légales</a>
+      <a href="/politique-confidentialite.html">Confidentialité</a>
     </nav>
     <div class="site-footer-legal">
       <p>Outils à titre indicatif — ne constituent pas un conseil fiscal personnalisé</p>
