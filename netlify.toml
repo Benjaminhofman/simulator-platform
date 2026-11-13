@@ -2,6 +2,9 @@
 [build]
   publish = "."
   functions = "netlify/functions"
-  # Génère _headers (protection Basic-Auth) à partir de la variable BASIC_AUTH.
-  # Échoue si BASIC_AUTH est absente : aucun site non protégé ne peut être publié.
-  command = "node generate-headers.js"
+
+# Protection de tout le site par mot de passe : netlify/edge-functions/auth.js
+# (identifiants dans la variable d'environnement BASIC_AUTH, jamais dans le dépôt).
+[[edge_functions]]
+  path = "/*"
+  function = "auth"
